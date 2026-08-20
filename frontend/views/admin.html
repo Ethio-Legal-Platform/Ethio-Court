@@ -876,6 +876,26 @@
     .modal-box-body { padding: 1.35rem; max-height: 80vh; overflow-y: auto; }
     .modal-close-btn { background: transparent; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer; }
     .modal-close-btn:hover { color: #0f172a; }
+
+    /* Dark Font View All Buttons */
+    .btn-view-all-link {
+      background: transparent;
+      border: none;
+      color: var(--fsc-navy-main);
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+    }
+    .btn-view-all-link:hover {
+      color: #0284c7;
+      background: #f1f5f9;
+    }
   </style>
 </head>
 <body onclick="handleAdminGlobalClick(event)">
@@ -920,8 +940,8 @@
           <div id="admin-notif-dropdown-list" style="max-height:280px;overflow-y:auto">
             <!-- Populated dynamically -->
           </div>
-          <div style="padding:0.5rem;text-align:center;background:#f8fafc;border-top:1px solid #e2e8f0">
-            <button class="btn-view-all-link" style="font-size:0.75rem" onclick="switchAdminView('cases_management'); setCaseCategoryFilter('requested'); toggleAdminNotifDropdown(event)">View Requested Cases &rarr;</button>
+          <div style="padding:0.6rem;text-align:center;background:#f8fafc;border-top:1px solid #e2e8f0">
+            <button class="btn-view-all-link" style="font-size:0.8rem;font-weight:700;color:var(--fsc-navy-main);background:transparent;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.3rem" onclick="switchAdminView('cases_management'); setCaseCategoryFilter('requested'); toggleAdminNotifDropdown(event)">View Requested Cases &rarr;</button>
           </div>
         </div>
       </div>
@@ -941,8 +961,8 @@
           <div id="admin-email-dropdown-list" style="max-height:280px;overflow-y:auto">
             <!-- Populated dynamically -->
           </div>
-          <div style="padding:0.5rem;text-align:center;background:#f8fafc;border-top:1px solid #e2e8f0">
-            <button class="btn-view-all-link" style="font-size:0.75rem" onclick="openAllBranchRequestsModal(); toggleAdminEmailDropdown(event)">View All Branch Logs &rarr;</button>
+          <div style="padding:0.6rem;text-align:center;background:#f8fafc;border-top:1px solid #e2e8f0">
+            <button class="btn-view-all-link" style="font-size:0.8rem;font-weight:700;color:var(--fsc-navy-main);background:transparent;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.3rem" onclick="openAllBranchRequestsModal(); toggleAdminEmailDropdown(event)">View All Branch Logs &rarr;</button>
           </div>
         </div>
       </div>
