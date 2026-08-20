@@ -1,5 +1,14 @@
 [
   {
+    "id": "AUD-1787247675173",
+    "action": "HEARING_SCHEDULED",
+    "user": "Branch Official Hassan",
+    "role": "official",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T17:41:15.173Z",
+    "details": "Judge: Hon. Judge Solomon Desta, Courtroom: Courtroom 4 (Main Trial Room), Date: 2026-08-20 at 09:30 AM"
+  },
+  {
     "id": "AUD-1787247182044",
     "action": "USER_LOGIN",
     "user": "Branch Official Hassan",

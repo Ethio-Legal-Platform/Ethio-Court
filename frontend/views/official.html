@@ -393,13 +393,13 @@
 
     /* Action Buttons */
     .btn-schedule-action {
-      background: var(--fsc-navy-main);
-      color: #ffffff;
+      background: transparent;
+      color: var(--fsc-navy-main);
+      border: 1.5px solid var(--fsc-navy-main);
       font-weight: 700;
       font-size: 0.775rem;
       padding: 0.45rem 0.85rem;
       border-radius: 6px;
-      border: none;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -407,7 +407,9 @@
       transition: all 0.15s ease;
     }
     .btn-schedule-action:hover {
-      background: #1e3a8a;
+      background: #f1f5f9;
+      border-color: #0284c7;
+      color: #0284c7;
       transform: translateY(-1px);
     }
 
