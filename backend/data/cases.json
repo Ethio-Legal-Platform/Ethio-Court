@@ -4,7 +4,7 @@
     "caseTitle": "Awash International Bank vs. Blue Nile Holdings (Commercial Bond Default)",
     "caseType": "Corporate",
     "dateDecided": "2026-08-20",
-    "status": "Decided",
+    "status": "forwarded_to_branch",
     "judgeId": "JUDGE-001",
     "judgeName": "Hon. Judge Solomon Desta",
     "plaintiffClientId": "0911998877",
@@ -38,7 +38,7 @@
       ]
     },
     "tempPin": "437502",
-    "jurisdiction": "Federal Supreme Court (Sidist Kilo)",
+    "jurisdiction": "Federal High Court — Lideta Division",
     "description": "Commercial contract default on infrastructure guarantees.",
     "incidentDate": null,
     "incidentLocation": "",
@@ -105,10 +105,10 @@
       }
     },
     "screeningStatus": "approved",
-    "screeningNotes": "",
+    "screeningNotes": "Approved after verifying complete commercial loan contracts.",
     "relevantLawArticle": "Commercial Code Art. 715",
     "reviewedBy": "Admin User",
-    "reviewedAt": "2026-08-20T16:24:30.056Z",
+    "reviewedAt": "2026-08-20T16:40:44.065Z",
     "clerkName": "Kalkidan Mengistu",
     "hearingDate": "2026-06-05",
     "hearingTime": "10:00 AM",
@@ -160,7 +160,8 @@
         "nextHearingDate": null
       }
     ],
-    "appealDeadline": "2026-09-19T16:24:30.197Z"
+    "appealDeadline": "2026-09-19T16:24:30.197Z",
+    "caseCategory": "Commercial & Banking Default"
   },
   {
     "caseId": "CASE-1787215962441",

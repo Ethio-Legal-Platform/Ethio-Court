@@ -17,6 +17,7 @@ let allNotifications = [];
 let allSmsLogs = [];
 let allAuditLogs = [];
 let selectedChartBranch = "ALL";
+let currentCaseFilter = "requested";
 
 const ICONS = {
   briefcase: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
@@ -452,42 +453,107 @@ function renderAdminDashboard(container) {
 }
 
 /* Subviews */
+
+function setCaseCategoryFilter(filterName) {
+  currentCaseFilter = filterName;
+  const container = document.getElementById('dynamic-admin-workspace');
+  if (container) renderCasesManagementView(container);
+}
+
 function renderCasesManagementView(container) {
+  const pendingCases = allCases.filter(c => c.status === 'pending_screening' || c.screeningStatus === 'pending' || !c.screeningStatus || c.status === 'pending');
+  const approvedCases = allCases.filter(c => c.screeningStatus === 'approved' || c.status === 'forwarded_to_branch' || c.status === 'scheduled' || c.status === 'assigned' || c.status === 'hearing');
+  const declinedCases = allCases.filter(c => c.screeningStatus === 'rejected' || c.status === 'rejected');
+
+  let displayList = allCases;
+  if (currentCaseFilter === 'requested') displayList = pendingCases;
+  else if (currentCaseFilter === 'approved') displayList = approvedCases;
+  else if (currentCaseFilter === 'declined') displayList = declinedCases;
+
+  const rowsHtml = displayList.length ? displayList.map(c => {
+    const isPending = c.status === 'pending_screening' || c.screeningStatus === 'pending' || !c.screeningStatus;
+    const isApproved = c.screeningStatus === 'approved' || c.status === 'scheduled' || c.status === 'forwarded_to_branch';
+    const isDeclined = c.screeningStatus === 'rejected' || c.status === 'rejected';
+
+    let statusPill = '<span class="status-pill pill-orange">REQUESTED</span>';
+    if (isApproved) statusPill = '<span class="status-pill pill-green">APPROVED</span>';
+    else if (isDeclined) statusPill = '<span class="status-pill pill-red">DECLINED</span>';
+
+    const filedDate = c.filingDate ? new Date(c.filingDate).toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'}) : 'Recent';
+    const docCount = (c.documents && c.documents.length) ? c.documents.length : 1;
+    const categoryLabel = c.caseCategory || c.caseType || 'Civil / Corporate';
+
+    return '<tr>' +
+      '<td><a class="case-link-bold" onclick="openAdminReviewModal(\'' + c.caseId + '\')">' + c.caseId + '</a></td>' +
+      '<td>' +
+        '<strong style="color:var(--fsc-navy-main)">' + (c.caseTitle || c.petitioner + ' vs. ' + c.respondent) + '</strong><br>' +
+        '<span style="font-size:0.75rem;color:#64748b">Filer: ' + (c.petitioner || 'Litigant') + ' (' + (c.filerPhone || 'No Phone') + ')</span>' +
+      '</td>' +
+      '<td><span class="status-pill pill-blue">' + categoryLabel + '</span></td>' +
+      '<td>' + (c.jurisdiction || 'Federal Supreme Court') + '</td>' +
+      '<td>' +
+        '<div style="display:flex;align-items:center;gap:0.3rem;color:#64748b;font-size:0.8rem">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+          '<span>' + docCount + ' files</span>' +
+        '</div>' +
+      '</td>' +
+      '<td style="color:#64748b;font-size:0.785rem">' + filedDate + '</td>' +
+      '<td>' + statusPill + '</td>' +
+      '<td>' +
+        '<button class="btn-export-dashboard" style="padding:0.35rem 0.75rem;font-size:0.75rem;margin:0" onclick="openAdminReviewModal(\'' + c.caseId + '\')">' +
+          (isPending ? '⚖️ Review &amp; Label' : 'View Dossier') +
+        '</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('') : '<tr><td colspan="8" style="text-align:center;color:#64748b;padding:2rem">No cases found in ' + currentCaseFilter.toUpperCase() + ' category.</td></tr>';
+
   container.innerHTML = 
     '<div class="admin-header-row">' +
       '<div>' +
         '<h1 class="admin-greeting-title">Court Docket &amp; Case Management</h1>' +
-        '<div class="admin-greeting-sub">Master directory of all legal cases filed across Ethiopian Federal Courts.</div>' +
+        '<div class="admin-greeting-sub">Review incoming requests, label legal categories, and assign target court branches.</div>' +
       '</div>' +
       '<button class="btn-export-dashboard" onclick="openAdminCreateCaseModal()">+ File New Case</button>' +
     '</div>' +
+
+    '<!-- Category Filter Tabs -->' +
+    '<div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;border-bottom:2px solid #e2e8f0;padding-bottom:0.75rem;flex-wrap:wrap">' +
+      '<button class="admin-tab-btn ' + (currentCaseFilter === 'requested' ? 'active' : '') + '" onclick="setCaseCategoryFilter(\'requested\')" style="padding:0.55rem 1.15rem;border-radius:6px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:' + (currentCaseFilter === 'requested' ? 'var(--fsc-navy-main);color:#fff' : '#ffffff;color:var(--fsc-navy-main)') + '">' +
+        '📥 Requested (Pending Screening) <span style="background:#f97316;color:#fff;padding:0.15rem 0.45rem;border-radius:10px;font-size:0.7rem;margin-left:0.35rem">' + pendingCases.length + '</span>' +
+      '</button>' +
+
+      '<button class="admin-tab-btn ' + (currentCaseFilter === 'approved' ? 'active' : '') + '" onclick="setCaseCategoryFilter(\'approved\')" style="padding:0.55rem 1.15rem;border-radius:6px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:' + (currentCaseFilter === 'approved' ? 'var(--fsc-navy-main);color:#fff' : '#ffffff;color:var(--fsc-navy-main)') + '">' +
+        '✓ Approved &amp; Forwarded <span style="background:#16a34a;color:#fff;padding:0.15rem 0.45rem;border-radius:10px;font-size:0.7rem;margin-left:0.35rem">' + approvedCases.length + '</span>' +
+      '</button>' +
+
+      '<button class="admin-tab-btn ' + (currentCaseFilter === 'declined' ? 'active' : '') + '" onclick="setCaseCategoryFilter(\'declined\')" style="padding:0.55rem 1.15rem;border-radius:6px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:' + (currentCaseFilter === 'declined' ? 'var(--fsc-navy-main);color:#fff' : '#ffffff;color:var(--fsc-navy-main)') + '">' +
+        '✕ Declined / Dismissed <span style="background:#ef4444;color:#fff;padding:0.15rem 0.45rem;border-radius:10px;font-size:0.7rem;margin-left:0.35rem">' + declinedCases.length + '</span>' +
+      '</button>' +
+
+      '<button class="admin-tab-btn ' + (currentCaseFilter === 'all' ? 'active' : '') + '" onclick="setCaseCategoryFilter(\'all\')" style="padding:0.55rem 1.15rem;border-radius:6px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:' + (currentCaseFilter === 'all' ? 'var(--fsc-navy-main);color:#fff' : '#ffffff;color:var(--fsc-navy-main)') + '">' +
+        'All Cases (' + allCases.length + ')' +
+      '</button>' +
+    '</div>' +
+
     '<div class="admin-panel-card">' +
       '<table class="admin-table">' +
         '<thead>' +
           '<tr>' +
             '<th>Case ID</th>' +
-            '<th>Title</th>' +
-            '<th>Division</th>' +
-            '<th>Presiding Judge</th>' +
+            '<th>Title / Parties</th>' +
+            '<th>Category Label</th>' +
+            '<th>Assigned Branch</th>' +
+            '<th>Client Files</th>' +
+            '<th>Filed Date</th>' +
             '<th>Status</th>' +
             '<th>Actions</th>' +
           '</tr>' +
         '</thead>' +
-        '<tbody>' +
-          allCases.slice(0, 15).map(c => 
-            '<tr>' +
-              '<td><a class="case-link-bold" onclick="openAdminCaseModal(\'' + c.caseId + '\')">' + c.caseId + '</a></td>' +
-              '<td><strong>' + (c.caseTitle || '') + '</strong></td>' +
-              '<td>' + (c.jurisdiction || 'Federal Supreme Court') + '</td>' +
-              '<td>' + (c.judgeName || 'Hon. Judge Solomon Desta') + '</td>' +
-              '<td><span class="status-pill ' + (c.status === 'closed' || c.status === 'Decided' ? 'pill-green' : 'pill-amber') + '">' + (c.status || 'Active').toUpperCase() + '</span></td>' +
-              '<td><button class="btn-view-sm" onclick="openAdminCaseModal(\'' + c.caseId + '\')">View Docket</button></td>' +
-            '</tr>'
-          ).join('') +
-        '</tbody>' +
+        '<tbody>' + rowsHtml + '</tbody>' +
       '</table>' +
     '</div>';
 }
+
 
 function renderUserManagementView(container) {
   container.innerHTML = 
@@ -1126,8 +1192,10 @@ function generateBranchChartHtml(branchId) {
 
 
 // ── Functional Admin Case Review & Legal Check Assistant ──
+
 async function openAdminReviewModal(caseId) {
   const caseItem = allCases.find(c => c.caseId === caseId) || { caseId, petitioner: 'Filer', respondent: 'Respondent', caseType: 'Civil' };
+  
   let legalLibrary = [];
   try {
     const res = await fetch(API + '/legal-library');
@@ -1138,58 +1206,156 @@ async function openAdminReviewModal(caseId) {
     '<option value="' + l.article + ' - ' + l.title + '">' + l.article + ': ' + l.title + ' (' + l.category + ')</option>'
   ).join('');
 
-  document.getElementById('admin-modal-title').textContent = 'Admin Screening & Branch Assignment — ' + caseId;
+  const docs = caseItem.documents || [];
+  const docsHtml = docs.length ? docs.map(d => {
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:#ffffff;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:0.4rem">' +
+      '<div style="display:flex;align-items:center;gap:0.5rem">' +
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+        '<div>' +
+          '<div style="font-weight:700;font-size:0.825rem;color:var(--fsc-navy-main)">' + d.name + '</div>' +
+          '<div style="font-size:0.7rem;color:#64748b">' + (d.size || '1.2 MB') + ' · Uploaded: ' + new Date(d.uploadedAt || Date.now()).toLocaleDateString() + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<a href="' + (d.path ? '/' + d.path.replace(/\\/g, '/') : '#') + '" target="_blank" class="btn-view-sm" style="padding:0.25rem 0.6rem;text-decoration:none;font-size:0.75rem">View / Download</a>' +
+    '</div>';
+  }).join('') : '<div style="padding:0.75rem;background:#ffffff;border-radius:6px;border:1px dashed #cbd5e1;color:#64748b;font-size:0.8rem">1. Supporting_Statement_of_Claim.pdf (Client submitted digital claim dossier)</div>';
+
+  document.getElementById('admin-modal-title').textContent = 'Case Request Dossier & Judicial Labeling — ' + caseId;
   document.getElementById('admin-modal-body').innerHTML = 
-    '<form onsubmit="handleAdminReviewSubmit(event, \'' + caseId + '\')">' +
-      '<div style="background:#f8fafc;padding:0.75rem 1rem;border-radius:6px;margin-bottom:1rem;border:1px solid #e2e8f0">' +
-        '<div style="font-weight:700;color:var(--fsc-navy-main)">' + (caseItem.caseTitle || caseItem.petitioner + ' vs. ' + caseItem.respondent) + '</div>' +
-        '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">Filer: ' + (caseItem.petitioner || 'Plaintiff') + ' | Phone: ' + (caseItem.filerPhone || 'N/A') + '</div>' +
-      '</div>' +
-
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Applicable Law / Legal Article Check</label>' +
-        '<select id="rev-legal-article" class="top-search-input" style="width:100%;border-radius:6px">' +
-          '<option value="Civil Code Art. 2024 - Breach of Commercial Contract">Civil Code Art. 2024 - Breach of Commercial Contract</option>' +
-          '<option value="Commercial Code Art. 715 - Negotiable Instruments & Banking Default">Commercial Code Art. 715 - Negotiable Instruments &amp; Banking Default</option>' +
-          '<option value="Criminal Code Art. 675 - Fraud & Financial Deception">Criminal Code Art. 675 - Fraud &amp; Financial Deception</option>' +
-          '<option value="FDRE Constitution Art. 37 - Right to Access to Justice">FDRE Constitution Art. 37 - Right to Access to Justice</option>' +
-          legalOptionsHtml +
-        '</select>' +
-      '</div>' +
-
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Screening Decision</label>' +
-          '<select id="rev-decision" class="top-search-input" style="width:100%;border-radius:6px">' +
-            '<option value="approved" selected>Approve &amp; Forward to Branch</option>' +
-            '<option value="rejected">Decline / Dismiss Filing</option>' +
-          '</select>' +
+    '<div style="max-height:75vh;overflow-y:auto;padding-right:0.35rem">' +
+      '<!-- Filer & Case Overview Card -->' +
+      '<div style="background:#f8fafc;padding:0.85rem 1.15rem;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:1rem">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+          '<div>' +
+            '<div style="font-size:0.7rem;font-weight:700;color:#64748b;text-transform:uppercase">Case Title &amp; Parties</div>' +
+            '<h3 style="font-size:1.1rem;font-weight:800;color:var(--fsc-navy-main);margin:0.2rem 0">' + (caseItem.caseTitle || caseItem.petitioner + ' vs. ' + caseItem.respondent) + '</h3>' +
+          '</div>' +
+          '<span class="status-pill ' + (caseItem.screeningStatus === 'approved' ? 'pill-green' : (caseItem.screeningStatus === 'rejected' ? 'pill-red' : 'pill-orange')) + '">' +
+            ((caseItem.screeningStatus || 'PENDING SCREENING')).toUpperCase() +
+          '</span>' +
         '</div>' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Target Court Branch</label>' +
-          '<select id="rev-branch" class="top-search-input" style="width:100%;border-radius:6px">' +
-            '<option value="Federal Supreme Court (Sidist Kilo)">Federal Supreme Court (Sidist Kilo)</option>' +
-            '<option value="Federal High Court — Lideta Division">Federal High Court — Lideta Division</option>' +
-            '<option value="Federal High Court — Arada Criminal">Federal High Court — Arada Criminal</option>' +
-            '<option value="Federal First Instance — Kirkos & Bole">Federal First Instance — Kirkos &amp; Bole</option>' +
-            '<option value="Dire Dawa Federal Circuit Court">Dire Dawa Federal Circuit Court</option>' +
-          '</select>' +
+
+        '<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:0.75rem;margin-top:0.75rem;font-size:0.8rem;border-top:1px solid #e2e8f0;padding-top:0.6rem">' +
+          '<div><span style="color:#64748b">Filer Name:</span> <strong style="color:var(--fsc-navy-main)">' + (caseItem.petitioner || 'Plaintiff') + '</strong></div>' +
+          '<div><span style="color:#64748b">Contact Phone:</span> <strong>' + (caseItem.filerPhone || '+251 911 123 456') + '</strong></div>' +
+          '<div><span style="color:#64748b">Filing Date:</span> <strong>' + new Date(caseItem.filingDate || Date.now()).toLocaleDateString() + '</strong></div>' +
         '</div>' +
+
+        (caseItem.description ? '<div style="margin-top:0.6rem;font-size:0.8rem;color:#334155;background:#ffffff;padding:0.6rem;border-radius:6px;border:1px solid #e2e8f0"><strong>Statement of Claim:</strong> ' + caseItem.description + '</div>' : '') +
       '</div>' +
 
-      '<div style="margin-bottom:1rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Review Notes / Instructions</label>' +
-        '<textarea id="rev-comments" class="top-search-input" style="width:100%;height:65px;border-radius:6px" placeholder="Enter judicial classification and notes..."></textarea>' +
+      '<!-- Submitted Files Section -->' +
+      '<div style="background:#f0f9ff;padding:0.85rem 1.15rem;border-radius:8px;border:1px solid #bae6fd;margin-bottom:1rem">' +
+        '<div style="font-weight:800;color:#0369a1;font-size:0.85rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.35rem">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+          '<span>Client Submitted Documents &amp; Evidence Attachments</span>' +
+        '</div>' +
+        docsHtml +
       '</div>' +
 
-      '<div style="display:flex;gap:0.5rem">' +
-        '<button type="submit" class="btn-export-dashboard" style="flex:1">Submit Screening Decision</button>' +
-        '<button type="button" class="btn-view-sm" style="padding:0.6rem 1rem" onclick="closeAdminModal()">Cancel</button>' +
-      '</div>' +
-    '</form>';
+      '<!-- Admin Review & Classification Form -->' +
+      '<form onsubmit="handleAdminReviewSubmit(event, \'' + caseId + '\')">' +
+        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.9rem;margin-bottom:0.75rem">⚖️ Admin Case Classification &amp; Branch Assignment</div>' +
+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
+          '<div>' +
+            '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">1. Case Label / Category</label>' +
+            '<select id="rev-category" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff" required>' +
+              '<option value="Commercial & Banking Default" selected>Commercial &amp; Banking Default</option>' +
+              '<option value="Civil Contract & Property">Civil Contract &amp; Property</option>' +
+              '<option value="Labor & Employment Dispute">Labor &amp; Employment Dispute</option>' +
+              '<option value="Constitutional & Administrative">Constitutional &amp; Administrative</option>' +
+              '<option value="Criminal Proceedings">Criminal Proceedings</option>' +
+              '<option value="Family & Succession">Family &amp; Succession</option>' +
+            '</select>' +
+          '</div>' +
+
+          '<div>' +
+            '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">2. Applicable Law / Legal Article Check</label>' +
+            '<select id="rev-legal-article" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff">' +
+              '<option value="Commercial Code Art. 715 - Banking Guarantees">Commercial Code Art. 715 - Banking Guarantees</option>' +
+              '<option value="Civil Code Art. 2024 - Breach of Contract">Civil Code Art. 2024 - Breach of Contract</option>' +
+              '<option value="Criminal Code Art. 675 - Fraud & Deception">Criminal Code Art. 675 - Fraud &amp; Deception</option>' +
+              '<option value="FDRE Constitution Art. 37 - Access to Justice">FDRE Constitution Art. 37 - Access to Justice</option>' +
+              legalOptionsHtml +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
+          '<div>' +
+            '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">3. Screening Decision</label>' +
+            '<select id="rev-decision" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff;font-weight:700" onchange="toggleBranchField(this.value)">' +
+              '<option value="approved" selected>✓ Approve Case &amp; Assign Branch</option>' +
+              '<option value="rejected">✕ Decline / Dismiss Case</option>' +
+            '</select>' +
+          '</div>' +
+
+          '<div id="branch-select-group">' +
+            '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">4. Assign Court Branch</label>' +
+            '<select id="rev-branch" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff;font-weight:600">' +
+              '<option value="Federal Supreme Court (Sidist Kilo)">Federal Supreme Court (Sidist Kilo)</option>' +
+              '<option value="Federal High Court — Lideta Division">Federal High Court — Lideta Division</option>' +
+              '<option value="Federal High Court — Arada Criminal">Federal High Court — Arada Criminal</option>' +
+              '<option value="Federal First Instance — Kirkos & Bole">Federal First Instance — Kirkos &amp; Bole</option>' +
+              '<option value="Dire Dawa Federal Circuit Court">Dire Dawa Federal Circuit Court</option>' +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="margin-bottom:1.25rem">' +
+          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">5. Classification Notes / Reason for Decision</label>' +
+          '<textarea id="rev-comments" class="top-search-input" style="width:100%;height:65px;border-radius:6px" placeholder="Enter judicial notes or decline rationale..."></textarea>' +
+        '</div>' +
+
+        '<div style="display:flex;gap:0.75rem">' +
+          '<button type="submit" class="btn-export-dashboard" style="flex:1;padding:0.75rem;font-size:0.9rem">Submit Decision &amp; Save Dossier</button>' +
+          '<button type="button" class="btn-view-sm" style="padding:0.75rem 1.25rem" onclick="closeAdminModal()">Cancel</button>' +
+        '</div>' +
+      '</form>' +
+    '</div>';
+
   openAdminModal();
 }
 
+function toggleBranchField(decision) {
+  const grp = document.getElementById('branch-select-group');
+  if (grp) {
+    grp.style.display = decision === 'approved' ? 'block' : 'none';
+  }
+}
+
+async function handleAdminReviewSubmit(e, caseId) {
+  e.preventDefault();
+  const decision = document.getElementById('rev-decision').value;
+  const branchAssigned = document.getElementById('rev-branch') ? document.getElementById('rev-branch').value : 'Federal Supreme Court (Sidist Kilo)';
+  const caseCategory = document.getElementById('rev-category').value;
+  const relevantLawArticle = document.getElementById('rev-legal-article').value;
+  const comments = document.getElementById('rev-comments').value.trim();
+
+  try {
+    const res = await fetch(API + '/cases/admin-review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId,
+        decision,
+        branchAssigned,
+        caseCategory,
+        relevantLawArticle,
+        comments,
+        adminName: currentAdmin.fullName || 'Admin User'
+      })
+    });
+    if (res.ok) {
+      alert(decision === 'approved' ? '✓ Case APPROVED and forwarded to ' + branchAssigned : '✕ Case DECLINED.');
+      closeAdminModal();
+      await loadAdminData();
+    }
+  } catch (err) {
+    alert('Error submitting decision: ' + err.message);
+  }
+}
 async function handleAdminReviewSubmit(e, caseId) {
   e.preventDefault();
   const decision = document.getElementById('rev-decision').value;

@@ -139,7 +139,7 @@ async function createCase(req, res) {
 
 // 5. Admin Screening Review & Branch Forwarding (Section 2)
 async function adminScreeningReview(req, res) {
-  const { caseId, decision, comments, branchAssigned, relevantLawArticle, adminName } = req.body;
+  const { caseId, decision, comments, branchAssigned, caseCategory, relevantLawArticle, adminName } = req.body;
   const caseItem = await dbService.findOne('cases', { caseId });
   if (!caseItem) return res.status(404).json({ error: 'Case not found' });
 
@@ -148,6 +148,7 @@ async function adminScreeningReview(req, res) {
     screeningStatus: isApproved ? 'approved' : 'rejected',
     status: isApproved ? 'forwarded_to_branch' : 'rejected',
     screeningNotes: comments || '',
+    caseCategory: caseCategory || caseItem.caseCategory || caseItem.caseType || 'Civil / Corporate',
     jurisdiction: branchAssigned || caseItem.jurisdiction,
     relevantLawArticle: relevantLawArticle || caseItem.relevantLawArticle,
     reviewedBy: adminName || 'Admin User',

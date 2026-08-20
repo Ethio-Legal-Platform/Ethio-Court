@@ -1,5 +1,14 @@
 [
   {
+    "id": "AUD-1787244044067",
+    "action": "ADMIN_APPROVED_AND_FORWARDED",
+    "user": "Admin User",
+    "role": "admin",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:40:44.067Z",
+    "details": "Assigned to Federal High Court — Lideta Division. Law Check: Commercial Code Art. 715"
+  },
+  {
     "id": "AUD-1787243233496",
     "action": "USER_LOGIN",
     "user": "System Administrator",
