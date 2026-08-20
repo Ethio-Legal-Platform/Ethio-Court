@@ -1,0 +1,212 @@
+[
+  {
+    "id": "LAWYER-001",
+    "username": "qalalew",
+    "password": "1234",
+    "fullName": "Advocate Kalalew Terefe",
+    "email": "qalalewtere@gmail.com",
+    "phone": "0911554433",
+    "licenseNumber": "LAW-1001",
+    "specialization": "Criminal & Commercial Law",
+    "role": "lawyer",
+    "isGovernmentLawyer": false,
+    "currentCaseload": 2,
+    "registeredAt": "2026-08-15T17:58:34.032Z",
+    "blockedFilers": [],
+    "ratings": [
+      {
+        "caseId": "CASE-1787198244224",
+        "rating": 5,
+        "remarks": "Exceptional evidentiary dossier preparation and clarity.",
+        "judgeId": "JUDGE-001",
+        "judgeName": "Hon. Justice Yohannes Bekele",
+        "date": "2026-08-20T03:57:31.317Z"
+      },
+      {
+        "caseId": "CASE-1787163049400",
+        "rating": 5,
+        "remarks": "",
+        "judgeId": "JUDGE-001",
+        "judgeName": "Hon. Justice Solomon Areda",
+        "date": "2026-08-20T04:28:29.929Z"
+      },
+      {
+        "caseId": "CASE-1787214805243",
+        "rating": 4.8,
+        "remarks": "",
+        "judgeId": "JUDGE-001",
+        "judgeName": "Hon. Solomon Desta",
+        "date": "2026-08-20T08:33:25.810Z"
+      },
+      {
+        "caseId": "CASE-1787215964172",
+        "rating": 4.9,
+        "remarks": "",
+        "judgeId": "JUDGE-002",
+        "judgeName": "Hon. Judge Bekele Seyoum",
+        "date": "2026-08-20T08:52:44.414Z"
+      }
+    ],
+    "averageRating": 4.9,
+    "ratingCount": 4,
+    "clientReviews": [
+      {
+        "caseId": "CASE-1787198244224",
+        "rating": 5,
+        "reviewText": "Exceptional service! Kept me informed at every stage of the hearing and won our claim in full.",
+        "clientName": "Tesfaye Lemma",
+        "side": "plaintiff",
+        "date": "2026-08-20T05:45:19.950Z"
+      },
+      {
+        "caseId": "CASE-1787205373601",
+        "rating": 5,
+        "reviewText": "Great courtroom performance!",
+        "clientName": "Alemayehu Tadesse",
+        "side": "plaintiff",
+        "date": "2026-08-20T05:56:14.759Z"
+      },
+      {
+        "caseId": "CASE-1787214805243",
+        "rating": 5,
+        "reviewText": "Outstanding trial advocacy and timely updates.",
+        "clientName": "Mulugeta Assefa",
+        "side": "plaintiff",
+        "date": "2026-08-20T08:33:26.859Z"
+      },
+      {
+        "caseId": "CASE-1787215964172",
+        "rating": 4.7,
+        "reviewText": "",
+        "clientName": "Awash International Bank S.C.",
+        "side": "plaintiff",
+        "date": "2026-08-20T08:52:44.922Z"
+      }
+    ],
+    "clientAverageRating": 4.9,
+    "clientRatingCount": 4,
+    "rating": 4.9,
+    "clientRating": 4.7,
+    "activeCases": 8,
+    "completedCases": 27
+  },
+  {
+    "id": "LAWYER-002",
+    "username": "lawyer.tigist",
+    "password": "lawyer123",
+    "fullName": "Advocate Tigist Assefa",
+    "email": "tigist.law@ethiopianbar.org",
+    "phone": "0912345678",
+    "licenseNumber": "LAW-1002",
+    "specialization": "Civil Dispute & Labor Law",
+    "role": "lawyer",
+    "isGovernmentLawyer": false,
+    "currentCaseload": 3,
+    "registeredAt": "2026-08-16T09:12:00.000Z",
+    "blockedFilers": [],
+    "ratings": [
+      {
+        "caseId": "CASE-1787163049400",
+        "rating": 3,
+        "remarks": "",
+        "judgeId": "JUDGE-001",
+        "judgeName": "Hon. Justice Solomon Areda",
+        "date": "2026-08-20T04:28:29.929Z"
+      },
+      {
+        "caseId": "CASE-1787215964172",
+        "rating": 3.8,
+        "remarks": "",
+        "judgeId": "JUDGE-002",
+        "judgeName": "Hon. Judge Bekele Seyoum",
+        "date": "2026-08-20T08:52:44.414Z"
+      }
+    ],
+    "averageRating": 3.4,
+    "ratingCount": 2
+  },
+  {
+    "id": "LAWYER-003",
+    "username": "gov.lawyer.dawit",
+    "password": "lawyer123",
+    "fullName": "Public Defender Dawit Kebede (State Appointed)",
+    "email": "dawit.publicdefender@moj.gov.et",
+    "phone": "0913987654",
+    "licenseNumber": "LAW-2001",
+    "specialization": "Public Defense & Criminal Representation",
+    "role": "lawyer",
+    "isGovernmentLawyer": true,
+    "currentCaseload": 2,
+    "registeredAt": "2026-08-14T11:00:00.000Z",
+    "blockedFilers": [],
+    "ratings": [
+      {
+        "caseId": "CASE-1787198244224",
+        "rating": 4,
+        "remarks": "Competent legal argumentation and prompt responsiveness.",
+        "judgeId": "JUDGE-001",
+        "judgeName": "Hon. Justice Yohannes Bekele",
+        "date": "2026-08-20T03:57:31.317Z"
+      }
+    ],
+    "averageRating": 4,
+    "ratingCount": 1,
+    "clientReviews": [
+      {
+        "caseId": "CASE-1787198244224",
+        "rating": 4,
+        "reviewText": "Helpful and dedicated representation from the public defender.",
+        "clientName": "Bekele Shiferaw",
+        "side": "defendant",
+        "date": "2026-08-20T05:45:19.965Z"
+      }
+    ],
+    "clientAverageRating": 4,
+    "clientRatingCount": 1
+  },
+  {
+    "id": "LAWYER-004",
+    "username": "gov.lawyer.marta",
+    "password": "lawyer123",
+    "fullName": "Public Defender Marta Mengistu (State Appointed)",
+    "email": "marta.publicdefender@moj.gov.et",
+    "phone": "0914876543",
+    "licenseNumber": "LAW-2002",
+    "specialization": "Civil Rights & Indigent Defense",
+    "role": "lawyer",
+    "isGovernmentLawyer": true,
+    "currentCaseload": 2,
+    "registeredAt": "2026-08-14T11:30:00.000Z",
+    "blockedFilers": []
+  },
+  {
+    "id": "LAWYER-2106C261",
+    "username": "lawyer.mekdes",
+    "password": "lawyer123",
+    "fullName": "Mekdes Tesfaye Wolde",
+    "email": "mekdes.law@ethiopianbar.org",
+    "phone": "0911445566",
+    "licenseNumber": "LAW-1004",
+    "specialization": "Family",
+    "role": "lawyer",
+    "isGovernmentLawyer": false,
+    "currentCaseload": 0,
+    "registeredAt": "2026-08-20T08:24:33.214Z",
+    "blockedFilers": []
+  },
+  {
+    "id": "LAWYER-904FBA4B",
+    "username": "lawyer.dawit",
+    "password": "dawitPass123",
+    "fullName": "Dawit Girma Tadesse",
+    "email": "",
+    "phone": "",
+    "licenseNumber": "LAW-1003",
+    "specialization": "Civil",
+    "role": "lawyer",
+    "isGovernmentLawyer": false,
+    "currentCaseload": 0,
+    "registeredAt": "2026-08-20T08:53:00.934Z",
+    "blockedFilers": []
+  }
+]

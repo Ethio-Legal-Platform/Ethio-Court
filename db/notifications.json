@@ -1,0 +1,32 @@
+[
+  {
+    "id": "NOTIF-01",
+    "caseId": "CASE-178721596417",
+    "title": "New document uploaded in CASE-178721596417",
+    "message": "Evidence_02.pdf was uploaded by the court.",
+    "recipientPhone": "0911998877",
+    "recipientRole": "lawyer",
+    "type": "document_uploaded",
+    "createdAt": "2026-08-20T09:24:31.961Z"
+  },
+  {
+    "id": "NOTIF-02",
+    "caseId": "CASE-178721596417",
+    "title": "Hearing scheduled for CASE-178721596417",
+    "message": "May 27, 2026 at 09:30 AM in Courtroom 4.",
+    "recipientPhone": "0911998877",
+    "recipientRole": "lawyer",
+    "type": "hearing_scheduled",
+    "createdAt": "2026-08-19T11:24:31.963Z"
+  },
+  {
+    "id": "NOTIF-03",
+    "caseId": "REQ-2026-901",
+    "title": "New representation request received",
+    "message": "Hana Tesfaye has requested your legal representation.",
+    "recipientPhone": "0911998877",
+    "recipientRole": "lawyer",
+    "type": "representation_request",
+    "createdAt": "2026-08-18T11:24:31.963Z"
+  }
+]

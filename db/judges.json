@@ -1,0 +1,35 @@
+[
+  {
+    "id": "JUDGE-001",
+    "username": "judge.solomon",
+    "password": "judge123",
+    "fullName": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "branch": "Federal Supreme Court (የፌዴራል ጠቅላይ ፍርድ ቤት)",
+    "courtroom": "Courtroom 4",
+    "enrolledDate": "2018-11-01",
+    "activeCaseCount": 18
+  },
+  {
+    "id": "JUDGE-002",
+    "username": "judge.tewodros",
+    "password": "judge123",
+    "fullName": "Hon. Judge Tewodros Mihret",
+    "role": "judge",
+    "branch": "Federal High Court — Lideta Division (የልደታ ምድብ ችሎት)",
+    "courtroom": "Courtroom 2",
+    "enrolledDate": "2019-06-15",
+    "activeCaseCount": 8
+  },
+  {
+    "id": "JUDGE-003",
+    "username": "judge.hiwot",
+    "password": "judge123",
+    "fullName": "Hon. Judge Hiwot Tadesse",
+    "role": "judge",
+    "branch": "Federal First Instance Court — Kirkos & Bole",
+    "courtroom": "Courtroom 1",
+    "enrolledDate": "2021-03-22",
+    "activeCaseCount": 6
+  }
+]

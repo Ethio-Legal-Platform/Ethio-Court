@@ -1,0 +1,10 @@
+[
+  {
+    "id": "ADMIN-001",
+    "username": "admin",
+    "password": "admin123",
+    "fullName": "System Administrator",
+    "role": "admin",
+    "email": "admin@courts.gov.et"
+  }
+]

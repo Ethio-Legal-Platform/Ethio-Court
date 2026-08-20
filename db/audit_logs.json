@@ -1,0 +1,1289 @@
+[
+  {
+    "id": "AUDIT-1787215965287-241",
+    "caseId": "CASE-1787215964172",
+    "actor": {
+      "role": "filer",
+      "id": "Client",
+      "name": "Client"
+    },
+    "action": "client_advocate_rated",
+    "details": "Client (plaintiff) submitted 4.7-star review for Advocate LAW-1001",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T08:52:45.287Z"
+  },
+  {
+    "id": "AUDIT-1787215964714-974",
+    "caseId": "CASE-1787215964172",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-002",
+      "name": "Hon. Judge Bekele Seyoum"
+    },
+    "action": "final_verdict_issued",
+    "details": "Judge delivered final verdict: [Ruling in favor of Plaintiff/Prosecution]. 1-month statutory appeal deadline set to 2026-09-19",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T08:52:44.714Z"
+  },
+  {
+    "id": "AUDIT-1787215964401-985",
+    "caseId": "CASE-1787215964172",
+    "actor": {
+      "role": "defendant",
+      "id": "SYSTEM",
+      "name": "Blue Nile Holdings PLC"
+    },
+    "action": "lawyer_appointment_requested",
+    "details": "Appointment request sent to Advocate License: LAW-1002 for defendant",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T08:52:44.401Z"
+  },
+  {
+    "id": "AUDIT-1787215964180-2",
+    "caseId": "CASE-1787215964172",
+    "actor": {
+      "role": "filer",
+      "id": "0911998877",
+      "name": "Awash International Bank S.C."
+    },
+    "action": "case_filed",
+    "details": "Case filed: Awash International Bank vs. Blue Nile Holdings (Commercial Bond Default)",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787215964172",
+      "caseType": "Corporate"
+    },
+    "timestamp": "2026-08-20T08:52:44.180Z"
+  },
+  {
+    "id": "AUDIT-1787215963373-957",
+    "caseId": "CASE-1787215962441",
+    "actor": {
+      "role": "judge",
+      "id": "SYSTEM",
+      "name": "Hon. Presiding Judge"
+    },
+    "action": "final_verdict_issued",
+    "details": "Judge delivered final verdict: [Ruling in favor of Plaintiff/Prosecution]. 1-month statutory appeal deadline set to 2026-09-19",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T08:52:43.373Z"
+  },
+  {
+    "id": "AUDIT-1787215962471-829",
+    "caseId": "CASE-1787215962441",
+    "actor": {
+      "role": "filer",
+      "id": "0911002233",
+      "name": "Teshome Bekele"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Teshome v. Alemayehu — Boundary Dispute",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787215962441",
+      "caseType": "Land"
+    },
+    "timestamp": "2026-08-20T08:52:42.471Z"
+  },
+  {
+    "id": "AUDIT-1787214807165-450",
+    "caseId": "CASE-1787214805243",
+    "actor": {
+      "role": "filer",
+      "id": "Client",
+      "name": "Client"
+    },
+    "action": "client_advocate_rated",
+    "details": "Client (plaintiff) submitted 5-star review for Advocate LAW-1001",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T08:33:27.165Z"
+  },
+  {
+    "id": "AUDIT-1787214806630-249",
+    "caseId": "CASE-1787214805243",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Solomon Desta"
+    },
+    "action": "final_verdict_issued",
+    "details": "Judge delivered final verdict: [Ruling in favor of Plaintiff/Prosecution]. 1-month statutory appeal deadline set to 2026-09-19",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T08:33:26.631Z"
+  },
+  {
+    "id": "AUDIT-1787214805260-57",
+    "caseId": "CASE-1787214805243",
+    "actor": {
+      "role": "filer",
+      "id": "0911554433",
+      "name": "Mulugeta Assefa"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Mulugeta v. Aster — Commercial Breach",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787214805243",
+      "caseType": "Civil"
+    },
+    "timestamp": "2026-08-20T08:33:25.260Z"
+  },
+  {
+    "id": "AUDIT-1787213071644-593",
+    "caseId": "CASE-1787213071052",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Presiding Judge"
+    },
+    "action": "final_verdict_issued",
+    "details": "Judge delivered final verdict: [Ruling in favor of Plaintiff/Prosecution]. 1-month statutory appeal deadline set to 2026-09-19",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T08:04:31.644Z"
+  },
+  {
+    "id": "AUDIT-1787213071068-766",
+    "caseId": "CASE-1787213071052",
+    "actor": {
+      "role": "filer",
+      "id": "0911778899",
+      "name": "Daniel Girma"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Daniel Girma v. Selamawit Tilahun — Property Partition",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787213071052",
+      "caseType": "Civil & Property"
+    },
+    "timestamp": "2026-08-20T08:04:31.068Z"
+  },
+  {
+    "id": "AUDIT-1787205374783-563",
+    "caseId": "CASE-1787205373601",
+    "actor": {
+      "role": "defendant",
+      "id": "Tewodros Kassahun",
+      "name": "Tewodros Kassahun"
+    },
+    "action": "formal_appeal_lodged",
+    "details": "Appellant (Tewodros Kassahun) filed formal statutory appeal: \"Misinterpretation of lease term renewal clause under Civil Code Article 2915....\"",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T05:56:14.783Z"
+  },
+  {
+    "id": "AUDIT-1787205374767-67",
+    "caseId": "CASE-1787205373601",
+    "actor": {
+      "role": "filer",
+      "id": "Alemayehu Tadesse",
+      "name": "Alemayehu Tadesse"
+    },
+    "action": "client_advocate_rated",
+    "details": "Client (Alemayehu Tadesse) submitted 5-star review for Advocate LAW-1001",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T05:56:14.767Z"
+  },
+  {
+    "id": "AUDIT-1787205374323-421",
+    "caseId": "CASE-1787205373601",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Presiding Judge"
+    },
+    "action": "final_verdict_issued",
+    "details": "Judge delivered final verdict: [Ruling in favor of Plaintiff/Prosecution]. 1-month statutory appeal deadline set to 2026-09-19",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T05:56:14.323Z"
+  },
+  {
+    "id": "AUDIT-1787205373615-819",
+    "caseId": "CASE-1787205373601",
+    "actor": {
+      "role": "filer",
+      "id": "0977112233",
+      "name": "Alemayehu Tadesse"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Alemayehu Tadesse v. Tewodros Kassahun — Commercial Tenancy",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787205373601",
+      "caseType": "Commercial & Contract"
+    },
+    "timestamp": "2026-08-20T05:56:13.615Z"
+  },
+  {
+    "id": "AUDIT-1787204719968-265",
+    "caseId": "CASE-1787198244224",
+    "actor": {
+      "role": "defendant",
+      "id": "Bekele Shiferaw",
+      "name": "Bekele Shiferaw"
+    },
+    "action": "client_advocate_rated",
+    "details": "Client (Bekele Shiferaw) submitted 4-star review for Advocate LAW-2001",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T05:45:19.968Z"
+  },
+  {
+    "id": "AUDIT-1787204719953-145",
+    "caseId": "CASE-1787198244224",
+    "actor": {
+      "role": "filer",
+      "id": "Tesfaye Lemma",
+      "name": "Tesfaye Lemma"
+    },
+    "action": "client_advocate_rated",
+    "details": "Client (Tesfaye Lemma) submitted 5-star review for Advocate LAW-1001",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T05:45:19.953Z"
+  },
+  {
+    "id": "AUDIT-1787203805263-144",
+    "caseId": "CASE-1787198244224",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Yohannes Bekele"
+    },
+    "action": "final_verdict_issued",
+    "details": "Judge delivered final verdict: [Ruling in favor of Plaintiff/Prosecution]. 1-month statutory appeal deadline set to 2026-09-19",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T05:30:05.263Z"
+  },
+  {
+    "id": "AUDIT-1787200109946-665",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "final_verdict_issued",
+    "details": "Judge delivered final verdict: [Ruling in favor of Plaintiff/Prosecution]. 1-month statutory appeal deadline set to 2026-09-19",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T04:28:29.946Z"
+  },
+  {
+    "id": "AUDIT-1787198251322-368",
+    "caseId": "CASE-1787198244224",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Yohannes Bekele"
+    },
+    "action": "final_verdict_issued",
+    "details": "Judge delivered final verdict: [Ruling in favor of Plaintiff/Prosecution]. 1-month statutory appeal deadline set to 2026-09-19",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-20T03:57:31.322Z"
+  },
+  {
+    "id": "AUDIT-1787198244236-289",
+    "caseId": "CASE-1787198244224",
+    "actor": {
+      "role": "filer",
+      "id": "0955282973",
+      "name": "Tesfaye Lemma"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Tesfaye Lemma v. Bekele Shiferaw — Commercial Contract Dispute",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787198244224",
+      "caseType": "Commercial & Contract"
+    },
+    "timestamp": "2026-08-20T03:57:24.236Z"
+  },
+  {
+    "id": "AUDIT-1787169030957-385",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "evidence_classified",
+    "details": "Judicial classification on \"Witness\": SHARED (was pending_review)",
+    "beforeValues": {
+      "status": "pending_review"
+    },
+    "afterValues": {
+      "status": "shared"
+    },
+    "timestamp": "2026-08-19T19:50:30.957Z"
+  },
+  {
+    "id": "AUDIT-1787169027646-357",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "evidence_classified",
+    "details": "Judicial classification on \"supporting_documents_and_evidence\": SHARED (was pending_review)",
+    "beforeValues": {
+      "status": "pending_review"
+    },
+    "afterValues": {
+      "status": "shared"
+    },
+    "timestamp": "2026-08-19T19:50:27.646Z"
+  },
+  {
+    "id": "AUDIT-1787168500720-556",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "lawyer",
+      "id": "LAW-1002",
+      "name": "Advocate Tigist Assefa"
+    },
+    "action": "lawyer_accepted_appointment",
+    "details": "Advocate LAW-1002 accepted representation for defendant",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T19:41:40.720Z"
+  },
+  {
+    "id": "AUDIT-1787167707782-45",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "defendant",
+      "id": "SYSTEM",
+      "name": "Kalalew"
+    },
+    "action": "lawyer_appointment_requested",
+    "details": "Appointment request sent to Advocate License: LAW-1002 for defendant",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T19:28:27.782Z"
+  },
+  {
+    "id": "AUDIT-1787167216820-906",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "system",
+      "id": "SYSTEM",
+      "name": "Automated Judicial Defense Dispatcher"
+    },
+    "action": "gov_lawyer_auto_assigned",
+    "details": "Auto-assigned Public Defender Public Defender Dawit Kebede (State Appointed) (LAW-2001) with caseload 2",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T19:20:16.820Z"
+  },
+  {
+    "id": "AUDIT-1787167052256-412",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": "JUDGE-001",
+      "courtroom": "Courtroom 1A (Cassation Bench)"
+    },
+    "afterValues": {
+      "date": "2026-08-20",
+      "time": "10:30",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T19:17:32.256Z"
+  },
+  {
+    "id": "AUDIT-1787167050249-247",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": "JUDGE-001",
+      "courtroom": "Courtroom 1A (Cassation Bench)"
+    },
+    "afterValues": {
+      "date": "2026-08-20",
+      "time": "10:30",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T19:17:30.249Z"
+  },
+  {
+    "id": "AUDIT-1787167046182-596",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": "JUDGE-001",
+      "courtroom": "Courtroom 1A (Cassation Bench)"
+    },
+    "afterValues": {
+      "date": "2026-08-20",
+      "time": "10:30",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T19:17:26.182Z"
+  },
+  {
+    "id": "AUDIT-1787167039844-608",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": "JUDGE-001",
+      "courtroom": "Courtroom 1A (Cassation Bench)"
+    },
+    "afterValues": {
+      "date": "2026-08-20",
+      "time": "10:30",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T19:17:19.844Z"
+  },
+  {
+    "id": "AUDIT-1787167039368-126",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": "JUDGE-001",
+      "courtroom": "Courtroom 1A (Cassation Bench)"
+    },
+    "afterValues": {
+      "date": "2026-08-20",
+      "time": "10:30",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T19:17:19.368Z"
+  },
+  {
+    "id": "AUDIT-1787167035416-87",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": "JUDGE-001",
+      "courtroom": "Courtroom 1A (Cassation Bench)"
+    },
+    "afterValues": {
+      "date": "2026-08-20",
+      "time": "10:30",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T19:17:15.416Z"
+  },
+  {
+    "id": "AUDIT-1787167031315-68",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": "JUDGE-001",
+      "courtroom": "Courtroom 1A (Cassation Bench)"
+    },
+    "afterValues": {
+      "date": "2026-08-20",
+      "time": "10:30",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T19:17:11.315Z"
+  },
+  {
+    "id": "AUDIT-1787167029318-864",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": "JUDGE-001",
+      "courtroom": "Courtroom 1A (Cassation Bench)"
+    },
+    "afterValues": {
+      "date": "2026-08-20",
+      "time": "10:30",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T19:17:09.337Z"
+  },
+  {
+    "id": "AUDIT-1787167024868-154",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": null,
+      "courtroom": null
+    },
+    "afterValues": {
+      "date": "2026-08-20",
+      "time": "10:30",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T19:17:04.868Z"
+  },
+  {
+    "id": "AUDIT-1787166816883-406",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "plaintiff",
+      "id": "SYSTEM",
+      "name": "Advocate Kalalew Terefe (Counsel for Plaintiff)"
+    },
+    "action": "evidence_filed_pending_review",
+    "details": "Evidence filed: \"Witness\" with Initial Flag: standard. Stage 1 Pending Review.",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T19:13:36.883Z"
+  },
+  {
+    "id": "AUDIT-1787163639324-734",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "lawyer",
+      "id": "LAW-1001",
+      "name": "Advocate Kalalew Terefe"
+    },
+    "action": "lawyer_accepted_appointment",
+    "details": "Advocate LAW-1001 accepted representation for plaintiff",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T18:20:39.324Z"
+  },
+  {
+    "id": "AUDIT-1787163638363-660",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "lawyer",
+      "id": "LAW-1001",
+      "name": "Advocate Kalalew Terefe"
+    },
+    "action": "lawyer_accepted_appointment",
+    "details": "Advocate LAW-1001 accepted representation for plaintiff",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T18:20:38.363Z"
+  },
+  {
+    "id": "AUDIT-1787163637300-653",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "lawyer",
+      "id": "LAW-1001",
+      "name": "Advocate Kalalew Terefe"
+    },
+    "action": "lawyer_accepted_appointment",
+    "details": "Advocate LAW-1001 accepted representation for plaintiff",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T18:20:37.300Z"
+  },
+  {
+    "id": "AUDIT-1787163634927-618",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "lawyer",
+      "id": "LAW-1001",
+      "name": "Advocate Kalalew Terefe"
+    },
+    "action": "lawyer_accepted_appointment",
+    "details": "Advocate LAW-1001 accepted representation for plaintiff",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T18:20:34.927Z"
+  },
+  {
+    "id": "AUDIT-1787163617335-229",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "plaintiff",
+      "id": "SYSTEM",
+      "name": "Liel"
+    },
+    "action": "lawyer_appointment_requested",
+    "details": "Appointment request sent to Advocate License: LAW-1001 for plaintiff",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T18:20:17.335Z"
+  },
+  {
+    "id": "AUDIT-1787163352170-550",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "admin",
+      "id": "ADMIN-001",
+      "name": "System Administrator"
+    },
+    "action": "case_approved_and_assigned_to_branch",
+    "details": "Admin reviewed case against law: FDRE Constitution (1995) Article 19 — Right of Persons Arrested. Decision: accepted. Branch: BRANCH-001",
+    "beforeValues": {
+      "status": "accepted",
+      "assignedBranchId": "BRANCH-001"
+    },
+    "afterValues": {
+      "status": "accepted",
+      "assignedBranchId": "BRANCH-001"
+    },
+    "timestamp": "2026-08-19T18:15:52.170Z"
+  },
+  {
+    "id": "AUDIT-1787163348933-8",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "admin",
+      "id": "ADMIN-001",
+      "name": "System Administrator"
+    },
+    "action": "case_approved_and_assigned_to_branch",
+    "details": "Admin reviewed case against law: FDRE Constitution (1995) Article 19 — Right of Persons Arrested. Decision: accepted. Branch: BRANCH-001",
+    "beforeValues": {
+      "status": "pending_review",
+      "assignedBranchId": null
+    },
+    "afterValues": {
+      "status": "accepted",
+      "assignedBranchId": "BRANCH-001"
+    },
+    "timestamp": "2026-08-19T18:15:48.933Z"
+  },
+  {
+    "id": "AUDIT-1787163049407-741",
+    "caseId": "CASE-1787163049400",
+    "actor": {
+      "role": "filer",
+      "id": "0901457490",
+      "name": "Liel"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Criminal",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787163049400",
+      "caseType": "Criminal Proceedings"
+    },
+    "timestamp": "2026-08-19T18:10:49.407Z"
+  },
+  {
+    "id": "AUDIT-1787158378845-847",
+    "caseId": "CASE-1787158378839",
+    "actor": {
+      "role": "filer",
+      "id": "0944430222",
+      "name": "Kalalew Terefe"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Criminal",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787158378839",
+      "caseType": "Commercial & Contract"
+    },
+    "timestamp": "2026-08-19T16:52:58.845Z"
+  },
+  {
+    "id": "AUDIT-1787158187860-754",
+    "caseId": "CASE-1787158187842",
+    "actor": {
+      "role": "filer",
+      "id": "0955282973",
+      "name": "Chala Desta"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Chala Desta v. Abebe Kebede — Commercial Warehouse Supply Breach",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787158187842",
+      "caseType": "Commercial & Contract"
+    },
+    "timestamp": "2026-08-19T16:49:47.860Z"
+  },
+  {
+    "id": "AUDIT-1787149829505-548",
+    "caseId": "CASE-1787149283228",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-20 at 09:00 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": null,
+      "courtroom": null
+    },
+    "afterValues": {
+      "date": "2026-08-20",
+      "time": "09:00",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T14:30:29.505Z"
+  },
+  {
+    "id": "AUDIT-1787149636515-977",
+    "caseId": "CASE-1787149283228",
+    "actor": {
+      "role": "admin",
+      "id": "ADMIN-001",
+      "name": "System Administrator"
+    },
+    "action": "case_approved_and_assigned_to_branch",
+    "details": "Admin reviewed case against law: Federal Criminal Code (Proclamation No. 414/2004) Article 32 — Principal Offender & Accomplices. Decision: accepted. Branch: BRANCH-001",
+    "beforeValues": {
+      "status": "pending_review",
+      "assignedBranchId": null
+    },
+    "afterValues": {
+      "status": "accepted",
+      "assignedBranchId": "BRANCH-001"
+    },
+    "timestamp": "2026-08-19T14:27:16.515Z"
+  },
+  {
+    "id": "AUDIT-1787149283257-639",
+    "caseId": "CASE-1787149283228",
+    "actor": {
+      "role": "filer",
+      "id": "0944430222",
+      "name": "Chala"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Criminal",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787149283228",
+      "caseType": "Criminal Proceedings"
+    },
+    "timestamp": "2026-08-19T14:21:23.257Z"
+  },
+  {
+    "id": "AUDIT-1787147385699-882",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Official Selam"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-09-18 at 10:15 in Courtroom 1A (Civil Bench) before Judge JUDGE-002",
+    "beforeValues": {
+      "assignedJudgeId": null,
+      "courtroom": null
+    },
+    "afterValues": {
+      "date": "2026-09-18",
+      "time": "10:15",
+      "courtroom": "Courtroom 1A (Civil Bench)",
+      "judgeId": "JUDGE-002"
+    },
+    "timestamp": "2026-08-19T13:49:45.699Z"
+  },
+  {
+    "id": "AUDIT-1787118520759-206",
+    "caseId": "CASE-1787118520643",
+    "actor": {
+      "role": "lawyer",
+      "id": "LAW-1001",
+      "name": "Advocate Kalalew Terefe"
+    },
+    "action": "lawyer_accepted_appointment",
+    "details": "Advocate LAW-1001 accepted representation for plaintiff",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T05:48:40.759Z"
+  },
+  {
+    "id": "AUDIT-1787118520690-466",
+    "caseId": "CASE-1787118520643",
+    "actor": {
+      "role": "plaintiff",
+      "id": "SYSTEM",
+      "name": "Dawit Yohannes"
+    },
+    "action": "lawyer_appointment_requested",
+    "details": "Appointment request sent to Advocate License: LAW-1001 for plaintiff",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T05:48:40.690Z"
+  },
+  {
+    "id": "AUDIT-1787118520649-480",
+    "caseId": "CASE-1787118520643",
+    "actor": {
+      "role": "filer",
+      "id": "0911998877",
+      "name": "Dawit Yohannes"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Dawit Yohannes v. Commercial Partner",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787118520643",
+      "caseType": "Commercial & Contract"
+    },
+    "timestamp": "2026-08-19T05:48:40.649Z"
+  },
+  {
+    "id": "AUDIT-1787118004385-854",
+    "caseId": "CASE-1786816470851",
+    "actor": {
+      "role": "lawyer",
+      "id": "LAW-1001",
+      "name": "Advocate Kalalew Terefe"
+    },
+    "action": "lawyer_accepted_appointment",
+    "details": "Advocate LAW-1001 accepted representation for defendant",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T05:40:04.385Z"
+  },
+  {
+    "id": "AUDIT-1787117986842-417",
+    "caseId": "CASE-1786816470851",
+    "actor": {
+      "role": "defendant",
+      "id": "SYSTEM",
+      "name": "Mulugeta Bekele"
+    },
+    "action": "lawyer_appointment_requested",
+    "details": "Appointment request sent to Advocate License: LAW-1001 for defendant",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T05:39:46.842Z"
+  },
+  {
+    "id": "AUDIT-1787117842731-684",
+    "caseId": "CASE-1786816470851",
+    "actor": {
+      "role": "judge",
+      "id": "SYSTEM",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "document_request_issued",
+    "details": "Judge ordered \"Transaction recipt\" from defendant by deadline 2026-08-21",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T05:37:22.731Z"
+  },
+  {
+    "id": "AUDIT-1787117813957-693",
+    "caseId": "CASE-1786816470851",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "evidence_classified",
+    "details": "Judicial classification on \"Defense Counter-Statement on Delivery Logistics\": SHARED (was pending_review)",
+    "beforeValues": {
+      "status": "pending_review"
+    },
+    "afterValues": {
+      "status": "shared"
+    },
+    "timestamp": "2026-08-19T05:36:53.957Z"
+  },
+  {
+    "id": "AUDIT-1787117649894-253",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "judge",
+      "id": "SYSTEM",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "document_request_issued",
+    "details": "Judge ordered \"Transaction recipt\" from plaintiff by deadline 2026-08-21",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-19T05:34:09.894Z"
+  },
+  {
+    "id": "AUDIT-1787117573205-409",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "evidence_classified",
+    "details": "Judicial classification on \"Subcontract Agreement & Engineer Completion Certificates\": SHARED (was sealed)",
+    "beforeValues": {
+      "status": "sealed"
+    },
+    "afterValues": {
+      "status": "shared"
+    },
+    "timestamp": "2026-08-19T05:32:53.205Z"
+  },
+  {
+    "id": "AUDIT-1787117571687-965",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "evidence_classified",
+    "details": "Judicial classification on \"Subcontract Agreement & Engineer Completion Certificates\": SEALED (was sealed)",
+    "beforeValues": {
+      "status": "sealed"
+    },
+    "afterValues": {
+      "status": "sealed"
+    },
+    "timestamp": "2026-08-19T05:32:51.687Z"
+  },
+  {
+    "id": "AUDIT-1787117569392-714",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "evidence_classified",
+    "details": "Judicial classification on \"Subcontract Agreement & Engineer Completion Certificates\": SEALED (was sealed)",
+    "beforeValues": {
+      "status": "sealed"
+    },
+    "afterValues": {
+      "status": "sealed"
+    },
+    "timestamp": "2026-08-19T05:32:49.392Z"
+  },
+  {
+    "id": "AUDIT-1787117568296-42",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "evidence_classified",
+    "details": "Judicial classification on \"Subcontract Agreement & Engineer Completion Certificates\": SEALED (was sealed)",
+    "beforeValues": {
+      "status": "sealed"
+    },
+    "afterValues": {
+      "status": "sealed"
+    },
+    "timestamp": "2026-08-19T05:32:48.296Z"
+  },
+  {
+    "id": "AUDIT-1787117567691-661",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "evidence_classified",
+    "details": "Judicial classification on \"Subcontract Agreement & Engineer Completion Certificates\": SEALED (was shared)",
+    "beforeValues": {
+      "status": "shared"
+    },
+    "afterValues": {
+      "status": "sealed"
+    },
+    "timestamp": "2026-08-19T05:32:47.691Z"
+  },
+  {
+    "id": "AUDIT-1787117561165-728",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "evidence_classified",
+    "details": "Judicial classification on \"Subcontract Agreement & Engineer Completion Certificates\": SHARED (was sealed)",
+    "beforeValues": {
+      "status": "sealed"
+    },
+    "afterValues": {
+      "status": "shared"
+    },
+    "timestamp": "2026-08-19T05:32:41.165Z"
+  },
+  {
+    "id": "AUDIT-1787117554537-374",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "evidence_classified",
+    "details": "Judicial classification on \"Subcontract Agreement & Engineer Completion Certificates\": SEALED (was pending_review)",
+    "beforeValues": {
+      "status": "pending_review"
+    },
+    "afterValues": {
+      "status": "sealed"
+    },
+    "timestamp": "2026-08-19T05:32:34.537Z"
+  },
+  {
+    "id": "AUDIT-1787117469627-184",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Case Assignment Officer Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-08-19 at 09:00 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": null,
+      "courtroom": null
+    },
+    "afterValues": {
+      "date": "2026-08-19",
+      "time": "09:00",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-19T05:31:09.627Z"
+  },
+  {
+    "id": "AUDIT-1787088431703-635",
+    "caseId": "CASE-1786992211002",
+    "actor": {
+      "role": "admin",
+      "id": "ADMIN-001",
+      "name": "System Administrator"
+    },
+    "action": "case_approved_and_assigned_to_branch",
+    "details": "Admin reviewed case against law: Federal Courts Proclamation (Proclamation No. 1234/2021) Article 11 — Jurisdiction of Federal First Instance Court. Decision: accepted. Branch: BRANCH-001",
+    "beforeValues": {
+      "status": "pending_review",
+      "assignedBranchId": null
+    },
+    "afterValues": {
+      "status": "accepted",
+      "assignedBranchId": "BRANCH-001"
+    },
+    "timestamp": "2026-08-18T21:27:11.703Z"
+  },
+  {
+    "id": "AUDIT-1787088042104-635",
+    "caseId": "CASE-1787088041961",
+    "actor": {
+      "role": "judge",
+      "id": "JUDGE-001",
+      "name": "Hon. Justice Solomon Areda"
+    },
+    "action": "final_verdict_issued",
+    "details": "Judge delivered final verdict. 1-month statutory appeal deadline set to 2026-09-17",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-18T21:20:42.104Z"
+  },
+  {
+    "id": "AUDIT-1787088042078-43",
+    "caseId": "CASE-1787088041961",
+    "actor": {
+      "role": "plaintiff",
+      "id": "SYSTEM",
+      "name": "Abebe Bikila"
+    },
+    "action": "postponement_requested",
+    "details": "Postponement Request #3 by plaintiff: \"Third extension request\". Status: pending_judge",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-18T21:20:42.078Z"
+  },
+  {
+    "id": "AUDIT-1787088042064-75",
+    "caseId": "CASE-1787088041961",
+    "actor": {
+      "role": "plaintiff",
+      "id": "SYSTEM",
+      "name": "Abebe Bikila"
+    },
+    "action": "postponement_requested",
+    "details": "Postponement Request #2 by plaintiff: \"Medical absence\". Status: approved",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-18T21:20:42.064Z"
+  },
+  {
+    "id": "AUDIT-1787088042046-646",
+    "caseId": "CASE-1787088041961",
+    "actor": {
+      "role": "plaintiff",
+      "id": "SYSTEM",
+      "name": "Abebe Bikila"
+    },
+    "action": "postponement_requested",
+    "details": "Postponement Request #1 by plaintiff: \"Awaiting certified land registry\". Status: approved",
+    "beforeValues": null,
+    "afterValues": null,
+    "timestamp": "2026-08-18T21:20:42.046Z"
+  },
+  {
+    "id": "AUDIT-1787088042015-169",
+    "caseId": "CASE-1787088041961",
+    "actor": {
+      "role": "officer",
+      "id": "SYSTEM",
+      "name": "Branch Officer Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Hearing scheduled for 2026-09-10 at 10:15 in Courtroom 1A (Cassation Bench) before Judge JUDGE-001",
+    "beforeValues": {
+      "assignedJudgeId": null,
+      "courtroom": null
+    },
+    "afterValues": {
+      "date": "2026-09-10",
+      "time": "10:15",
+      "courtroom": "Courtroom 1A (Cassation Bench)",
+      "judgeId": "JUDGE-001"
+    },
+    "timestamp": "2026-08-18T21:20:42.015Z"
+  },
+  {
+    "id": "AUDIT-1787088041993-537",
+    "caseId": "CASE-1787088041961",
+    "actor": {
+      "role": "admin",
+      "id": "ADMIN-001",
+      "name": "Senior Registrar Admin"
+    },
+    "action": "case_approved_and_assigned_to_branch",
+    "details": "Admin reviewed case against law: FDRE Constitution Art. 40 (Right to Property). Decision: accepted. Branch: BRANCH-001",
+    "beforeValues": {
+      "status": "pending_review",
+      "assignedBranchId": null
+    },
+    "afterValues": {
+      "status": "accepted",
+      "assignedBranchId": "BRANCH-001"
+    },
+    "timestamp": "2026-08-18T21:20:41.993Z"
+  },
+  {
+    "id": "AUDIT-1787088041970-443",
+    "caseId": "CASE-1787088041961",
+    "actor": {
+      "role": "filer",
+      "id": "0911000111",
+      "name": "Abebe Bikila"
+    },
+    "action": "case_filed",
+    "details": "Case filed: Abebe v. Kebele Housing Authority",
+    "beforeValues": null,
+    "afterValues": {
+      "caseId": "CASE-1787088041961",
+      "caseType": "Constitutional & Administrative"
+    },
+    "timestamp": "2026-08-18T21:20:41.970Z"
+  },
+  {
+    "id": "AUDIT-1001",
+    "caseId": "CASE-1786816470851",
+    "actor": {
+      "role": "admin",
+      "id": "ADMIN-001",
+      "name": "System Administrator"
+    },
+    "action": "case_reviewed_and_approved",
+    "details": "Admin verified complaint against Criminal Code Art. 692 (Fraud) and assigned to Federal Supreme Court.",
+    "beforeValues": {
+      "status": "pending_review",
+      "assignedBranchId": null
+    },
+    "afterValues": {
+      "status": "accepted",
+      "assignedBranchId": "BRANCH-001"
+    },
+    "timestamp": "2026-08-15T18:02:04.600Z"
+  },
+  {
+    "id": "AUDIT-1002",
+    "caseId": "CASE-1786816470851",
+    "actor": {
+      "role": "officer",
+      "id": "OFFICER-001",
+      "name": "Case Assignment Officer Hassan"
+    },
+    "action": "hearing_scheduled",
+    "details": "Scheduled 1st Trial Session for Judge Hon. Justice Solomon Areda in Courtroom 2A.",
+    "beforeValues": {
+      "assignedJudgeId": null,
+      "appointment": null
+    },
+    "afterValues": {
+      "assignedJudgeId": "JUDGE-001",
+      "courtroom": "Courtroom 2A",
+      "hearingDate": "2026-08-25T10:00:00.000Z"
+    },
+    "timestamp": "2026-08-15T18:05:12.100Z"
+  }
+]

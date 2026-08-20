@@ -1,0 +1,38 @@
+[
+  {
+    "id": "OFFICER-001",
+    "username": "officer.tesfaye",
+    "password": "officer123",
+    "fullName": "Tesfaye Alemu",
+    "role": "officer",
+    "title": "Screening Officer",
+    "branchId": "BRANCH-001",
+    "branchName": "Federal Supreme Court — Screening Unit (የፌዴራል ጠቅላይ ፍርድ ቤት)",
+    "email": "tesfaye.screening@courts.gov.et",
+    "phone": "+251 11 551 7700 (Ext 14)"
+  },
+  {
+    "id": "OFFICER-002",
+    "username": "officer.hassan",
+    "password": "officer123",
+    "fullName": "Branch Official Hassan",
+    "role": "officer",
+    "title": "Registrar Officer",
+    "branchId": "BRANCH-001",
+    "branchName": "Federal Supreme Court (የፌዴራል ጠቅላይ ፍርድ ቤት)",
+    "email": "hassan.fsc@courts.gov.et",
+    "phone": "0911223301"
+  },
+  {
+    "id": "OFFICER-003",
+    "username": "officer.selam",
+    "password": "officer123",
+    "fullName": "Branch Official Selam",
+    "role": "officer",
+    "title": "Registrar Officer",
+    "branchId": "BRANCH-002",
+    "branchName": "Federal High Court — Lideta Division (የልደታ ምድብ ችሎት)",
+    "email": "selam.lideta@courts.gov.et",
+    "phone": "0911223302"
+  }
+]

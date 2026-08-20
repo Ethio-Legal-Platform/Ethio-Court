@@ -1,0 +1,48 @@
+[
+  {
+    "id": "Q-2026-001",
+    "title": "Severance Pay Calculation Under Labor Proclamation 1156/2019",
+    "description": "I have worked at a private manufacturing firm in Addis Ababa for 4 years and was recently terminated without prior written notice. How should my severance pay and compensation for lack of notice be computed?",
+    "category": "Labor & Employment",
+    "city": "Addis Ababa",
+    "authorId": "FILER-001",
+    "authorName": "Abebe Kebede",
+    "authorRole": "client",
+    "isPrivate": false,
+    "targetLawyerId": null,
+    "targetLawyerName": null,
+    "createdAt": "2026-08-16T10:30:00.000Z",
+    "answers": [
+      {
+        "id": "ANS-001",
+        "content": "Under Ethiopian Labor Proclamation No. 1156/2019 Article 39 and 40, an employee terminated unlawfully is entitled to severance pay equal to 30 times the average daily wage for the first year of service, plus one-third for each subsequent year, in addition to compensation under Article 43.",
+        "authorId": "LAWYER-0C36E308",
+        "authorName": "Advocate John Smith",
+        "authorRole": "lawyer",
+        "isLawyer": true,
+        "licenseNumber": "LAW-1001",
+        "specialization": "Labor & Employment",
+        "upvoters": [
+          "FILER-001",
+          "ADMIN-001"
+        ],
+        "createdAt": "2026-08-16T14:15:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "Q-2026-002",
+    "title": "Commercial Lease Agreement Breach and Injunction",
+    "description": "The landlord has arbitrarily increased the commercial warehouse rent by 50% contrary to the signed 3-year agreement. Can we petition the Federal High Court Lideta Division for an interim injunction?",
+    "category": "Commercial & Contract",
+    "city": "Addis Ababa",
+    "authorId": "FILER-002",
+    "authorName": "Tadesse Real Estate PLC",
+    "authorRole": "client",
+    "isPrivate": false,
+    "targetLawyerId": null,
+    "targetLawyerName": null,
+    "createdAt": "2026-08-17T08:00:00.000Z",
+    "answers": []
+  }
+]

@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Federal Supreme Court of Ethiopia — Litigant Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+    :root {
+      --fsc-navy-dark: #081426;
+      --fsc-navy-main: #0b1a30;
+      --fsc-navy-light: #152844;
+      --fsc-gold-main: #dfb15b;
+      --fsc-gold-dark: #c99738;
+      --fsc-gold-light: #fdf3dc;
+      --fsc-bg: #f4f6fa;
+      --fsc-card-bg: #ffffff;
+      --fsc-border: #e2e8f0;
+      --fsc-text-main: #0f172a;
+      --fsc-text-muted: #64748b;
+      --fsc-radius-lg: 10px;
+      --fsc-radius-md: 6px;
+      --fsc-shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --fsc-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    
+    html, body {
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden; /* Prevent page-level scroll */
+      background-color: var(--fsc-bg);
+      color: var(--fsc-text-main);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Dark Header */
+    .litigant-top-header {
+      background: var(--fsc-navy-dark);
+      color: #ffffff;
+      height: 64px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.75rem;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .litigant-header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .litigant-seal-badge {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--fsc-gold-main);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fsc-gold-main);
+      background: var(--fsc-navy-main);
+      flex-shrink: 0;
+    }
+
+    .litigant-header-court-title {
+      font-size: 0.875rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .litigant-header-court-sub {
+      font-size: 0.725rem;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    /* Center Header Navigation Tabs */
+    .litigant-header-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      height: 100%;
+    }
+
+    .header-nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0 0.95rem;
+      height: 100%;
+      color: #cbd5e1;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .header-nav-tab:hover {
+      color: #ffffff;
+    }
+
+    .header-nav-tab.active {
+      color: var(--fsc-gold-main);
+      border-bottom: 3px solid var(--fsc-gold-main);
+    }
+
+    .litigant-header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .litigant-icon-btn {
+      position: relative;
+      background: transparent;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s ease;
+    }
+
+    .litigant-icon-btn:hover { color: #ffffff; }
+
+    .litigant-notif-bubble {
+      position: absolute;
+      top: -4px;
+      right: -6px;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Profile Pill & Dropdown */
+    .profile-dropdown-wrap {
+      position: relative;
+    }
+
+    .litigant-profile-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      padding: 0.3rem 0.5rem;
+      border-radius: 20px;
+      transition: background 0.15s ease;
+      user-select: none;
+    }
+
+    .litigant-profile-pill:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .litigant-avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .litigant-profile-meta {
+      display: flex;
+      flex-direction: column;
+      text-align: right;
+    }
+
+    .litigant-profile-name { font-size: 0.8rem; font-weight: 700; color: #ffffff; line-height: 1.1; }
+    .litigant-profile-role { font-size: 0.685rem; color: #94a3b8; }
+
+    /* Dropdown Menu */
+    .profile-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 260px;
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: var(--fsc-radius-lg);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.18), 0 8px 10px -6px rgba(0,0,0,0.1);
+      display: none;
+      flex-direction: column;
+      padding: 0.5rem 0;
+      z-index: 1000;
+    }
+
+    .profile-dropdown-menu.show { display: flex; }
+
+    .dropdown-user-header {
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--fsc-border);
+    }
+
+    .dropdown-avatar-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--fsc-navy-main);
+      color: var(--fsc-gold-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      border: 1.5px solid var(--fsc-gold-main);
+      flex-shrink: 0;
+    }
+
+    .dropdown-user-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .dropdown-user-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--fsc-navy-main);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .dropdown-user-sub {
+      font-size: 0.72rem;
+      color: var(--fsc-text-muted);
+      margin-top: 1px;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: var(--fsc-border);
+      margin: 0.35rem 0;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 1.15rem;
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: #334155;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: all 0.15s ease;
+    }
+
+    .dropdown-item:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .dropdown-item svg {
+      color: #64748b;
+      flex-shrink: 0;
+    }
+
+    .dropdown-item:hover svg {
+      color: var(--fsc-navy-main);
+    }
+
+    .dropdown-logout {
+      color: #dc2626 !important;
+    }
+
+    .dropdown-logout svg {
+      color: #dc2626 !important;
+    }
+
+    .dropdown-logout:hover {
+      background: #fee2e2 !important;
+    }
+
+    /* Main App Layout */
+    .litigant-layout-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 64px - 40px);
+      max-height: calc(100vh - 64px - 40px);
+      overflow: hidden; /* No outer scroll */
+    }
+
+    /* Left Light Sidebar (White #ffffff, Scrollable on overflow) */
+    .litigant-sidebar {
+      width: 235px;
+      background: #ffffff;
+      border-right: 1px solid var(--fsc-border);
+      color: #475569;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 0.85rem 0.65rem 0.5rem;
+      flex-shrink: 0;
+      height: 100%;
+      overflow-y: auto; /* Scrollable if items exceed height */
+      overflow-x: hidden;
+      user-select: none;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+
+    .litigant-sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .litigant-sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .litigant-sidebar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    /* Expiration Box */
+    .temporary-badge-box {
+      background: #fffbeb;
+      border: 1px solid #fef3c7;
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+    }
+
+    .temp-clock-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #fed7aa;
+      color: #ea580c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .temp-box-title { font-size: 0.785rem; font-weight: 800; color: #9a3412; }
+    .temp-box-sub   { font-size: 0.685rem; color: #78350f; margin-top: 1px; }
+    .temp-countdown-text { font-size: 0.785rem; font-weight: 800; color: #ea580c; margin-top: 2px; }
+    .temp-created-date { font-size: 0.65rem; color: #9a3412; margin-top: 2px; }
+
+    .litigant-sidebar-section-title {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.5rem 0.2rem;
+    }
+
+    .litigant-nav-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .litigant-nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #475569;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      width: 100%;
+      border-radius: 6px;
+    }
+
+    .litigant-nav-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .litigant-nav-btn:hover {
+      background: #f1f5f9;
+      color: var(--fsc-navy-main);
+    }
+
+    .litigant-nav-btn.active {
+      color: #2563eb;
+      background: #eff6ff;
+      font-weight: 700;
+    }
+
+    .badge-blue-pill {
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.05rem 0.45rem;
+      border-radius: 10px;
+    }
+
+    /* Bottom Help Box */
+    .litigant-sidebar-help-box {
+      margin-top: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .litigant-help-text { display: flex; flex-direction: column; }
+    .litigant-help-title { font-size: 0.75rem; font-weight: 700; color: var(--fsc-navy-main); }
+    .litigant-help-sub   { font-size: 0.685rem; color: #64748b; }
+    .litigant-help-phone { font-size: 0.72rem; font-weight: 700; color: #2563eb; margin-top: 1px; }
+
+    /* Main Workspace (ONLY THIS AREA SCROLLS) */
+    .litigant-main-content {
+      flex: 1;
+      padding: 1.35rem 1.85rem 2.5rem;
+      max-width: 1500px;
+      margin: 0 auto;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto; /* ONLY content scrolls! */
+      overflow-x: hidden;
+    }
+
+    .litigant-greeting-row {
+      margin-bottom: 1.25rem;
+    }
+
+    .litigant-greeting-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--fsc-navy-main);
+      letter-spacing: -0.01em;
+    }
+
+    .litigant-greeting-sub {
+      font-size: 0.825rem;
+      color: var(--fsc-text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Top Case Progress Card */
+    .case-progress-card {
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: var(--fsc-radius-lg);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--fsc-shadow-sm);
+      margin-bottom: 1.25rem;
+    }
+
+    .case-progress-top-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1.9fr;
+      gap: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    @media (max-width: 1000px) {
+      .case-progress-top-row { grid-template-columns: 1fr; }
+    }
+
+    .case-id-header-label { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; }
+    .case-id-title-val { font-size: 1.15rem; font-weight: 800; color: var(--fsc-navy-main); display: flex; align-items: center; gap: 0.5rem; margin: 0.2rem 0; }
+    .case-title-line { font-size: 0.85rem; font-weight: 700; color: #334155; margin-top: 0.35rem; }
+
+    /* Stepper 6 Steps */
+    .case-stepper-6 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      margin-top: 0.75rem;
+    }
+
+    .step-item-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .step-circle-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: #e2e8f0;
+      color: #64748b;
+      margin-bottom: 0.35rem;
+    }
+
+    .step-circle-icon.completed {
+      background: #16a34a;
+      color: #ffffff;
+    }
+
+    .step-circle-icon.active {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+    }
+
+    .step-label-title { font-size: 0.75rem; font-weight: 700; color: var(--fsc-navy-main); }
+    .step-label-sub   { font-size: 0.65rem; color: #64748b; margin-top: 1px; }
+
+    .case-meta-bottom-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      padding-top: 0.85rem;
+    }
+
+    .meta-col-item { display: flex; flex-direction: column; }
+    .meta-col-label { font-size: 0.685rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+    .meta-col-val   { font-size: 0.8125rem; font-weight: 700; color: var(--fsc-navy-main); margin-top: 2px; }
+
+    /* 2-Column Main Workspace */
+    .litigant-2col-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 1100px) {
+      .litigant-2col-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Panel Card */
+    .litigant-panel-card {
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: var(--fsc-radius-lg);
+      padding: 1.15rem 1.35rem;
+      box-shadow: var(--fsc-shadow-sm);
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .litigant-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+
+    .litigant-panel-title {
+      font-size: 0.925rem;
+      font-weight: 700;
+      color: var(--fsc-navy-main);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .litigant-panel-link {
+      font-size: 0.785rem;
+      font-weight: 600;
+      color: #2563eb;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .litigant-panel-link:hover { text-decoration: underline; }
+
+    /* Case At a Glance 2x2 Grid */
+    .glance-2x2-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .glance-2x2-grid { grid-template-columns: 1fr; }
+    }
+
+    .glance-box-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.95rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .glance-box-label { font-size: 0.685rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
+    .glance-highlight-title { font-size: 0.875rem; font-weight: 800; color: var(--fsc-navy-main); }
+    .glance-subtext { font-size: 0.75rem; color: #475569; margin: 0.25rem 0 0.5rem; line-height: 1.35; }
+    .btn-glance-action {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--fsc-navy-main);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .btn-glance-action:hover { background: #e2e8f0; }
+
+    /* Split 2 Columns */
+    .split-2col-subcards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .split-2col-subcards { grid-template-columns: 1fr; }
+    }
+
+    /* Evidence Doc Items */
+    .evidence-stage-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .stage-box-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem; }
+    .stage-title-text { font-size: 0.785rem; font-weight: 700; color: var(--fsc-navy-main); display: flex; align-items: center; gap: 0.35rem; }
+
+    .doc-row-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.75rem;
+    }
+    .doc-row-item:last-child { border-bottom: none; }
+    .doc-row-left { display: flex; align-items: center; gap: 0.4rem; color: #2563eb; font-weight: 600; cursor: pointer; }
+    .doc-row-left:hover { text-decoration: underline; }
+    .doc-row-meta { color: #64748b; font-size: 0.7rem; }
+
+    /* Messages feed */
+    .msg-feed-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .msg-feed-item:last-child { border-bottom: none; }
+    .msg-feed-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: var(--fsc-navy-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.725rem;
+      flex-shrink: 0;
+    }
+    .msg-feed-title { font-size: 0.785rem; font-weight: 700; color: var(--fsc-navy-main); display: flex; align-items: center; justify-content: space-between; }
+    .msg-feed-time  { font-size: 0.685rem; color: #94a3b8; font-weight: 500; }
+    .msg-feed-text  { font-size: 0.75rem; color: #475569; margin-top: 2px; line-height: 1.25; }
+
+    .btn-compose-full {
+      width: 100%;
+      padding: 0.6rem;
+      background: var(--fsc-navy-main);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.785rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+
+    /* Account Details Card */
+    .account-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.785rem;
+    }
+    .account-meta-row:last-of-type { border-bottom: none; }
+    .account-meta-label { color: #64748b; font-weight: 500; }
+    .account-meta-val   { font-weight: 700; color: var(--fsc-navy-main); display: flex; align-items: center; gap: 0.35rem; }
+
+    .btn-extend-access {
+      width: 100%;
+      padding: 0.6rem;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.785rem;
+      font-weight: 700;
+      color: var(--fsc-navy-main);
+      cursor: pointer;
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+    .btn-extend-access:hover { background: #f8fafc; }
+
+    /* Notifications List */
+    .notif-item-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .notif-item-wrap:last-child { border-bottom: none; }
+    .notif-icon-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .notif-text-title { font-size: 0.785rem; font-weight: 700; color: var(--fsc-navy-main); }
+    .notif-text-sub   { font-size: 0.72rem; color: #64748b; margin-top: 1px; }
+    .notif-text-time  { font-size: 0.685rem; color: #94a3b8; margin-top: 1px; }
+
+    /* Quick Actions 3x2 Grid */
+    .quick-actions-3x2 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.55rem;
+    }
+
+    .action-tile-btn {
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: 6px;
+      padding: 0.75rem 0.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: var(--fsc-navy-main);
+      font-size: 0.725rem;
+      font-weight: 600;
+    }
+
+    .action-tile-btn:hover {
+      background: #f8fafc;
+      border-color: #2563eb;
+      color: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    /* Security Notice Card */
+    .security-notice-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.85rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+    }
+
+    /* Institutional Footer */
+    .litigant-institutional-footer {
+      background: var(--fsc-navy-dark);
+      color: #94a3b8;
+      font-size: 0.75rem;
+      height: 40px;
+      padding: 0 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    /* Universal Modal System */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(11, 26, 48, 0.65);
+      backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+      z-index: 1000; padding: 1rem;
+    }
+    .modal-box {
+      background: #ffffff; border-radius: var(--fsc-radius-lg); max-width: 650px; width: 100%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); overflow: hidden;
+    }
+    .modal-box-header {
+      padding: 1.15rem 1.35rem; border-bottom: 1px solid var(--fsc-border);
+      display: flex; justify-content: space-between; align-items: center; background: #f8fafc;
+    }
+    .modal-box-title { font-size: 1rem; font-weight: 800; color: var(--fsc-navy-main); }
+    .modal-box-body { padding: 1.35rem; max-height: 80vh; overflow-y: auto; }
+    .modal-close-btn { background: transparent; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer; }
+    .modal-close-btn:hover { color: #0f172a; }
+  </style>
+</head>
+<body onclick="handleLitigantGlobalClick(event)">
+
+  <!-- Top Dark Header -->
+  <header class="litigant-top-header">
+    <div class="litigant-header-left">
+      <div class="litigant-seal-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+      </div>
+      <div>
+        <div class="litigant-header-court-title">Federal Supreme Court of Ethiopia</div>
+        <div class="litigant-header-court-sub">የኢትዮጵያ ፌዴራል ጠቅላይ ፍርድ ቤት</div>
+      </div>
+    </div>
+
+    <!-- Center Navigation Tabs -->
+    <nav class="litigant-header-nav">
+      <button class="header-nav-tab active" onclick="switchLitigantView('dashboard')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button class="header-nav-tab" onclick="switchLitigantView('my_cases')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <span>My Cases</span>
+      </button>
+      <button class="header-nav-tab" onclick="switchLitigantView('documents')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>Documents</span>
+      </button>
+      <button class="header-nav-tab" onclick="switchLitigantView('hearings')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg>
+        <span>Hearings</span>
+      </button>
+      <button class="header-nav-tab" onclick="switchLitigantView('notifications')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span>Notifications</span>
+      </button>
+    </nav>
+
+    <div class="litigant-header-right">
+      <button class="litigant-icon-btn" title="Notifications" onclick="switchLitigantView('notifications')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="litigant-notif-bubble">3</span>
+      </button>
+
+      <!-- Profile Dropdown Trigger -->
+      <div class="profile-dropdown-wrap">
+        <div class="litigant-profile-pill" id="litigant-profile-pill-trigger" onclick="toggleLitigantProfileDropdown(event)">
+          <div class="litigant-avatar-circle" id="litigant-avatar-initials">AK</div>
+          <div class="litigant-profile-meta">
+            <span class="litigant-profile-name" id="top-litigant-name">Abebe Kebede</span>
+            <span class="litigant-profile-role" id="top-litigant-role">Plaintiff (Temporary Account)</span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+
+        <!-- Profile Dropdown Menu -->
+        <div class="profile-dropdown-menu" id="litigant-profile-dropdown-menu">
+          <div class="dropdown-user-header">
+            <div class="dropdown-avatar-circle" id="litigant-dropdown-avatar">AK</div>
+            <div class="dropdown-user-info">
+              <div class="dropdown-user-name" id="litigant-dropdown-fullname">Abebe Kebede</div>
+              <div class="dropdown-user-sub" id="litigant-dropdown-sub">Plaintiff (Temporary Account) · Verified</div>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item" onclick="openLitigantEditProfileModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+            <span>Edit Profile / Contact Info</span>
+          </button>
+          <button class="dropdown-item" onclick="openChangePinModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>Change Access PIN</span>
+          </button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item dropdown-logout" onclick="logoutLitigant()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout Body (Sidebar + Content) -->
+  <div class="litigant-layout-body">
+
+    <!-- Left Light Sidebar (White, Scrollable on overflow) -->
+    <aside class="litigant-sidebar">
+      <div>
+        <!-- Temporary Expiration Box -->
+        <div class="temporary-badge-box">
+          <div class="temp-clock-circle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="temp-box-title">Temporary Account</div>
+            <div class="temp-box-sub">Access expires in</div>
+            <div class="temp-countdown-text" id="sidebar-countdown">29d : 14h : 23m</div>
+            <div class="temp-created-date">Created: May 24, 2026</div>
+          </div>
+        </div>
+
+        <div class="litigant-sidebar-section-title">Main Menu</div>
+        <div class="litigant-nav-group">
+          <button class="litigant-nav-btn active" onclick="switchLitigantView('dashboard')">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+              <span>Dashboard</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="switchLitigantView('my_cases')">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+              <span>My Cases</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="openCaseDetailsModal()">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
+              <span>Case Details</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="switchLitigantView('documents')">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>Documents &amp; Evidence</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="switchLitigantView('hearings')">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg>
+              <span>Hearings &amp; Calendar</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="openAdvocateProfileModal()">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+              <span>My Advocate</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="openAppealModal()">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 8 12 12 16"/><line x1="16" x2="8" y1="12" y2="12"/></svg>
+              <span>Appeals</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="openPaymentModal()">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+              <span>Payments</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="switchLitigantView('messages')">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>Messages</span>
+            </div>
+            <span class="badge-blue-pill">2</span>
+          </button>
+        </div>
+
+        <div class="litigant-sidebar-section-title" style="margin-top:0.4rem">Account</div>
+        <div class="litigant-nav-group">
+          <button class="litigant-nav-btn" onclick="openLitigantEditProfileModal()">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Account Settings</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="openChangePinModal()">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Change PIN</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="openLitigantHelpModal()">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+              <span>Help &amp; Support</span>
+            </div>
+          </button>
+          <button class="litigant-nav-btn" onclick="logoutLitigant()" style="color:#ef4444">
+            <div class="litigant-nav-btn-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+              <span>Logout</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Help Support Box -->
+      <div class="litigant-sidebar-help-box">
+        <div style="color:#2563eb">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+        </div>
+        <div class="litigant-help-text">
+          <span class="litigant-help-title">Need help?</span>
+          <span class="litigant-help-sub">Contact Court Support</span>
+          <span class="litigant-help-phone">+251 11 551 7700</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace (ONLY THIS AREA SCROLLS) -->
+    <main class="litigant-main-content">
+      <div id="dynamic-litigant-workspace">
+        <!-- Rendered dynamically via temporary.js -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Institutional Footer -->
+  <footer class="litigant-institutional-footer">
+    <div>
+      Federal Supreme Court of Ethiopia &bull; Churchill Avenue, Addis Ababa, Ethiopia
+    </div>
+    <div style="display:flex;align-items:center;gap:1.5rem">
+      <span>+251 11 551 7700</span>
+      <span>info@fsc.gov.et</span>
+    </div>
+    <div>
+      &copy; 2026 Federal Supreme Court of Ethiopia. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Universal Modal System -->
+  <div class="modal-backdrop" id="universal-litigant-modal">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <div class="modal-box-title" id="litigant-modal-title">Litigant Portal</div>
+        <button class="modal-close-btn" onclick="closeLitigantModal()">✕</button>
+      </div>
+      <div class="modal-box-body" id="litigant-modal-body">
+        <!-- Injected modal content -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/temporary.js"></script>
+</body>
+</html>

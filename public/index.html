@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Federal Supreme Court of Ethiopia — የኢትዮጵያ ፌዴራል ጠቅላይ ፍርድ ቤት</title>
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+    :root {
+      --hero-bg: #070b16;
+      --card-bg: #ffffff;
+      --accent-glow: rgba(200, 147, 42, 0.15);
+      --judicial-gold: #c8932a;
+      --judicial-navy: #0b192c;
+    }
+    body { background: var(--cream-50); color: var(--navy-900); }
+
+    /* Refined Official Single-Line Navbar */
+    .fsc-navbar {
+      background: var(--judicial-navy);
+      border-bottom: 1px solid rgba(200, 147, 42, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      width: 100%;
+    }
+    .fsc-nav-inner {
+      max-width: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0.85rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: nowrap;
+    }
+    .fsc-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .fsc-emblem {
+      width: 2.75rem;
+      height: 2.75rem;
+      background: linear-gradient(135deg, var(--gold-500), #9c6c18);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      box-shadow: 0 0 15px rgba(200, 147, 42, 0.4);
+      border: 2px solid #fce8bd;
+      flex-shrink: 0;
+    }
+    .fsc-brand-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: white;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .fsc-brand-sub {
+      font-size: 0.75rem;
+      color: var(--gold-300);
+      font-weight: 500;
+      margin-top: 0.15rem;
+      display: block;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .fsc-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      list-style: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .fsc-nav-links a {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all var(--trans);
+      padding: 0.35rem 0;
+      border-bottom: 2px solid transparent;
+    }
+    .fsc-nav-links a:hover {
+      color: white;
+      border-bottom-color: var(--gold-400);
+    }
+    @media (max-width: 960px) {
+      .fsc-nav-links { display: none; }
+    }
+
+    /* Hero Section */
+    .landing-hero {
+      background: linear-gradient(135deg, var(--navy-950) 0%, var(--navy-900) 50%, var(--navy-800) 100%);
+      color: white;
+      padding: 3.5rem 1.5rem 5.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(200, 147, 42, 0.2);
+    }
+    .landing-hero::before {
+      content: '';
+      position: absolute;
+      top: -8rem; left: 50%;
+      transform: translateX(-50%);
+      width: 50rem; height: 50rem;
+      background: radial-gradient(circle, rgba(200, 147, 42, 0.18) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.5rem 1.35rem;
+      background: rgba(200, 147, 42, 0.12);
+      border: 1px solid rgba(200, 147, 42, 0.35);
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      color: var(--gold-300);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 20px rgba(200, 147, 42, 0.15);
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 2.15rem;
+      font-weight: 700;
+      line-height: 1.25;
+      max-width: 52rem;
+      margin: 0 auto 1rem;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .hero-subtitle {
+      font-size: 0.975rem;
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 48rem;
+      margin: 0.85rem auto 2.25rem;
+      line-height: 1.65;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      padding: 0 1rem;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+      gap: 1.25rem;
+      max-width: 62rem;
+      margin: 0 auto;
+      padding: 1.25rem 1.5rem;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(200, 147, 42, 0.25);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+    .stat-item { text-align: center; }
+    .stat-val { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--gold-300); }
+    .stat-lbl { font-size: 0.72rem; color: rgba(255, 255, 255, 0.7); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem; font-weight: 500; }
+
+    /* Public Search Section */
+    .search-section {
+      max-width: 62rem;
+      margin: -3rem auto 4.5rem;
+      position: relative;
+      z-index: 10;
+      padding: 0 1.5rem;
+    }
+    .search-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: 1.75rem 2rem;
+      box-shadow: 0 20px 45px rgba(10, 25, 44, 0.15);
+      border: 1px solid var(--line);
+    }
+    .search-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.15rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .search-title-text {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      color: var(--navy-950);
+      font-weight: 700;
+    }
+    .search-form { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .search-input {
+      flex: 1;
+      min-width: 16rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.15rem;
+      font-size: 0.9125rem;
+      outline: none;
+      transition: all var(--trans);
+      background: var(--cream-50);
+    }
+    .search-input:focus {
+      border-color: var(--gold-500);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(200, 147, 42, 0.15);
+    }
+
+    /* Content Layout */
+    .section-wrap { max-width: 78rem; margin: 0 auto 4.5rem; padding: 0 1.5rem; }
+    .section-header { text-align: center; margin-bottom: 2.25rem; }
+    .section-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold-600);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.4rem;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--navy-950);
+      letter-spacing: -0.01em;
+    }
+    .section-sub {
+      font-size: 0.925rem;
+      color: var(--navy-700);
+      opacity: 0.85;
+      max-width: 48rem;
+      margin: 0.5rem auto 0;
+      line-height: 1.55;
+      font-weight: 400;
+    }
+
+    /* Grid Layouts */
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr)); gap: 1.75rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1.5rem; }
+
+    /* Feature & Service Cards */
+    .feature-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: all var(--trans);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(10, 25, 44, 0.1);
+      border-color: var(--gold-500);
+    }
+    .feature-badge {
+      align-self: flex-start;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-sm);
+      background: var(--cream-100);
+      color: var(--navy-800);
+      margin-bottom: 1rem;
+    }
+    .feature-icon {
+      width: 3.25rem; height: 3.25rem;
+      border-radius: var(--radius-md);
+      background: rgba(200, 147, 42, 0.12);
+      border: 1px solid rgba(200, 147, 42, 0.3);
+      color: var(--gold-600);
+      font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .feature-title { font-size: 1.05rem; font-weight: 700; color: var(--navy-950); margin-bottom: 0.45rem; }
+    .feature-text { font-size: 0.85rem; color: var(--navy-700); opacity: 0.88; line-height: 1.55; flex: 1; }
+
+    /* Court Hierarchy Cards */
+    .tier-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--navy-800);
+      border-radius: var(--radius-lg);
+      padding: 1.65rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .tier-card.tier-supreme { border-top-color: var(--gold-500); background: #faf8f3; }
+    .tier-num { font-size: 0.72rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem; }
+    .tier-title-amharic { font-size: 0.985rem; font-weight: 700; color: var(--navy-950); margin-bottom: 0.2rem; }
+    .tier-title-english { font-family: var(--font-display); font-size: 1.075rem; font-weight: 700; color: var(--navy-900); margin-bottom: 0.75rem; }
+    .tier-desc { font-size: 0.825rem; color: var(--navy-700); opacity: 0.85; line-height: 1.55; margin-bottom: 1rem; flex: 1; }
+    .tier-list { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; font-size: 0.785rem; color: var(--navy-800); border-top: 1px solid var(--line); padding-top: 0.85rem; }
+    .tier-list li { display: flex; align-items: center; gap: 0.5rem; }
+    .tier-list li::before { content: '✦'; color: var(--gold-500); font-size: 0.7rem; }
+
+    /* News & Announcements */
+    .news-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .news-body { padding: 1.35rem; flex: 1; display: flex; flex-direction: column; }
+    .news-date { font-size: 0.72rem; color: var(--navy-700); opacity: 0.65; font-weight: 600; text-transform: uppercase; margin-bottom: 0.45rem; }
+    .news-title { font-size: 0.95rem; font-weight: 700; color: var(--navy-950); margin-bottom: 0.5rem; line-height: 1.35; }
+    .news-snippet { font-size: 0.825rem; color: var(--navy-700); opacity: 0.85; line-height: 1.55; margin-bottom: 0.85rem; flex: 1; }
+
+    /* Auth Modal */
+    .auth-modal {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(10, 15, 30, 0.82);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .auth-card {
+      background: white; border-radius: var(--radius-xl);
+      width: 100%; max-width: 29rem; padding: 2.25rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .auth-close {
+      position: absolute; top: 1.25rem; right: 1.25rem;
+      background: none; border: none; font-size: 1.25rem;
+      cursor: pointer; color: var(--navy-700); opacity: 0.5;
+    }
+    .auth-close:hover { opacity: 1; }
+    
+    .login-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); margin-bottom: 1.5rem; }
+    .login-tab { padding: 0.75rem; text-align: center; font-size: 0.9375rem; font-weight: 500; cursor: pointer; color: var(--navy-700); opacity: 0.6; border-bottom: 2px solid transparent; border: none; background: none; }
+    .login-tab.active { color: var(--navy-900); opacity: 1; border-bottom: 2px solid var(--navy-800); font-weight: 600; }
+
+    /* Footer */
+    .landing-footer {
+      background: var(--navy-950);
+      color: rgba(255, 255, 255, 0.65);
+      padding: 4.5rem 1.5rem 2rem;
+      border-top: 1px solid rgba(200, 147, 42, 0.2);
+      font-size: 0.875rem;
+    }
+    .footer-inner { max-width: 78rem; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3.5rem; }
+    @media (max-width: 900px) { .footer-inner { grid-template-columns: 1fr; gap: 2rem; } .hero-title { font-size: 2.35rem; } }
+    .footer-title { color: white; font-weight: 700; margin-bottom: 1.15rem; font-size: 0.9375rem; letter-spacing: 0.02em; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+    .footer-links a:hover { color: var(--gold-400); }
+  </style>
+</head>
+<body>
+
+<!-- ── Main Official Navbar ── -->
+<nav class="fsc-navbar">
+  <div class="fsc-nav-inner">
+    <a class="fsc-brand" href="/">
+      <div class="fsc-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
+      <div>
+        <div class="fsc-brand-title">Federal Supreme Court of Ethiopia</div>
+        <div class="fsc-brand-sub">የኢትዮጵያ ፌዴራል ጠቅላይ ፍርድ ቤት · Official Judiciary Portal</div>
+      </div>
+    </a>
+
+    <ul class="fsc-nav-links">
+      <li><a href="#search">Case Lookup</a></li>
+      <li><a href="#hierarchy">Court Divisions</a></li>
+      <li><a href="#services">E-Services</a></li>
+      <li><a href="#news">Cassation Precedents</a></li>
+      <li><a href="#qa">Legal Knowledge</a></li>
+    </ul>
+
+    <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0">
+      <a href="/file-case" class="btn" style="background:var(--gold-500);color:var(--navy-950);font-weight:700;padding:0.45rem 0.9rem;font-size:0.8125rem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> File Case Online
+      </a>
+      <button class="btn btn-outline" style="border-color:rgba(255,255,255,0.3);color:white;padding:0.45rem 0.9rem;font-size:0.8125rem;display:flex;align-items:center;gap:0.4rem" onclick="openAuthModal('login')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Sign In
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero Section ── -->
+<header class="landing-hero">
+  <h1 class="hero-title">Independent, Equal &amp; Accessible Justice for All</h1>
+  
+  <p class="hero-subtitle">
+    The highest judicial authority of the Federal Democratic Republic of Ethiopia. Integrating electronic case filing, automated summonses, Cassation Division precedents, and digital docket tracking for citizens and advocates.
+  </p>
+  
+  <div class="hero-actions">
+    <a href="/file-case" class="btn btn-lg" style="background:var(--gold-500);color:var(--navy-950);font-weight:700;padding:0.85rem 2rem;font-size:1.05rem;box-shadow:0 6px 20px rgba(200,147,42,0.35)">
+      File Case Online
+    </a>
+    <a href="#search" class="btn btn-lg btn-ghost" style="padding:0.85rem 1.8rem;font-size:1rem;color:white;border:1px solid rgba(255,255,255,0.3)">
+      Track Case Docket
+    </a>
+    <button class="btn btn-lg btn-ghost" onclick="openAuthModal('login')" style="padding:0.85rem 1.8rem;font-size:1rem;color:var(--gold-300);border:1px solid rgba(200,147,42,0.4)">
+      Access Workspace
+    </button>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-val">FDRE FSC</div>
+      <div class="stat-lbl">Supreme Judicial Authority</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">Cassation</div>
+      <div class="stat-lbl">Binding Precedent Review</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">3-Tier</div>
+      <div class="stat-lbl">Federal Court Hierarchy</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">MoJ Verified</div>
+      <div class="stat-lbl">Authenticated Bar Advocates</div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Public Docket Search Widget ── -->
+<section class="search-section" id="search">
+  <div class="search-card">
+    <div class="search-header-flex">
+      <div>
+        <h3 class="search-title-text">Public Case &amp; Docket Search</h3>
+        <p style="font-size:0.875rem;color:var(--navy-700);opacity:0.8;margin-top:0.2rem">
+          Search active court records by Case Tracking ID (e.g. <code>CASE-1786816470851</code>) or litigant name.
+        </p>
+      </div>
+      <span class="badge badge-navy" style="font-size:0.75rem">Real-Time Registry</span>
+    </div>
+
+    <form class="search-form" onsubmit="searchPublicDocket(event)">
+      <input class="search-input" id="public-search-query" type="text" placeholder="Enter Case ID, Plaintiff, or Defendant Name..."/>
+      <button type="submit" class="btn btn-primary" style="padding:0.9rem 1.75rem;font-weight:700">
+        Search Docket
+      </button>
+    </form>
+    
+    <div id="search-results-box" style="margin-top:1.25rem"></div>
+  </div>
+</section>
+
+<!-- ── Federal Judiciary Hierarchy ── -->
+<section class="section-wrap" id="hierarchy">
+  <div class="section-header">
+    <div class="section-tag">Constitutional Architecture</div>
+    <h2 class="section-title">Federal Court Hierarchy &amp; Divisions</h2>
+    <p class="section-sub">
+      Established under the Constitution of the Federal Democratic Republic of Ethiopia (FDRE) to uphold the rule of law and deliver impartial justice.
+    </p>
+  </div>
+
+  <div class="grid-3">
+    <!-- Supreme Court -->
+    <div class="tier-card tier-supreme">
+      <div class="tier-num">Tier 1 · Apex Court</div>
+      <div class="tier-title-amharic">የፌዴራል ጠቅላይ ፍርድ ቤት</div>
+      <div class="tier-title-english">Federal Supreme Court (FSC)</div>
+      <p class="tier-desc">
+        The highest judicial organ led by the Chief Justice and Deputy Chief Justice. Exercises final appellate jurisdiction and original jurisdiction over high-level international cases.
+      </p>
+      <ul class="tier-list">
+        <li>Cassation Division (የሰበር ሰሚ ችሎት)</li>
+        <li>Binding Legal Precedent Authority</li>
+        <li>Presidential &amp; Judicial Council Leadership</li>
+        <li>Final Federal Appellate Review</li>
+      </ul>
+    </div>
+
+    <!-- High Court -->
+    <div class="tier-card">
+      <div class="tier-num">Tier 2 · Appellate &amp; Trial</div>
+      <div class="tier-title-amharic">የፌዴራል ከፍተኛ ፍርድ ቤት</div>
+      <div class="tier-title-english">Federal High Court (FHC)</div>
+      <p class="tier-desc">
+        Handles complex civil, commercial, criminal, labor, and administrative disputes. Operates specialized benches across Lideta, Arada, and regional circuit divisions.
+      </p>
+      <ul class="tier-list">
+        <li>Lideta Civil &amp; Commercial Benches</li>
+        <li>Arada Criminal &amp; Constitutional Division</li>
+        <li>Labor, Tax &amp; Customs Benches</li>
+        <li>Dire Dawa &amp; Regional Circuit Benches</li>
+      </ul>
+    </div>
+
+    <!-- First Instance -->
+    <div class="tier-card">
+      <div class="tier-num">Tier 3 · Primary Jurisdiction</div>
+      <div class="tier-title-amharic">የፌዴራል የመጀመሪያ ደረጃ ፍርድ ቤት</div>
+      <div class="tier-title-english">Federal First Instance Court</div>
+      <p class="tier-desc">
+        The primary trial court for initial civil claims, petty offenses, and family or contract disputes across federal sub-cities and administrative zones.
+      </p>
+      <ul class="tier-list">
+        <li>Sub-City &amp; District Trial Benches</li>
+        <li>Citizen Intake &amp; E-Filing Hubs</li>
+        <li>Initial Evidence Indexing</li>
+        <li>Summary Civil &amp; Criminal Proceedings</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Digital E-Services Section ── -->
+<section class="section-wrap" id="services">
+  <div class="section-header">
+    <div class="section-tag">Public E-Services</div>
+    <h2 class="section-title">Digital Court Services &amp; Portals</h2>
+    <p class="section-sub">
+      Streamlining judicial access for citizens, advocates, and judicial benches through modern digital tools.
+    </p>
+  </div>
+
+  <div class="grid-3">
+    <div class="feature-card">
+      <div class="feature-badge">E-Filing Portal</div>
+      <div class="feature-icon">01</div>
+      <h3 class="feature-title">Electronic Case Filing</h3>
+      <p class="feature-text">
+        Submit civil, commercial, or labor petitions with phone verification (+251) and receive immediate 6-digit Case PINs for secure docket tracking.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-badge">Real-Time Registry</div>
+      <div class="feature-icon">02</div>
+      <h3 class="feature-title">Case &amp; Docket Tracker</h3>
+      <p class="feature-text">
+        Track case progress, view assigned judicial officers, monitor hearing status, and check trial dates online from anywhere in Ethiopia.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-badge">MoJ Integration</div>
+      <div class="feature-icon">03</div>
+      <h3 class="feature-title">MoJ Bar Advocate Gateway</h3>
+      <p class="feature-text">
+        Real-time authentication against the Ministry of Justice (MoJ) advocate registry to verify active practicing credentials of legal counsel.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-badge">SMS Alerts</div>
+      <div class="feature-icon">04</div>
+      <h3 class="feature-title">Automated Summons &amp; SMS</h3>
+      <p class="feature-text">
+        Court hearing dates, judicial orders, and official summonses are dispatched directly to litigants and counsel via automated SMS text notifications.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-badge">Court Orders</div>
+      <div class="feature-icon">05</div>
+      <h3 class="feature-title">Judicial Rulings &amp; Orders</h3>
+      <p class="feature-text">
+        Access official written orders, interim injunctions, and formal judgment records issued by presiding judges across all federal benches.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-badge">Official Petitions</div>
+      <div class="feature-icon">06</div>
+      <h3 class="feature-title">Administrative Complaints</h3>
+      <p class="feature-text">
+        File formal procedural complaints, administrative requests, or registry inquiries directly with court division registrars for swift resolution.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── News, Announcements & Cassation Precedents ── -->
+<section class="section-wrap" id="news">
+  <div class="section-header">
+    <div class="section-tag">Judicial Updates</div>
+    <h2 class="section-title">Cassation Decisions &amp; Official News</h2>
+    <p class="section-sub">
+      Key announcements, legal circulars, and binding precedents issued by the Cassation Division of the Federal Supreme Court.
+    </p>
+  </div>
+
+  <div class="grid-3">
+    <div class="news-card">
+      <div class="news-body">
+        <div class="news-date">August 2026 · Cassation Precedent</div>
+        <h3 class="news-title">Binding Ruling on Commercial Contract Interpretation</h3>
+        <p class="news-snippet">
+          The Cassation Division reaffirmed the binding precedent regarding force majeure clauses in international commercial supply agreements, clarifying standards for lower federal courts.
+        </p>
+        <a href="#search" style="font-size:0.8125rem;font-weight:700;color:var(--gold-600)">Read Precedent Details →</a>
+      </div>
+    </div>
+
+    <div class="news-card">
+      <div class="news-body">
+        <div class="news-date">July 2026 · Judicial Reform</div>
+        <h3 class="news-title">Expansion of Digital E-Filing Benches in Lideta &amp; Arada</h3>
+        <p class="news-snippet">
+          The Federal Supreme Court announced full digital docket integration across all civil and commercial chambers, reducing case processing times by 40%.
+        </p>
+        <a href="#services" style="font-size:0.8125rem;font-weight:700;color:var(--gold-600)">Explore E-Filing Services →</a>
+      </div>
+    </div>
+
+    <div class="news-card">
+      <div class="news-body">
+        <div class="news-date">June 2026 · Ministry of Justice</div>
+        <h3 class="news-title">MoJ Bar Advocate License Verification Protocols</h3>
+        <p class="news-snippet">
+          Updated directives for advocate registration require real-time verification of MoJ license numbers (`LAW-XXXX`) to ensure full compliance on public filings.
+        </p>
+        <button class="btn btn-link" onclick="openAuthModal('register')" style="font-size:0.8125rem;font-weight:700;color:var(--gold-600);text-align:left;padding:0">Verify Advocate Credentials →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Legal Knowledge Base & Q&A (No Rating Systems) ── -->
+<section class="section-wrap" id="qa">
+  <div class="section-header">
+    <div class="section-tag">Citizen Knowledge</div>
+    <h2 class="section-title">Ethiopian Legal Advisory &amp; Inquiries</h2>
+    <p class="section-sub">
+      Information on Ethiopian proclamations, civil procedure code, commercial dispute guidelines, and citizen rights.
+    </p>
+  </div>
+
+  <div class="grid-2" id="qa-container" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(22rem, 1fr));gap:1.75rem">
+    <div style="text-align:center;padding:2.5rem;grid-column:1/-1;color:var(--navy-700)">
+      <span class="spin"></span> Loading legal inquiry database...
+    </div>
+  </div>
+</section>
+
+<!-- ── Auth Modal (Sign In / Register) ── -->
+<div id="auth-modal" class="auth-modal hidden" onclick="closeAuthModal(event)">
+  <div class="auth-card anim-up" onclick="event.stopPropagation()">
+    <button class="auth-close" onclick="closeAuthModal()">✕</button>
+    
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <span style="font-size:2.5rem;display:block;margin-bottom:0.25rem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></span>
+      <h3 style="font-family:var(--font-display);font-size:1.375rem;font-weight:700;color:var(--navy-950)">Federal Court System Access</h3>
+      <p style="font-size:0.8125rem;color:var(--navy-700);opacity:0.75">Federal Supreme Court of Ethiopia · የኢትዮጵያ ፌዴራል ጠቅላይ ፍርድ ቤት</p>
+    </div>
+
+    <div class="login-tabs">
+      <button class="login-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="login-tab" id="tab-register" onclick="switchAuthTab('register')">Register Advocate</button>
+    </div>
+
+    <div id="alert-box"></div>
+
+    <!-- Login Pane -->
+    <div id="pane-login">
+      <!-- Quick Demo Login Buttons -->
+      <div style="background:var(--cream-100);border:1px solid var(--line);border-radius:var(--radius-md);padding:0.75rem;margin-bottom:1rem">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--navy-900);text-transform:uppercase;margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between">
+          <span>Quick Demo Accounts:</span>
+          <span style="font-weight:500;opacity:0.75">1-Click Auto Login</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(95px, 1fr));gap:0.4rem">
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600" onclick="quickLogin('admin','admin123')">
+            Admin
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600;color:var(--gold-600)" onclick="quickLogin('judge.solomon','judge123')">
+            Judge
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600;color:#0369a1" onclick="quickLogin('officer.hassan','officer123')">
+            Official (Supreme)
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600;color:#0369a1" onclick="quickLogin('officer.selam','officer123')">
+            Official (Lideta)
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600;color:#0369a1" onclick="quickLogin('officer.yonas','officer123')">
+            Official (Arada)
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600" onclick="quickLogin('clerk.ibrahim','clerk123')">
+            Clerk
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600" onclick="quickLogin('qalalew','1234')">
+            Lawyer
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600;color:#1e40af" onclick="quickLogin('prosecutor.bereket','prosecutor123')">
+            Prosecutor
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600" onclick="quickLogin('0955282973','123456')">
+            Plaintiff
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600" onclick="quickLogin('0922334455','123456')">
+            Defendant
+          </button>
+        </div>
+      </div>
+
+      <form id="modal-login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="m-username">Username / Phone Number</label>
+          <input class="form-input" id="m-username" type="text" autocomplete="username" placeholder="e.g. admin or 0911234567" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="m-password">Password / Case PIN</label>
+          <input class="form-input" id="m-password" type="password" autocomplete="current-password" placeholder="Enter password or 6-digit PIN" required/>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="modal-login-btn" style="margin-top:0.5rem;font-weight:700">
+          Authenticate &amp; Log In
+        </button>
+      </form>
+    </div>
+
+    <!-- Register Pane -->
+    <div id="pane-register" class="hidden">
+      <div class="alert alert-info" style="margin-bottom:1rem">
+        <span>🔒</span>
+        <span>Advocate bar licenses are verified directly against the Ministry of Justice (MoJ) registry.</span>
+      </div>
+      <form id="modal-register-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label class="form-label" for="m-reg-license">MoJ License Number</label>
+          <input class="form-input" id="m-reg-license" type="text" placeholder="e.g. LAW-1001 or LAW-1003" oninput="checkLicenseLive(this.value)" required/>
+          <div id="license-live-feedback" style="font-size:0.75rem;margin-top:0.35rem"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="m-reg-fullname">Full Name (as on MoJ record)</label>
+          <input class="form-input" id="m-reg-fullname" type="text" placeholder="e.g. Kebede Haile Mariam" required/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="m-reg-username">Username</label>
+            <input class="form-input" id="m-reg-username" type="text" placeholder="Choose username" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="m-reg-password">Password</label>
+            <input class="form-input" id="m-reg-password" type="password" placeholder="Create password" required/>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="modal-register-btn" style="margin-top:0.5rem;font-weight:700">
+          Verify License &amp; Register
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── Institutional Footer ── -->
+<footer class="landing-footer" id="contact">
+  <div class="footer-inner">
+    <div>
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
+        <div class="fsc-emblem" style="width:2.25rem;height:2.25rem;font-size:1.1rem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
+        <div>
+          <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:700;color:white">Federal Supreme Court of Ethiopia</div>
+          <div style="font-size:0.75rem;color:var(--gold-400)">የኢትዮጵያ ፌዴራል ጠቅላይ ፍርድ ቤት</div>
+        </div>
+      </div>
+      <p style="line-height:1.65;margin-bottom:1rem;color:rgba(255,255,255,0.75)">
+        The official digital case management and electronic filing portal of the Federal Democratic Republic of Ethiopia Judiciary.
+      </p>
+      <p style="font-size:0.8125rem;color:rgba(255,255,255,0.55)">
+        📍 <strong>Headquarters:</strong> Churchill Avenue / Sidist Kilo, Supreme Judiciary Complex, P.O. Box 6166, Addis Ababa, Ethiopia.
+      </p>
+    </div>
+
+    <div>
+      <div class="footer-title">Judicial Services</div>
+      <ul class="footer-links">
+        <li><a href="/file-case">Electronic Case Filing</a></li>
+        <li><a href="#search">Public Docket Tracking</a></li>
+        <li><a href="#services">Hearing Schedule Checker</a></li>
+        <li><a href="#services">Advocate Verification</a></li>
+        <li><a href="#qa">Legal Knowledge Base</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="footer-title">Federal Benches</div>
+      <ul class="footer-links">
+        <li><a href="#hierarchy">Federal Supreme Court (FSC)</a></li>
+        <li><a href="#hierarchy">Cassation Division</a></li>
+        <li><a href="#hierarchy">Lideta Civil &amp; Commercial</a></li>
+        <li><a href="#hierarchy">Arada Criminal Division</a></li>
+        <li><a href="#hierarchy">Dire Dawa Circuit Bench</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="footer-title">Access &amp; Security</div>
+      <ul class="footer-links">
+        <li><a href="#" onclick="openAuthModal('login')">Judicial Officer Login</a></li>
+        <li><a href="#" onclick="openAuthModal('register')">MoJ Advocate Registration</a></li>
+        <li><a href="/file-case">Litigant SMS PIN Access</a></li>
+        <li><a href="#contact">Judicial Registrar Office</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="max-width:78rem;margin:0 auto;padding-top:1.75rem;border-top:1px solid rgba(255,255,255,0.1);text-align:center;font-size:0.75rem;color:rgba(255,255,255,0.5)">
+    &copy; 2026 Federal Democratic Republic of Ethiopia Judiciary · Ministry of Justice Integration. All rights reserved.
+  </div>
+</footer>
+
+<script>
+const API = 'http://localhost:5001/api';
+
+// ── Auth Modal Controls ──
+function openAuthModal(tab = 'login') {
+  document.getElementById('auth-modal').classList.remove('hidden');
+  switchAuthTab(tab);
+}
+function quickLogin(username, password) {
+  switchAuthTab('login');
+  document.getElementById('m-username').value = username;
+  document.getElementById('m-password').value = password;
+  const form = document.getElementById('modal-login-form');
+  if (form) form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+}
+
+function closeAuthModal(e) {
+  if (!e || e.target.id === 'auth-modal' || e.target.classList.contains('auth-close')) {
+    document.getElementById('auth-modal').classList.add('hidden');
+  }
+}
+function switchAuthTab(tab) {
+  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.getElementById('pane-login').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('pane-register').classList.toggle('hidden', tab !== 'register');
+  clearAlert();
+}
+function showAlert(msg, type = 'error') {
+  const el = document.getElementById('alert-box');
+  el.innerHTML = `<div class="alert alert-${type==='success'?'success':'danger'}" style="margin-bottom:1rem"><span>${type==='success'?'✓':'⚠'}</span><span>${msg}</span></div>`;
+}
+function clearAlert() { document.getElementById('alert-box').innerHTML = ''; }
+
+// ── Handle Login ──
+async function handleLogin(e) {
+  e.preventDefault(); clearAlert();
+  const username = document.getElementById('m-username').value.trim();
+  const password = document.getElementById('m-password').value;
+  const btn = document.getElementById('modal-login-btn');
+  
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Authenticating…';
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      sessionStorage.setItem('court_user', JSON.stringify(data.user));
+      showAlert(`Welcome, ${data.user.fullName}! Accessing court workspace…`, 'success');
+      let targetUrl = '/dashboard';
+      if (data.user.role === 'judge') targetUrl = '/judge';
+      else if (data.user.role === 'admin') targetUrl = '/admin';
+      else if (data.user.role === 'clerk') targetUrl = '/clerk';
+      else if (data.user.role === 'officer' || data.user.role === 'screening' || data.user.role === 'official') targetUrl = '/official';
+      else if (data.user.role === 'client' || data.user.role === 'litigant' || data.user.role === 'temporary') targetUrl = '/temporary';
+      setTimeout(() => window.location.href = targetUrl, 600);
+    } else {
+      showAlert(data.error || 'Authentication failed');
+    }
+  } catch (err) {
+    showAlert('Server unreachable. Please check backend status.');
+  } finally {
+    btn.disabled = false; btn.innerHTML = 'Authenticate &amp; Log In';
+  }
+}
+
+// ── Handle Register ──
+async function handleRegister(e) {
+  e.preventDefault(); clearAlert();
+  const body = {
+    licenseNumber: document.getElementById('m-reg-license').value.trim(),
+    fullName: document.getElementById('m-reg-fullname').value.trim(),
+    username: document.getElementById('m-reg-username').value.trim(),
+    password: document.getElementById('m-reg-password').value
+  };
+  const btn = document.getElementById('modal-register-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Verifying MoJ Record…';
+  try {
+    const res = await fetch(`${API}/auth/register-lawyer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showAlert('Advocate license verified & account created! Please sign in.', 'success');
+      setTimeout(() => switchAuthTab('login'), 1200);
+    } else {
+      showAlert(data.error || 'Registration failed');
+    }
+  } catch (err) {
+    showAlert('Server connection error.');
+  } finally {
+    btn.disabled = false; btn.innerHTML = 'Verify License & Register';
+  }
+}
+
+async function checkLicenseLive(val) {
+  val = (val || '').trim().toUpperCase();
+  const feedback = document.getElementById('license-live-feedback');
+  if (!val || val.length < 5) {
+    if (feedback) feedback.innerHTML = '';
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/licenses/verify/${encodeURIComponent(val)}`);
+    const data = await res.json();
+    if (res.ok && data.valid) {
+      feedback.innerHTML = `<span style="color:#16a34a;font-weight:700">✓ MoJ Verified: ${data.fullName} (${data.specialization} Law, ${data.tier})</span>`;
+      const nameInput = document.getElementById('m-reg-fullname');
+      if (nameInput && !nameInput.value) nameInput.value = data.fullName;
+    } else {
+      feedback.innerHTML = `<span style="color:#dc2626;font-weight:700">✕ ${data.error || data.message || 'License not found'}</span>`;
+    }
+  } catch {}
+}
+
+// ── Search Public Docket ──
+async function searchPublicDocket(e) {
+  e.preventDefault();
+  const q = document.getElementById('public-search-query').value.trim().toLowerCase();
+  const resBox = document.getElementById('search-results-box');
+  if (!q) return;
+
+  resBox.innerHTML = '<div style="padding:1rem;color:var(--navy-700)"><span class="spin"></span> Searching judicial docket...</div>';
+  try {
+    const res = await fetch(`${API}/cases`);
+    const cases = await res.json();
+    const found = cases.filter(c => 
+      c.caseId.toLowerCase().includes(q) || 
+      c.caseTitle.toLowerCase().includes(q) ||
+      (c.filer && c.filer.name.toLowerCase().includes(q))
+    );
+
+    if (found.length === 0) {
+      resBox.innerHTML = `<div class="alert alert-warn">No public case records matching "<strong>${q}</strong>" found in active registry.</div>`;
+      return;
+    }
+
+    resBox.innerHTML = `
+      <div style="background:var(--cream-50);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.25rem">
+        <div style="font-weight:700;font-size:0.875rem;margin-bottom:0.75rem;color:var(--navy-950)">Found ${found.length} case record(s):</div>
+        ${found.map(c => `
+          <div style="padding:0.75rem 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
+            <div>
+              <div style="font-weight:700;color:var(--navy-950);font-size:0.95rem">${c.caseTitle}</div>
+              <div style="font-size:0.78125rem;color:var(--navy-700);opacity:0.8">ID: <span class="mono">${c.caseId}</span> · Type: ${c.caseType} · Division: ${c.jurisdiction || 'Addis Ababa'}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <span class="badge ${c.status==='closed'?'badge-closed':'badge-active'}">${c.status.toUpperCase()}</span>
+              <button class="btn btn-sm btn-outline" onclick="openAuthModal('login')">View File</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } catch (err) {
+    resBox.innerHTML = `<div class="alert alert-danger">Error retrieving case records.</div>`;
+  }
+}
+
+// ── Load Q&A ──
+async function loadLandingData() {
+  try {
+    const res = await fetch(`${API}/qa/questions`);
+    const qs = await res.json();
+    const box = document.getElementById('qa-container');
+    if (qs.length > 0) {
+      box.innerHTML = qs.slice(0, 4).map(q => `
+        <div class="feature-card">
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
+            <span style="background:rgba(200,147,42,0.15);color:var(--gold-600);font-size:0.6875rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:var(--radius-full)">${q.category}</span>
+            <span style="font-size:0.75rem;color:var(--navy-700);opacity:0.6">${q.city}</span>
+          </div>
+          <h4 style="font-size:1.05rem;font-weight:700;color:var(--navy-950);margin-bottom:0.5rem">${q.title}</h4>
+          <p style="font-size:0.875rem;color:var(--navy-700);opacity:0.85;line-height:1.55;margin-bottom:1rem;flex:1">${q.description}</p>
+          <div style="border-top:1px solid var(--line);padding-top:0.75rem;display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:0.75rem;color:var(--navy-700);opacity:0.7">💬 ${q.answers ? q.answers.length : 0} Verified Answer(s)</span>
+            <button class="btn btn-ghost btn-sm" onclick="openAuthModal('login')">Read Answers →</button>
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadLandingData();
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('login') === 'true' || urlParams.get('auth') === 'login') {
+    openAuthModal('login');
+  }
+});
+</script>
+</body>
+</html>

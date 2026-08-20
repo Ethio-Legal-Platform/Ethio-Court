@@ -1,0 +1,20 @@
+[
+  {
+    "id": "cffcac2d-63fe-4109-b794-0ace1ee5235f",
+    "caseId": "CASE-1786820416223",
+    "event": "Hearing started",
+    "note": "",
+    "clerkId": "CLERK-001",
+    "nextHearingDate": "2026-08-15",
+    "recordedAt": "2026-08-15T19:49:31.288Z"
+  },
+  {
+    "id": "9f30a426-e133-49c8-9ea4-f8895f96e560",
+    "caseId": "CASE-1786816470851",
+    "event": "Hearing started",
+    "note": "",
+    "clerkId": "CLERK-001",
+    "nextHearingDate": "2026-08-15",
+    "recordedAt": "2026-08-15T19:50:24.192Z"
+  }
+]

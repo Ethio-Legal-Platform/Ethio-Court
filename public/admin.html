@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Federal Supreme Court of Ethiopia — Administration Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+    :root {
+      --fsc-navy-dark: #081426;
+      --fsc-navy-main: #0b1a30;
+      --fsc-navy-light: #152844;
+      --fsc-gold-main: #dfb15b;
+      --fsc-gold-dark: #c99738;
+      --fsc-gold-light: #fdf3dc;
+      --fsc-bg: #f4f6fa;
+      --fsc-card-bg: #ffffff;
+      --fsc-border: #e2e8f0;
+      --fsc-text-main: #0f172a;
+      --fsc-text-muted: #64748b;
+      --fsc-radius-lg: 10px;
+      --fsc-radius-md: 6px;
+      --fsc-shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --fsc-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    
+    html, body {
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden; /* Prevent page-level scroll */
+      background-color: var(--fsc-bg);
+      color: var(--fsc-text-main);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Dark Header */
+    .admin-top-header {
+      background: var(--fsc-navy-dark);
+      color: #ffffff;
+      height: 64px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.75rem;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .admin-header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .admin-seal-badge {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--fsc-gold-main);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fsc-gold-main);
+      background: var(--fsc-navy-main);
+      flex-shrink: 0;
+    }
+
+    .admin-header-court-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .admin-header-court-sub {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    .admin-header-workspace-tag {
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid rgba(255, 255, 255, 0.15);
+      padding-left: 1.15rem;
+      margin-left: 0.5rem;
+    }
+
+    .admin-workspace-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--fsc-gold-main);
+      line-height: 1.2;
+    }
+
+    .admin-workspace-sub {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+
+    .admin-header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .admin-date-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.785rem;
+      color: #cbd5e1;
+    }
+
+    .admin-date-pill div { display: flex; flex-direction: column; text-align: right; }
+    .admin-date-day { font-weight: 600; color: #ffffff; font-size: 0.8rem; }
+    .admin-date-sub { font-size: 0.7rem; color: #94a3b8; }
+
+    .admin-icon-btn {
+      position: relative;
+      background: transparent;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s ease;
+    }
+
+    .admin-icon-btn:hover { color: #ffffff; }
+
+    .admin-notif-bubble {
+      position: absolute;
+      top: -4px;
+      right: -6px;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Profile Pill & Dropdown */
+    .profile-dropdown-wrap {
+      position: relative;
+    }
+
+    .admin-profile-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      padding: 0.3rem 0.5rem;
+      border-radius: 20px;
+      transition: background 0.15s ease;
+      user-select: none;
+    }
+
+    .admin-profile-pill:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .admin-profile-meta {
+      display: flex;
+      flex-direction: column;
+      text-align: right;
+    }
+
+    .admin-profile-name { font-size: 0.8rem; font-weight: 700; color: #ffffff; line-height: 1.1; }
+    .admin-profile-role { font-size: 0.7rem; color: #94a3b8; }
+
+    /* Dropdown Menu Styles */
+    .profile-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 260px;
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: var(--fsc-radius-lg);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.18), 0 8px 10px -6px rgba(0,0,0,0.1);
+      display: none;
+      flex-direction: column;
+      padding: 0.5rem 0;
+      z-index: 1000;
+    }
+
+    .profile-dropdown-menu.show { display: flex; }
+
+    .dropdown-user-header {
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--fsc-border);
+    }
+
+    .dropdown-avatar-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--fsc-navy-main);
+      color: var(--fsc-gold-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      border: 1.5px solid var(--fsc-gold-main);
+      flex-shrink: 0;
+    }
+
+    .dropdown-user-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .dropdown-user-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--fsc-navy-main);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .dropdown-user-sub {
+      font-size: 0.72rem;
+      color: var(--fsc-text-muted);
+      margin-top: 1px;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: var(--fsc-border);
+      margin: 0.35rem 0;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 1.15rem;
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: #334155;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: all 0.15s ease;
+    }
+
+    .dropdown-item:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .dropdown-item svg {
+      color: #64748b;
+      flex-shrink: 0;
+    }
+
+    .dropdown-item:hover svg {
+      color: var(--fsc-navy-main);
+    }
+
+    .dropdown-logout {
+      color: #dc2626 !important;
+    }
+
+    .dropdown-logout svg {
+      color: #dc2626 !important;
+    }
+
+    .dropdown-logout:hover {
+      background: #fee2e2 !important;
+    }
+
+    /* Main App Layout */
+    .admin-layout-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 64px - 40px);
+      max-height: calc(100vh - 64px - 40px);
+      overflow: hidden; /* No outer scroll */
+    }
+
+    /* Left Sidebar (Fixed / No Scroll) */
+    .admin-sidebar {
+      width: 240px;
+      background: var(--fsc-navy-dark);
+      color: #94a3b8;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 0.75rem 0 0.5rem;
+      flex-shrink: 0;
+      height: 100%;
+      overflow-y: auto; /* Scrollable if items exceed height */
+      overflow-x: hidden;
+      user-select: none;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+
+    .admin-sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .admin-sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .admin-sidebar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    .admin-sidebar::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .admin-sidebar-section-title {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #64748b;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 1.15rem 0.2rem;
+    }
+
+    .admin-nav-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.05rem;
+    }
+
+    .admin-nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.38rem 1.15rem;
+      font-size: 0.785rem;
+      font-weight: 500;
+      color: #94a3b8;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      width: 100%;
+      border-left: 3px solid transparent;
+    }
+
+    .admin-nav-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .admin-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: #ffffff;
+    }
+
+    .admin-nav-btn.active {
+      color: var(--fsc-gold-main);
+      background: rgba(223, 177, 91, 0.08);
+      font-weight: 700;
+      border-left: 3px solid var(--fsc-gold-main);
+    }
+
+    /* Bottom System Clock Box */
+    .admin-sidebar-clock-box {
+      margin: 0.35rem 0.85rem 0;
+      padding: 0.55rem 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .admin-clock-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-clock-label { font-size: 0.65rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
+    .admin-clock-time  { font-size: 0.85rem; font-weight: 800; color: #ffffff; letter-spacing: 0.02em; }
+    .admin-clock-date  { font-size: 0.685rem; color: #94a3b8; }
+
+    /* Main Workspace (ONLY THIS AREA SCROLLS) */
+    .admin-main-content {
+      flex: 1;
+      padding: 1.35rem 1.85rem 2.5rem;
+      max-width: 1500px;
+      margin: 0 auto;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto; /* ONLY content scrolls! */
+      overflow-x: hidden;
+    }
+
+    .admin-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .admin-greeting-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--fsc-navy-main);
+      letter-spacing: -0.01em;
+    }
+
+    .admin-greeting-sub {
+      font-size: 0.825rem;
+      color: var(--fsc-text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .btn-export-dashboard {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 0.5rem 0.85rem;
+      font-size: 0.785rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      box-shadow: var(--fsc-shadow-sm);
+      transition: all 0.15s ease;
+    }
+
+    .btn-export-dashboard:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    /* 6 KPI Cards Grid */
+    .admin-kpi-grid-6 {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.85rem;
+      margin-bottom: 1.35rem;
+    }
+
+    @media (max-width: 1300px) {
+      .admin-kpi-grid-6 { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .admin-kpi-grid-6 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .admin-kpi-card {
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: var(--fsc-radius-lg);
+      padding: 0.9rem 1rem;
+      box-shadow: var(--fsc-shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .admin-kpi-top {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .admin-kpi-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .kpi-blue   { background: #e0f2fe; color: #0284c7; }
+    .kpi-green  { background: #dcfce7; color: #16a34a; }
+    .kpi-orange { background: #ffedd5; color: #ea580c; }
+    .kpi-purple { background: #f3e8ff; color: #9333ea; }
+    .kpi-navy   { background: #e2e8f0; color: #0b1a30; }
+    .kpi-teal   { background: #ccfbf1; color: #0d9488; }
+
+    .admin-kpi-label { font-size: 0.75rem; font-weight: 600; color: var(--fsc-text-muted); }
+    .admin-kpi-number { font-size: 1.35rem; font-weight: 800; color: var(--fsc-navy-main); line-height: 1.1; margin-top: 1px; }
+    .admin-kpi-delta { font-size: 0.685rem; font-weight: 700; color: #16a34a; margin-top: 4px; display: flex; align-items: center; gap: 0.2rem; }
+    .admin-kpi-delta.neutral { color: #64748b; }
+
+    /* 3-Column Grid Rows */
+    .admin-3col-row {
+      display: grid;
+      grid-template-columns: 1.7fr 1fr 1.05fr;
+      gap: 1.15rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .admin-bottom-row {
+      display: grid;
+      grid-template-columns: 2.7fr 1.05fr;
+      gap: 1.15rem;
+      margin-bottom: 1.35rem;
+    }
+
+    @media (max-width: 1200px) {
+      .admin-3col-row, .admin-bottom-row { grid-template-columns: 1fr; }
+    }
+
+    /* Panel Card */
+    .admin-panel-card {
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: var(--fsc-radius-lg);
+      padding: 1.1rem 1.25rem;
+      box-shadow: var(--fsc-shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+
+    .admin-panel-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--fsc-navy-main);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .admin-panel-link {
+      font-size: 0.785rem;
+      font-weight: 600;
+      color: #2563eb;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .admin-panel-link:hover { text-decoration: underline; }
+
+    /* System Health List */
+    .health-service-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .health-service-row:last-child { border-bottom: none; }
+
+    .health-service-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .health-service-title { font-size: 0.785rem; font-weight: 700; color: var(--fsc-navy-main); }
+    .health-service-sub   { font-size: 0.7rem; color: #64748b; }
+    .health-status-badge  { font-size: 0.72rem; font-weight: 700; color: #16a34a; display: flex; align-items: center; gap: 0.3rem; }
+
+    /* LEX-RATING Card */
+    .lex-metric-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .lex-metric-row:last-of-type { border-bottom: none; }
+    .lex-metric-left { display: flex; align-items: center; gap: 0.5rem; color: #475569; font-size: 0.785rem; font-weight: 500; }
+    .lex-metric-value { font-size: 0.8125rem; font-weight: 700; color: var(--fsc-navy-main); }
+
+    .btn-sync-now {
+      width: 100%;
+      padding: 0.65rem;
+      background: var(--fsc-navy-main);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--fsc-radius-md);
+      font-size: 0.785rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.75rem;
+      transition: background 0.15s ease;
+      text-align: center;
+    }
+
+    .btn-sync-now:hover { background: var(--fsc-navy-light); }
+
+    /* Tables */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.785rem;
+      text-align: left;
+    }
+
+    .admin-table th {
+      padding: 0.55rem 0.45rem;
+      font-weight: 700;
+      color: var(--fsc-text-muted);
+      border-bottom: 1px solid var(--fsc-border);
+      background: #f8fafc;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .admin-table td {
+      padding: 0.65rem 0.45rem;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--fsc-text-main);
+      vertical-align: middle;
+    }
+
+    .admin-table tr:hover td { background: #f8fafc; }
+
+    .case-link-bold {
+      color: #2563eb;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .case-link-bold:hover { text-decoration: underline; }
+
+    .btn-view-sm {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.725rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    .btn-view-sm:hover { background: #f1f5f9; }
+
+    /* Status Pills */
+    .status-pill {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .pill-blue   { background: #e0f2fe; color: #0369a1; }
+    .pill-green  { background: #dcfce7; color: #15803d; }
+    .pill-orange { background: #ffedd5; color: #c2410c; }
+    .pill-amber  { background: #fef3c7; color: #b45309; }
+    .pill-purple { background: #f3e8ff; color: #7e22ce; }
+
+    /* Stepper mini */
+    .mini-stepper {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .step-node {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #cbd5e1;
+    }
+
+    .step-node.active { background: #16a34a; }
+    .step-line { width: 10px; height: 2px; background: #e2e8f0; }
+
+    /* User Distribution Donut Layout */
+    .donut-layout-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0;
+    }
+
+    .donut-legend-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+    }
+
+    .legend-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .legend-item-left {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #475569;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .legend-count { font-weight: 700; color: var(--fsc-navy-main); }
+
+    /* System Notifications List */
+    .notif-feed-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .notif-feed-item:last-child { border-bottom: none; }
+
+    .notif-feed-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notif-feed-title { font-size: 0.785rem; font-weight: 700; color: var(--fsc-navy-main); line-height: 1.2; }
+    .notif-feed-time  { font-size: 0.685rem; color: #94a3b8; margin-top: 1px; }
+
+    /* Quick Actions 2x3 Grid */
+    .quick-actions-2x3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.55rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .action-tile-btn {
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: 6px;
+      padding: 0.75rem 0.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: var(--fsc-navy-main);
+      font-size: 0.725rem;
+      font-weight: 600;
+    }
+
+    .action-tile-btn:hover {
+      background: #f8fafc;
+      border-color: #2563eb;
+      color: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    .btn-maintenance-full {
+      width: 100%;
+      padding: 0.6rem;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      color: #334155;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-maintenance-full:hover {
+      background: #e2e8f0;
+      color: var(--fsc-navy-main);
+    }
+
+    /* Institutional Footer */
+    .admin-institutional-footer {
+      background: var(--fsc-navy-dark);
+      color: #94a3b8;
+      font-size: 0.75rem;
+      height: 40px;
+      padding: 0 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .footer-security-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Modal System */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(11, 26, 48, 0.65);
+      backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+      z-index: 1000; padding: 1rem;
+    }
+    .modal-box {
+      background: #ffffff; border-radius: var(--fsc-radius-lg); max-width: 650px; width: 100%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); overflow: hidden;
+    }
+    .modal-box-header {
+      padding: 1.15rem 1.35rem; border-bottom: 1px solid var(--fsc-border);
+      display: flex; justify-content: space-between; align-items: center; background: #f8fafc;
+    }
+    .modal-box-title { font-size: 1rem; font-weight: 800; color: var(--fsc-navy-main); }
+    .modal-box-body { padding: 1.35rem; max-height: 80vh; overflow-y: auto; }
+    .modal-close-btn { background: transparent; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer; }
+    .modal-close-btn:hover { color: #0f172a; }
+  </style>
+</head>
+<body onclick="handleAdminGlobalClick(event)">
+
+  <!-- Top Dark Header -->
+  <header class="admin-top-header">
+    <div class="admin-header-left">
+      <div class="admin-seal-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+      </div>
+      <div>
+        <div class="admin-header-court-title">Federal Supreme Court of Ethiopia</div>
+        <div class="admin-header-court-sub">የኢትዮጵያ ፌዴራል ጠቅላይ ፍርድ ቤት</div>
+      </div>
+      <div class="admin-header-workspace-tag">
+        <span class="admin-workspace-label">Administration Dashboard</span>
+        <span class="admin-workspace-sub">System Overview &amp; Management</span>
+      </div>
+    </div>
+
+    <div class="admin-header-right">
+      <div class="admin-date-pill">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg>
+        <div>
+          <span class="admin-date-day">May 24, 2026</span>
+          <span class="admin-date-sub">Wednesday</span>
+        </div>
+      </div>
+
+      <button class="admin-icon-btn" title="System Notifications" onclick="switchAdminView('notifications')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="admin-notif-bubble">8</span>
+      </button>
+
+      <button class="admin-icon-btn" title="Messages" onclick="openAdminContactModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        <span class="admin-notif-bubble" style="background:#ef4444">3</span>
+      </button>
+
+      <!-- Profile Dropdown Trigger -->
+      <div class="profile-dropdown-wrap">
+        <div class="admin-profile-pill" id="admin-profile-pill-trigger" onclick="toggleAdminProfileDropdown(event)">
+          <div class="admin-avatar-circle" id="admin-avatar-initials">AU</div>
+          <div class="admin-profile-meta">
+            <span class="admin-profile-name" id="top-admin-name">Admin User</span>
+            <span class="admin-profile-role" id="top-admin-role">Super Administrator</span>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+
+        <!-- Profile Dropdown Menu -->
+        <div class="profile-dropdown-menu" id="admin-profile-dropdown-menu">
+          <div class="dropdown-user-header">
+            <div class="dropdown-avatar-circle" id="admin-dropdown-avatar">AU</div>
+            <div class="dropdown-user-info">
+              <div class="dropdown-user-name" id="admin-dropdown-fullname">Admin User</div>
+              <div class="dropdown-user-sub" id="admin-dropdown-sub">Super Administrator · System Root</div>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item" onclick="openAdminEditProfileModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+            <span>Edit Profile</span>
+          </button>
+          <button class="dropdown-item" onclick="openAdminSettingsModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>System Settings</span>
+          </button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item dropdown-logout" onclick="logoutAdmin()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout Body (Sidebar + Content) -->
+  <div class="admin-layout-body">
+
+    <!-- Left Dark Sidebar (Fixed - Never scrolls) -->
+    <aside class="admin-sidebar">
+      <div>
+        <div class="admin-sidebar-section-title">Main Navigation</div>
+        <div class="admin-nav-group">
+          <button class="admin-nav-btn active" onclick="switchAdminView('dashboard')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+              <span>Dashboard</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('cases_management')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+              <span>Cases Management</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('user_management')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>User &amp; Role Management</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('advocates_licenses')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="14" x="3" y="5" rx="2"/><path d="M3 10h18"/><path d="M7 15h.01"/><path d="M11 15h2"/></svg>
+              <span>Advocates &amp; Licenses</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('judges_staff')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 13-7.5 7.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L11 10"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/></svg>
+              <span>Judges &amp; Staff</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('court_divisions')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>
+              <span>Court Divisions</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('hearing_calendar')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg>
+              <span>Hearing Calendar</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('documents_evidence')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+              <span>Documents &amp; Evidence</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('appeals_management')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 8 12 12 16"/><line x1="16" x2="8" y1="12" y2="12"/></svg>
+              <span>Appeals Management</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('ratings_evaluation')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span>Ratings &amp; Evaluation</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('notifications')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              <span>Notifications (SMS/Email)</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('reports_analytics')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+              <span>Reports &amp; Analytics</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="admin-sidebar-section-title" style="margin-top:0.4rem">System Management</div>
+        <div class="admin-nav-group">
+          <button class="admin-nav-btn" onclick="switchAdminView('moj_registry')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
+              <span>MoJ Registry (Licenses)</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('lex_rating')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              <span>LEX-RATING Integration</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('webhook_monitor')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M6 9v12"/></svg>
+              <span>Webhook Monitor</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('sms_gateway')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>SMS Gateway Logs</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('audit_logs')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
+              <span>Audit Logs</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="switchAdminView('system_health')">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              <span>System Health</span>
+            </div>
+          </button>
+          <button class="admin-nav-btn" onclick="openAdminSettingsModal()">
+            <div class="admin-nav-btn-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Settings</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom System Clock Box -->
+      <div class="admin-sidebar-clock-box">
+        <div class="admin-clock-left">
+          <span class="admin-clock-label">System Time</span>
+          <span class="admin-clock-time" id="sidebar-live-clock">10:45:32 AM</span>
+          <span class="admin-clock-date" id="sidebar-live-date">May 24, 2026</span>
+        </div>
+        <div style="color:#64748b">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace (ONLY THIS AREA SCROLLS) -->
+    <main class="admin-main-content">
+      <div id="dynamic-admin-workspace">
+        <!-- Rendered via admin.js -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Institutional Footer -->
+  <footer class="admin-institutional-footer">
+    <div class="footer-security-tag">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Secure. Transparent. Accessible Justice.</span>
+    </div>
+    <div>
+      &copy; 2026 Federal Supreme Court of Ethiopia. All rights reserved.
+    </div>
+    <div>
+      Version 1.0.0
+    </div>
+  </footer>
+
+  <!-- Universal Modal System -->
+  <div class="modal-backdrop" id="universal-admin-modal">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <div class="modal-box-title" id="admin-modal-title">Admin Action</div>
+        <button class="modal-close-btn" onclick="closeAdminModal()">✕</button>
+      </div>
+      <div class="modal-box-body" id="admin-modal-body">
+        <!-- Injected modal content -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

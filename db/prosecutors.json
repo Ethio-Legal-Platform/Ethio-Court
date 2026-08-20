@@ -1,0 +1,28 @@
+[
+  {
+    "id": "PROSECUTOR-001",
+    "username": "prosecutor.bereket",
+    "password": "prosecutor123",
+    "fullName": "Senior Public Prosecutor Bereket Hailu",
+    "email": "bereket.prosecution@moj.gov.et",
+    "phone": "0911456789",
+    "licenseNumber": "PROS-2001",
+    "specialization": "Financial Crimes & State Prosecution",
+    "role": "prosecutor",
+    "department": "Federal Ministry of Justice — Directorate of Public Prosecution",
+    "activeCasesCount": 3
+  },
+  {
+    "id": "PROSECUTOR-002",
+    "username": "prosecutor.helen",
+    "password": "prosecutor123",
+    "fullName": "Public Prosecutor Helen Wolde",
+    "email": "helen.prosecution@moj.gov.et",
+    "phone": "0922567890",
+    "licenseNumber": "PROS-2002",
+    "specialization": "General Criminal & Constitutional Matters",
+    "role": "prosecutor",
+    "department": "Federal High Court Prosecution Bureau",
+    "activeCasesCount": 2
+  }
+]

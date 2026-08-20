@@ -1,0 +1,337 @@
+[
+  {
+    "licenseNumber": "LAW-1001",
+    "fullName": "Kebede Haile Mariam",
+    "status": "ACTIVE",
+    "issueDate": "2015-04-10",
+    "expiryDate": "2030-04-10",
+    "specialization": "Criminal",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1002",
+    "fullName": "Tigist Alemu Bekele",
+    "status": "ACTIVE",
+    "issueDate": "2016-08-22",
+    "expiryDate": "2031-08-22",
+    "specialization": "Corporate",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1003",
+    "fullName": "Dawit Girma Tadesse",
+    "status": "ACTIVE",
+    "issueDate": "2017-03-15",
+    "expiryDate": "2032-03-15",
+    "specialization": "Civil",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1004",
+    "fullName": "Mekdes Tesfaye Wolde",
+    "status": "ACTIVE",
+    "issueDate": "2018-06-01",
+    "expiryDate": "2033-06-01",
+    "specialization": "Family",
+    "tier": "Federal First Instance"
+  },
+  {
+    "licenseNumber": "LAW-1005",
+    "fullName": "Yohannes Bekele Asrat",
+    "status": "ACTIVE",
+    "issueDate": "2014-11-18",
+    "expiryDate": "2029-11-18",
+    "specialization": "Civil",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1006",
+    "fullName": "Selam Tadesse Negash",
+    "status": "ACTIVE",
+    "issueDate": "2019-01-07",
+    "expiryDate": "2034-01-07",
+    "specialization": "Criminal",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1007",
+    "fullName": "Biruk Mengesha Haile",
+    "status": "ACTIVE",
+    "issueDate": "2016-05-30",
+    "expiryDate": "2031-05-30",
+    "specialization": "Corporate",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1008",
+    "fullName": "Hiwot Negash Tesfaye",
+    "status": "ACTIVE",
+    "issueDate": "2020-09-12",
+    "expiryDate": "2035-09-12",
+    "specialization": "Family",
+    "tier": "Federal First Instance"
+  },
+  {
+    "licenseNumber": "LAW-1009",
+    "fullName": "Abrham Wolde Selassie",
+    "status": "ACTIVE",
+    "issueDate": "2013-07-25",
+    "expiryDate": "2028-07-25",
+    "specialization": "Criminal",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1010",
+    "fullName": "Fikirte Demissie Assefa",
+    "status": "ACTIVE",
+    "issueDate": "2021-02-14",
+    "expiryDate": "2036-02-14",
+    "specialization": "Corporate",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1011",
+    "fullName": "Solomon Desta Tsegaye",
+    "status": "ACTIVE",
+    "issueDate": "2015-10-03",
+    "expiryDate": "2030-10-03",
+    "specialization": "Civil",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1012",
+    "fullName": "Rahel Mekonnen Girma",
+    "status": "ACTIVE",
+    "issueDate": "2018-12-20",
+    "expiryDate": "2033-12-20",
+    "specialization": "Family",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1013",
+    "fullName": "Amanuel Getachew Belay",
+    "status": "ACTIVE",
+    "issueDate": "2015-02-11",
+    "expiryDate": "2030-02-11",
+    "specialization": "Labour",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1014",
+    "fullName": "Bethlehem Sisay Kassa",
+    "status": "ACTIVE",
+    "issueDate": "2013-09-19",
+    "expiryDate": "2028-09-19",
+    "specialization": "Land",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1015",
+    "fullName": "Ephrem Hailu Berhe",
+    "status": "ACTIVE",
+    "issueDate": "2017-06-25",
+    "expiryDate": "2032-06-25",
+    "specialization": "Tax",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1016",
+    "fullName": "Meron Worku Asfaw",
+    "status": "ACTIVE",
+    "issueDate": "2014-04-14",
+    "expiryDate": "2029-04-14",
+    "specialization": "Banking",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1017",
+    "fullName": "Natnael Fikru Zeleke",
+    "status": "ACTIVE",
+    "issueDate": "2019-11-05",
+    "expiryDate": "2034-11-05",
+    "specialization": "Intellectual Property",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1018",
+    "fullName": "Sosina Tamrat Desta",
+    "status": "ACTIVE",
+    "issueDate": "2016-10-18",
+    "expiryDate": "2031-10-18",
+    "specialization": "Immigration",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1019",
+    "fullName": "Kassahun Melaku Tefera",
+    "status": "ACTIVE",
+    "issueDate": "2015-08-30",
+    "expiryDate": "2030-08-30",
+    "specialization": "Labour",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1020",
+    "fullName": "Hirut Gebremedhin Tadesse",
+    "status": "ACTIVE",
+    "issueDate": "2011-03-12",
+    "expiryDate": "2026-03-12",
+    "specialization": "Land",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1021",
+    "fullName": "Abel Mesfin Kassa",
+    "status": "ACTIVE",
+    "issueDate": "2016-01-18",
+    "expiryDate": "2031-01-18",
+    "specialization": "Constitutional & Admin",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1022",
+    "fullName": "Genet Teshome Bekele",
+    "status": "ACTIVE",
+    "issueDate": "2017-09-05",
+    "expiryDate": "2032-09-05",
+    "specialization": "Environmental & Energy",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1023",
+    "fullName": "Tewodros Aklilu Mengistu",
+    "status": "ACTIVE",
+    "issueDate": "2014-05-14",
+    "expiryDate": "2029-05-14",
+    "specialization": "Construction & Real Estate",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1024",
+    "fullName": "Semira Mohammed Ali",
+    "status": "ACTIVE",
+    "issueDate": "2018-04-20",
+    "expiryDate": "2033-04-20",
+    "specialization": "International Arbitration",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1025",
+    "fullName": "Binyam Girma Wolde",
+    "status": "ACTIVE",
+    "issueDate": "2019-07-11",
+    "expiryDate": "2034-07-11",
+    "specialization": "Cyber & Fintech Law",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1026",
+    "fullName": "Tsion Zewdu Lemma",
+    "status": "ACTIVE",
+    "issueDate": "2015-12-01",
+    "expiryDate": "2030-12-01",
+    "specialization": "Maritime & Logistics",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "LAW-1027",
+    "fullName": "Mesfin Alemayehu Desta",
+    "status": "ACTIVE",
+    "issueDate": "2017-02-28",
+    "expiryDate": "2032-02-28",
+    "specialization": "Insurance & Torts",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-1028",
+    "fullName": "Yodit Negusse Haile",
+    "status": "ACTIVE",
+    "issueDate": "2020-08-15",
+    "expiryDate": "2035-08-15",
+    "specialization": "Commercial Dispute",
+    "tier": "Federal First Instance"
+  },
+  {
+    "licenseNumber": "LAW-1029",
+    "fullName": "Hailemariam Dessalegn",
+    "status": "SUSPENDED",
+    "issueDate": "2012-05-10",
+    "expiryDate": "2027-05-10",
+    "specialization": "Civil Litigation",
+    "tier": "Federal High Court",
+    "disciplinaryReason": "Suspended pending Bar Ethics & Conduct Investigation (File #ET-2026-901)"
+  },
+  {
+    "licenseNumber": "LAW-1030",
+    "fullName": "Almaz Tefera Berhanu",
+    "status": "EXPIRED",
+    "issueDate": "2010-01-15",
+    "expiryDate": "2025-01-15",
+    "specialization": "Family & Succession",
+    "tier": "Federal First Instance",
+    "disciplinaryReason": "Statutory triennial license renewal lapsed."
+  },
+  {
+    "licenseNumber": "LAW-2001",
+    "fullName": "Public Defender Dawit Kebede",
+    "status": "ACTIVE",
+    "issueDate": "2016-03-01",
+    "expiryDate": "2031-03-01",
+    "specialization": "Public Defense & Criminal",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "LAW-2002",
+    "fullName": "Public Defender Marta Mengistu",
+    "status": "ACTIVE",
+    "issueDate": "2017-10-12",
+    "expiryDate": "2032-10-12",
+    "specialization": "Indigent Defense & Civil Rights",
+    "tier": "Federal First Instance"
+  },
+  {
+    "licenseNumber": "LAW-2003",
+    "fullName": "Public Defender Henok Tilahun Assefa",
+    "status": "ACTIVE",
+    "issueDate": "2018-05-20",
+    "expiryDate": "2033-05-20",
+    "specialization": "Juvenile & Human Rights",
+    "tier": "Federal First Instance"
+  },
+  {
+    "licenseNumber": "LAW-2004",
+    "fullName": "Public Defender Aster Kifle Yohannes",
+    "status": "ACTIVE",
+    "issueDate": "2015-09-08",
+    "expiryDate": "2030-09-08",
+    "specialization": "Constitutional Defense",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "PROS-2001",
+    "fullName": "Senior Prosecutor Bereket Hailu",
+    "status": "ACTIVE",
+    "issueDate": "2015-11-05",
+    "expiryDate": "2030-11-05",
+    "specialization": "Major Crimes & State Prosecution",
+    "tier": "Federal Supreme Court"
+  },
+  {
+    "licenseNumber": "PROS-2002",
+    "fullName": "Public Prosecutor Helen Wolde",
+    "status": "ACTIVE",
+    "issueDate": "2018-07-18",
+    "expiryDate": "2028-07-18",
+    "specialization": "Economic & Financial Crimes",
+    "tier": "Federal High Court"
+  },
+  {
+    "licenseNumber": "PROS-2003",
+    "fullName": "Public Prosecutor Tamirat Alemayehu",
+    "status": "ACTIVE",
+    "issueDate": "2019-04-12",
+    "expiryDate": "2029-04-12",
+    "specialization": "Organized Crime Division",
+    "tier": "Federal High Court"
+  }
+]

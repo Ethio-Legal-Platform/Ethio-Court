@@ -1,0 +1,25 @@
+[
+  {
+    "id": "CLERK-001",
+    "username": "clerk.kalkidan",
+    "password": "clerk123",
+    "fullName": "Kalkidan Mengistu",
+    "role": "clerk",
+    "title": "Court Clerk",
+    "branch": "Federal Supreme Court",
+    "division": "Court Registry & Case Administration",
+    "email": "kalkidan.registry@courts.gov.et",
+    "phone": "+251 11 551 7700 (Ext 22)"
+  },
+  {
+    "id": "CLERK-002",
+    "username": "clerk.ibrahim",
+    "password": "clerk123",
+    "fullName": "Court Clerk Ibrahim Tesfaye",
+    "role": "clerk",
+    "title": "Court Clerk",
+    "branch": "Federal High Court — Lideta",
+    "email": "clerk@courts.gov.et",
+    "phone": "0911223305"
+  }
+]

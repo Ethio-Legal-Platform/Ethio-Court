@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>File a Case — Federal Court System</title>
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+    body{background:var(--cream-50)}
+    .file-hero{background:var(--navy-950);padding:3rem 1.5rem;text-align:center;position:relative;overflow:hidden}
+    .file-hero::before{content:'';position:absolute;top:-4rem;left:50%;transform:translateX(-50%);width:30rem;height:30rem;background:rgba(200,147,42,.1);border-radius:50%;filter:blur(48px)}
+    .file-hero-inner{position:relative;z-index:1;max-width:42rem;margin:0 auto}
+    .file-hero-badge{display:inline-flex;align-items:center;gap:.375rem;padding:.375rem .875rem;background:rgba(245,239,226,.08);border:1px solid rgba(245,239,226,.15);border-radius:var(--radius-full);font-size:.8125rem;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.05em;font-weight:500;margin-bottom:1rem}
+    .file-hero-title{font-family:var(--font-display);font-size:2rem;font-weight:600;color:white;margin-bottom:.75rem;line-height:1.2}
+    .file-hero-sub{font-size:1rem;color:rgba(255,255,255,.55);line-height:1.7}
+    .form-container{max-width:52rem;margin:0 auto;padding:3rem 1.5rem 5rem}
+    .step-bar{display:flex;align-items:center;gap:.5rem;margin-bottom:2.5rem;flex-wrap:wrap}
+    .step{display:flex;align-items:center;gap:.5rem;font-size:.875rem;color:var(--navy-700);opacity:.4;font-weight:500}
+    .step.active{opacity:1;color:var(--navy-900)}
+    .step.done{opacity:.7;color:var(--green-500)}
+    .step-num{width:1.75rem;height:1.75rem;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+    .step-sep{flex:1;height:1px;background:var(--line);min-width:1.5rem}
+    .section-card{background:white;border:1px solid var(--line);border-radius:var(--radius-xl);padding:1.75rem;margin-bottom:1.5rem}
+    .section-title{font-family:var(--font-display);font-size:1.125rem;font-weight:600;color:var(--navy-950);margin-bottom:1.25rem;display:flex;align-items:center;gap:.625rem}
+    .section-title-icon{width:2rem;height:2rem;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;background:rgba(200,147,42,.1);border:1px solid rgba(200,147,42,.25);font-size:.875rem;flex-shrink:0}
+    .otp-box{border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem;background:var(--cream-50)}
+    .otp-verified{display:flex;align-items:center;gap:.5rem;color:var(--green-500);font-weight:600;font-size:.9375rem}
+    .otp-input-big{text-align:center;font-family:var(--font-mono);font-size:1.75rem;font-weight:500;letter-spacing:.2em}
+    .success-screen{text-align:center;padding:3rem 1.5rem}
+    .success-icon{font-size:4rem;margin-bottom:1.5rem}
+    .success-title{font-family:var(--font-display);font-size:1.75rem;font-weight:600;color:var(--navy-950);margin-bottom:.75rem}
+    .success-case-id{font-family:var(--font-mono);font-size:1.25rem;color:var(--gold-500);background:rgba(200,147,42,.08);border:1px solid rgba(200,147,42,.3);border-radius:var(--radius-md);padding:.75rem 1.5rem;display:inline-block;margin:.75rem 0}
+  </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="navbar-logo" href="/">
+      <div class="navbar-logo-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
+      <div>
+        <div class="navbar-logo-name">Federal Court System</div>
+        <div class="navbar-logo-sub">Ministry of Justice</div>
+      </div>
+    </a>
+    <div class="navbar-spacer"></div>
+    <a href="/?login=true" class="btn btn-primary" style="padding:0.45rem 0.9rem;font-size:0.8125rem;display:inline-flex;align-items:center;gap:0.35rem;text-decoration:none" onclick="openAuthModal('login'); return false;">
+      <span>🔐 Log In</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="file-hero">
+  <div class="file-hero-inner">
+    <div class="file-hero-badge">Official Court Filing Portal</div>
+    <h1 class="file-hero-title">File a Court Case</h1>
+    <p class="file-hero-sub">
+      Submit your claim or petition to the Federal Courts of Ethiopia. Accessible to all citizens, advocates, and individuals filing in a personal capacity. Verify your phone number via SMS to receive your secure Case PIN and track judicial hearings.
+    </p>
+  </div>
+</div>
+
+<div class="form-container">
+  <!-- Alert area -->
+  <div id="alert-box"></div>
+
+  <!-- Step bar -->
+  <div class="step-bar" id="step-bar" role="list">
+    <div class="step active" id="step-1" role="listitem"><div class="step-num">1</div>Verify Phone</div>
+    <div class="step-sep"></div>
+    <div class="step" id="step-2" role="listitem"><div class="step-num">2</div>Filer Details</div>
+    <div class="step-sep"></div>
+    <div class="step" id="step-3" role="listitem"><div class="step-num">3</div>Defendant Details</div>
+    <div class="step-sep"></div>
+    <div class="step" id="step-4" role="listitem"><div class="step-num">4</div>Case Information</div>
+    <div class="step-sep"></div>
+    <div class="step" id="step-5" role="listitem"><div class="step-num">5</div>Evidence &amp; Submit</div>
+  </div>
+
+  <!-- ── PANE 1: OTP Verification ── -->
+  <div id="pane-1">
+    <div class="section-card">
+      <div class="section-title"><div class="section-title-icon" style="font-weight:700">1</div>Phone Verification</div>
+
+      <div class="alert alert-info">
+        <span>ℹ</span>
+        <span>A 6-digit verification code will be sent to your phone via SMS. This prevents fraudulent or anonymous case filings.</span>
+      </div>
+
+      <div id="otp-request-form">
+        <div class="form-group">
+          <label class="form-label" for="otp-phone">Ethiopian Phone Number</label>
+          <input class="form-input" id="otp-phone" type="tel" placeholder="e.g. 0911234567" autocomplete="tel"/>
+          <p class="form-helper">Ethio Telecom or Safaricom Ethiopia numbers. We will send a code via SMS.</p>
+        </div>
+        <button class="btn btn-primary btn-lg" id="otp-request-btn" onclick="requestOTP()">
+          Send Verification Code
+        </button>
+      </div>
+
+      <div id="otp-verify-form" class="hidden">
+        <div class="otp-box">
+          <div class="form-group" style="margin-bottom:.75rem">
+            <label class="form-label" for="otp-code">Enter 6-Digit Code</label>
+            <input class="form-input otp-input-big" id="otp-code" type="text" inputmode="numeric" maxlength="6" placeholder="• • • • • •"/>
+            <p class="form-helper" id="otp-phone-hint"></p>
+          </div>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+            <button class="btn btn-gold btn-lg" id="otp-verify-btn" onclick="verifyOTP()">Verify Code</button>
+            <button class="btn btn-ghost" onclick="resetOTP()">← Change Number</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="otp-done" class="hidden">
+        <div class="otp-verified">✓ Phone verified! Proceeding to case form…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PANE 2: Filer Details ── -->
+  <div id="pane-2" class="hidden">
+    <div class="section-card">
+      <div class="section-title"><div class="section-title-icon" style="font-weight:700">2</div>Filer (Plaintiff) Information</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="f-name">Filer Full Name *</label>
+          <input class="form-input" id="f-name" type="text" autocomplete="name" placeholder="Your full legal name" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-phone">Filer Phone Number *</label>
+          <input class="form-input" id="f-phone" type="tel" readonly style="background:var(--cream-50)"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="f-email">Email Address</label>
+          <input class="form-input" id="f-email" type="email" autocomplete="email" placeholder="For case notifications"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-role">Filing As *</label>
+          <select class="form-select" id="f-role" onchange="handleRoleChange()">
+            <option value="individual">Individual / Plaintiff (የግል ከሳሽ)</option>
+            <option value="prosecutor">Prosecutor (Criminal Case / የወንጀል ዓቃቤ ሕግ)</option>
+            <option value="organization">Organization / Company (ድርጅት / ማኅበር)</option>
+            <option value="lawyer_on_behalf">Lawyer Filing on behalf of Client (ጠበቃ)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-address">Filer Address / Residence</label>
+        <input class="form-input" id="f-address" type="text" placeholder="City, Sub-City, Woreda/Kebele"/>
+      </div>
+
+      <!-- Client info — shown if filing as lawyer on behalf -->
+      <div id="client-section" class="hidden" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line)">
+        <h4 style="font-weight:600;color:var(--navy-900);margin-bottom:.875rem">Represented Client Information</h4>
+        <div class="alert alert-warn"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></span><span>You are filing as counsel. Ensure you have power of attorney or client authorization.</span></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="c-name">Client Full Name *</label>
+            <input class="form-input" id="c-name" placeholder="Client's legal name"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="c-phone">Client Phone *</label>
+            <input class="form-input" id="c-phone" type="tel" placeholder="0911234567"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="c-id">Client National ID Number</label>
+          <input class="form-input" id="c-id" placeholder="ID number (Kebele ID, Passport, etc.)"/>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:.75rem;margin-top:1rem">
+        <button class="btn btn-ghost" onclick="goToPane(1)">← Back</button>
+        <button class="btn btn-primary btn-lg" onclick="goToPane(3)">Continue to Defendant Details →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PANE 3: Defendant Details ── -->
+  <div id="pane-3" class="hidden">
+    <div class="section-card">
+      <div class="section-title"><div class="section-title-icon" style="font-weight:700">3</div>Defendant / Accused Information</div>
+      <div class="alert alert-info">
+        <span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></span>
+        <span>Official Legal Summons: The defendant will receive an automated court summons via SMS with temporary credentials to access their defense portal. Accurate contact details are mandatory.</span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="d-name">Defendant Full Name / Organization *</label>
+          <input class="form-input" id="d-name" type="text" placeholder="e.g. Abebe Kebede or Ethio Infra PLC" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="d-phone">Defendant Mobile Phone Number *</label>
+          <input class="form-input" id="d-phone" type="tel" placeholder="e.g. 0911223344" required/>
+          <p class="form-helper">An official SMS court summons with defense portal PIN will be sent to this phone number.</p>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="d-type">Defendant Legal Classification *</label>
+          <select class="form-select" id="d-type">
+            <option value="individual">Individual Citizen / Resident (የግል ግለሰብ)</option>
+            <option value="private_company">Private Enterprise / PLC / Share Company (የንግድ ድርጅት)</option>
+            <option value="government_agency">Public Institution / Government Agency (የመንግሥት መሥሪያ ቤት)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="d-email">Defendant Email Address (Optional)</label>
+          <input class="form-input" id="d-email" type="email" placeholder="e.g. defendant@domain.com"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="d-address">Defendant Physical Residence / Address *</label>
+        <input class="form-input" id="d-address" type="text" placeholder="City (e.g. Addis Ababa), Sub-City (e.g. Lideta), Woreda/Kebele, House Number / Landmark" required/>
+        <p class="form-helper">Required for Court Process Servers (ጥሪ አድራሽ) if physical court summons delivery is needed.</p>
+      </div>
+
+      <div style="display:flex;gap:.75rem;margin-top:1rem">
+        <button class="btn btn-ghost" onclick="goToPane(2)">← Back</button>
+        <button class="btn btn-primary btn-lg" onclick="goToPane(4)">Continue to Case Information →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PANE 4: Case Information ── -->
+  <div id="pane-4" class="hidden">
+    <div class="section-card">
+      <div class="section-title"><div class="section-title-icon" style="font-weight:700">4</div>Case Information &amp; Statement of Claim</div>
+      <div class="form-group">
+        <label class="form-label" for="c-title">Case Title / Matter *</label>
+        <input class="form-input" id="c-title" type="text" placeholder="e.g. Chala v. Abebe Kebede — Commercial Supply Breach" required/>
+        <p class="form-helper">Use a clear title summarising the dispute matter.</p>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="c-court-level">Target Court Level *</label>
+          <select class="form-select" id="c-court-level" required>
+            <option value="Federal First Instance Court">Federal First Instance Court (የፌዴራል የመጀመሪያ ደረጃ ፍርድ ቤት)</option>
+            <option value="Federal High Court" selected>Federal High Court (የፌዴራል ከፍተኛ ፍርድ ቤት)</option>
+            <option value="Federal Supreme Court">Federal Supreme Court (የፌዴራል ጠቅላይ ፍርድ ቤት)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="c-type">Case Type *</label>
+          <select class="form-select" id="c-type" required>
+            <option value="Civil Dispute">Civil Dispute (የፍትሐብሔር ክርክር)</option>
+            <option value="Commercial & Contract" selected>Commercial &amp; Contract (የንግድ እና የውል ክርክር)</option>
+            <option value="Criminal Proceedings">Criminal Proceedings (የወንጀል ክስ)</option>
+            <option value="Labor & Employment">Labor &amp; Employment (የአሠሪና ሠራተኛ ክርክር)</option>
+            <option value="Family & Succession">Family &amp; Succession (የቤተሰብና የውርስ ጉዳይ)</option>
+            <option value="Constitutional & Administrative">Constitutional &amp; Administrative (የሕገ-መንግሥትና አስተዳደራዊ)</option>
+            <option value="Customs & Revenue">Customs &amp; Revenue (የጉምሩክና ገቢዎች ክርክር)</option>
+            <option value="Small Claims">Small Claims Procedure (አነስተኛ ክርክር)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="c-jurisdiction">Court Division / Location *</label>
+          <select class="form-select" id="c-jurisdiction" required>
+            <option value="Addis Ababa - Lideta Division">Addis Ababa - Lideta (Civil &amp; Commercial)</option>
+            <option value="Addis Ababa - Arada Division">Addis Ababa - Arada (Criminal)</option>
+            <option value="Addis Ababa - Kirkos Division">Addis Ababa - Kirkos Division</option>
+            <option value="Addis Ababa - Bole Division">Addis Ababa - Bole Division</option>
+            <option value="Addis Ababa - Yeka Division">Addis Ababa - Yeka Division</option>
+            <option value="Addis Ababa - Nifas Silk Division">Addis Ababa - Nifas Silk Lafto</option>
+            <option value="Dire Dawa Circuit">Dire Dawa Circuit Bench</option>
+            <option value="Hawassa Circuit">Hawassa Federal Circuit</option>
+            <option value="Adama Circuit">Adama Federal Circuit</option>
+            <option value="Bahir Dar Circuit">Bahir Dar Federal Circuit</option>
+            <option value="Mekelle Circuit">Mekelle Federal Circuit</option>
+            <option value="Jimma Circuit">Jimma Federal Circuit</option>
+            <option value="Gondar Circuit">Gondar Federal Circuit</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="c-incident-date">Incident / Filing Date</label>
+          <input class="form-input" id="c-incident-date" type="date"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="c-incident-loc">Incident Location</label>
+        <input class="form-input" id="c-incident-loc" type="text" placeholder="Where the incident occurred"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="c-desc">Case Description &amp; Statement of Claim *</label>
+        <textarea class="form-textarea" id="c-desc" rows="7" placeholder="Provide a detailed and factual account of the dispute, what happened, the legal basis of your claim, and the specific relief or financial judgment you are seeking." required style="min-height:10rem"></textarea>
+        <p class="form-helper">Minimum 50 characters. Factual accuracy is required under penalty of law.</p>
+      </div>
+
+      <div style="display:flex;gap:.75rem;margin-top:.5rem">
+        <button class="btn btn-ghost" onclick="goToPane(3)">← Back</button>
+        <button class="btn btn-primary btn-lg" onclick="goToPane(5)">Continue to Evidence &amp; Submit →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PANE 5: Evidence & Submit ── -->
+  <div id="pane-5" class="hidden">
+    <div class="section-card">
+      <div class="section-title"><div class="section-title-icon" style="font-weight:700">5</div>Evidence &amp; Supporting Documents</div>
+
+      <div class="alert alert-info">
+        <span>🔒</span>
+        <span>Two-Stage Disclosure: All uploaded evidence enters Stage 1 (Pending Judicial Classification) before being shared with the opposing party.</span>
+      </div>
+
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('evidence-files').click()" role="button" tabindex="0">
+        <div class="upload-zone-title">Upload Evidence &amp; Supporting Documents</div>
+        <div class="upload-zone-sub">Click to browse or drag and drop PDF files here</div>
+        <div class="upload-zone-sub" style="font-family:var(--font-mono);font-size:.75rem;margin-top:.5rem;opacity:.5">PDF only · Max 25 MB per file · Up to 10 files</div>
+      </div>
+      <input type="file" id="evidence-files" accept=".pdf" multiple style="display:none" onchange="handleFileSelect(event)"/>
+      <div class="file-list" id="file-list"></div>
+    </div>
+
+    <!-- Review Summary -->
+    <div class="section-card" id="review-section">
+      <div class="section-title"><div class="section-title-icon" style="font-weight:700">✓</div>Review Case Dossier &amp; Submit</div>
+      <div id="review-body" style="display:flex;flex-direction:column;gap:.75rem;font-size:.9375rem">
+        <!-- Filled by JS -->
+      </div>
+      <div class="alert alert-warn" style="margin-top:1.25rem">
+        <span>⚠</span>
+        <span>By submitting this lawsuit, you declare under penalty of perjury that all factual claims and defendant details are accurate and truthful.</span>
+      </div>
+      <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="goToPane(4)">← Back</button>
+        <button class="btn btn-gold btn-lg" id="submit-btn" onclick="submitCase()">
+          Submit Case to Court
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SUCCESS ── -->
+  <div id="pane-success" class="hidden">
+    <div class="section-card success-screen">
+      <div class="success-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
+      <h2 class="success-title">Case Filed Successfully</h2>
+      <p style="color:var(--navy-700);margin-bottom:1rem">Your case has been submitted and is under administrative review. You will be notified via SMS when a decision is made.</p>
+      <div class="success-case-id" id="success-case-id"></div>
+      
+      <!-- Temporary Access Credentials Box -->
+      <div style="background:var(--cream-100);border:1px solid var(--gold-500);border-radius:var(--radius-lg);padding:1.25rem;margin:1.25rem 0;text-align:left">
+        <h4 style="font-weight:600;color:var(--navy-900);margin-bottom:.375rem;display:flex;align-items:center;gap:.375rem">
+          <span>🔑</span> Temporary Litigant Account Created
+        </h4>
+        <p style="font-size:.875rem;color:var(--navy-700);opacity:.8;margin-bottom:.75rem">
+          An account has been created for you until your case is closed. You can log in anytime to track status, upload evidence, or request a lawyer.
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;background:white;padding:.875rem;border-radius:var(--radius-md);border:1px solid var(--line);font-size:.875rem">
+          <div>Username / Phone: <strong id="temp-user-phone" class="mono"></strong></div>
+          <div>Temporary Access PIN: <strong id="temp-user-pin" class="mono" style="color:var(--gold-500);font-size:1.125rem"></strong></div>
+        </div>
+      </div>
+      <a href="/" class="btn btn-primary btn-lg" style="margin-top:1.5rem;display:inline-flex">← Return to Home</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5001/api';
+let verifiedPhone = '';
+let selectedFiles = [];
+let currentPane  = 1;
+
+function showAlert(msg, type='error') {
+  document.getElementById('alert-box').innerHTML =
+    `<div class="alert alert-${type}"><span>${type==='error'?'⚠':'✓'}</span><span>${msg}</span></div>`;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function clearAlert() { document.getElementById('alert-box').innerHTML = ''; }
+
+function updateStepBar(active) {
+  for (let i = 1; i <= 5; i++) {
+    const s = document.getElementById(`step-${i}`);
+    if (s) s.className = 'step ' + (i < active ? 'done' : i === active ? 'active' : '');
+  }
+}
+
+function goToPane(n) {
+  // 1. Validation before advancing to Pane 3 (from Pane 2)
+  if (n === 3 && currentPane === 2) {
+    if (!document.getElementById('f-name').value.trim()) return showAlert('Please enter your full legal name');
+  }
+
+  // 2. Validation before advancing to Pane 4 (from Pane 3)
+  if (n === 4 && currentPane === 3) {
+    if (!document.getElementById('d-name').value.trim()) return showAlert('Please enter the Defendant full name or company name');
+    if (!document.getElementById('d-phone').value.trim()) return showAlert('Please enter the Defendant mobile phone number for legal summons delivery');
+    if (!document.getElementById('d-address').value.trim()) return showAlert('Please enter the Defendant physical address / residence');
+  }
+
+  // 3. Validation before advancing to Pane 5 (from Pane 4)
+  if (n === 5 && currentPane === 4) {
+    if (!document.getElementById('c-title').value.trim()) return showAlert('Please enter a case title');
+    if (!document.getElementById('c-type').value)       return showAlert('Please select case type');
+    if (!document.getElementById('c-jurisdiction').value.trim()) return showAlert('Please select target court division');
+    if (document.getElementById('c-desc').value.trim().length < 50) return showAlert('Case description too short — please provide more detail (minimum 50 characters)');
+  }
+
+  clearAlert();
+  document.getElementById(`pane-${currentPane}`).classList.add('hidden');
+  document.getElementById(`pane-${n}`).classList.remove('hidden');
+  currentPane = n;
+  updateStepBar(n);
+
+  if (n === 5) buildReview();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function handleRoleChange() {
+  const role = document.getElementById('f-role').value;
+  document.getElementById('client-section').classList.toggle('hidden', role !== 'lawyer_on_behalf');
+}
+
+// ── OTP ──
+async function requestOTP() {
+  const phone = document.getElementById('otp-phone').value.trim();
+  if (!phone) return showAlert('Please enter your phone number');
+  clearAlert();
+  const btn = document.getElementById('otp-request-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Sending…';
+  try {
+    const res  = await fetch(`${API}/otp/request`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone}) });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('otp-request-form').classList.add('hidden');
+      document.getElementById('otp-verify-form').classList.remove('hidden');
+      if (data.delivered) {
+        document.getElementById('otp-phone-hint').innerHTML = `
+          <div style="font-size:0.8125rem;color:#16a34a;margin-top:0.5rem;font-weight:600">
+            ✓ Real SMS sent to <strong>${phone}</strong>. Please enter the 6-digit code received on your phone.
+          </div>
+        `;
+        document.getElementById('otp-code').value = '';
+      } else if (data.isNotWhitelisted) {
+        document.getElementById('otp-phone-hint').innerHTML = `
+          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius-md);padding:0.75rem;margin-top:0.75rem">
+            <div style="font-size:0.8125rem;color:#92400e;font-weight:700">
+              ℹ SMSEthiopia Starter Plan Notice
+            </div>
+            <div style="font-size:0.75rem;color:#78350f;margin-top:0.25rem;line-height:1.4">
+              Real SMS gateway rejected delivery because <strong>${phone}</strong> is not whitelisted on your SMSEthiopia free tier campaign (whitelisted number: <strong>0955282973</strong>).<br/>
+              To deliver real SMS to any phone number, upgrade your campaign API key on smsethiopia.com.<br/>
+              <div style="margin-top:0.35rem;font-weight:700">Unwhitelisted test code: <span style="color:var(--gold-600);font-size:0.95rem">${data.testCode}</span></div>
+            </div>
+          </div>
+        `;
+        document.getElementById('otp-code').value = data.testCode || '';
+      } else {
+        document.getElementById('otp-phone-hint').innerHTML = `
+          <div style="font-size:0.8125rem;color:var(--navy-700);margin-top:0.5rem">
+            Verification code sent to <strong>${phone}</strong> via SMS. Please enter the code below.
+          </div>
+        `;
+        document.getElementById('otp-code').value = '';
+      }
+      document.getElementById('otp-code').focus();
+    } else {
+      showAlert(data.error || 'Failed to send OTP');
+    }
+  } catch { showAlert('Cannot connect to server.'); }
+  finally { btn.disabled = false; btn.innerHTML = 'Send Verification Code'; }
+}
+
+async function verifyOTP() {
+  const phone = document.getElementById('otp-phone').value.trim();
+  const code  = document.getElementById('otp-code').value.trim();
+  if (code.length !== 6) return showAlert('Please enter the 6-digit code');
+  clearAlert();
+  const btn = document.getElementById('otp-verify-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Verifying…';
+  try {
+    const res  = await fetch(`${API}/otp/verify`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone, code}) });
+    const data = await res.json();
+    if (res.ok) {
+      verifiedPhone = phone;
+      document.getElementById('otp-verify-form').classList.add('hidden');
+      document.getElementById('otp-done').classList.remove('hidden');
+      document.getElementById('f-phone').value = phone; // pre-fill filer phone
+      setTimeout(() => goToPane(2), 900);
+    } else {
+      showAlert(data.error || 'Invalid code');
+    }
+  } catch { showAlert('Cannot connect to server.'); }
+  finally { btn.disabled = false; btn.innerHTML = 'Verify Code'; }
+}
+
+function resetOTP() {
+  document.getElementById('otp-verify-form').classList.add('hidden');
+  document.getElementById('otp-request-form').classList.remove('hidden');
+  document.getElementById('otp-code').value = '';
+  clearAlert();
+}
+
+// ── File handling ──
+function handleFileSelect(e) {
+  for (const f of e.target.files) {
+    if (!selectedFiles.find(x => x.name === f.name)) selectedFiles.push(f);
+  }
+  renderFileList();
+}
+function renderFileList() {
+  const list = document.getElementById('file-list');
+  list.innerHTML = selectedFiles.map((f, i) => `
+    <div class="file-item">
+      <span class="file-item-icon">📄</span>
+      <div class="file-item-info">
+        <div class="file-item-name">${f.name}</div>
+        <div class="file-item-meta">${(f.size/1024).toFixed(0)} KB · PDF</div>
+      </div>
+      <span class="enc-badge">🔒 Stage 1 Encrypted</span>
+      <button class="btn btn-ghost btn-sm" onclick="removeFile(${i})" aria-label="Remove">✕</button>
+    </div>
+  `).join('');
+}
+function removeFile(i) { selectedFiles.splice(i, 1); renderFileList(); }
+
+// ── Review Dossier ──
+function buildReview() {
+  const rows = [
+    ['Plaintiff / Filer',   document.getElementById('f-name').value],
+    ['Filer Phone',         document.getElementById('f-phone').value],
+    ['Filing Role',         document.getElementById('f-role').value],
+    ['Defendant Name',      document.getElementById('d-name').value],
+    ['Defendant Phone',     document.getElementById('d-phone').value],
+    ['Defendant Type',      document.getElementById('d-type').value],
+    ['Defendant Address',   document.getElementById('d-address').value],
+    ['Case Title',          document.getElementById('c-title').value],
+    ['Target Court Level',  document.getElementById('c-court-level').value],
+    ['Case Type',           document.getElementById('c-type').value],
+    ['Court Division',      document.getElementById('c-jurisdiction').value],
+    ['Evidence Files',      selectedFiles.length ? `${selectedFiles.length} file(s) attached` : 'None (Oral/Direct filing)'],
+  ];
+  document.getElementById('review-body').innerHTML = rows.map(([k,v]) => `
+    <div style="display:flex;gap:1rem;padding:.5rem 0;border-bottom:1px solid var(--line)">
+      <div style="width:12rem;font-size:.875rem;font-weight:600;color:var(--navy-700);flex-shrink:0">${k}</div>
+      <div style="font-size:.9375rem;color:var(--navy-900)">${v || '<span style="opacity:.4">—</span>'}</div>
+    </div>
+  `).join('');
+}
+
+// ── Submit ──
+async function submitCase() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Submitting…';
+  clearAlert();
+
+  const fd = new FormData();
+  fd.append('filerName',         document.getElementById('f-name').value.trim());
+  fd.append('filerPhone',        document.getElementById('f-phone').value.trim());
+  fd.append('filerEmail',        document.getElementById('f-email').value.trim());
+  fd.append('filerAddress',      document.getElementById('f-address').value.trim());
+  fd.append('filerRole',         document.getElementById('f-role').value);
+  
+  // Defendant Data
+  fd.append('defendantName',     document.getElementById('d-name').value.trim());
+  fd.append('defendantPhone',    document.getElementById('d-phone').value.trim());
+  fd.append('defendantEmail',    document.getElementById('d-email').value.trim());
+  fd.append('defendantAddress',  document.getElementById('d-address').value.trim());
+  fd.append('defendantType',     document.getElementById('d-type').value);
+
+  // Case Information
+  fd.append('caseTitle',         document.getElementById('c-title').value.trim());
+  fd.append('courtLevel',        document.getElementById('c-court-level').value);
+  fd.append('caseType',          document.getElementById('c-type').value);
+  fd.append('jurisdiction',      document.getElementById('c-jurisdiction').value.trim());
+  fd.append('description',       document.getElementById('c-desc').value.trim());
+  fd.append('incidentDate',      document.getElementById('c-incident-date').value);
+  fd.append('incidentLocation',  document.getElementById('c-incident-loc').value.trim());
+  fd.append('isProsecutor',      document.getElementById('f-role').value === 'prosecutor');
+
+  if (document.getElementById('f-role').value === 'lawyer_on_behalf') {
+    fd.append('clientName',     document.getElementById('c-name').value.trim());
+    fd.append('clientPhone',    document.getElementById('c-phone').value.trim());
+    fd.append('clientIdNumber', document.getElementById('c-id').value.trim());
+  }
+
+  for (const file of selectedFiles) fd.append('evidenceFiles', file);
+
+  try {
+    const res  = await fetch(`${API}/cases/file`, { method:'POST', body: fd });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById(`pane-${currentPane}`).classList.add('hidden');
+      document.getElementById('pane-success').classList.remove('hidden');
+      document.getElementById('success-case-id').textContent = data.caseId;
+      document.getElementById('temp-user-phone').textContent = data.filerPhone;
+      document.getElementById('temp-user-pin').textContent   = data.tempPin;
+      updateStepBar(5);
+      window.scrollTo({top:0, behavior:'smooth'});
+    } else {
+      showAlert(data.error || 'Submission failed');
+      btn.disabled = false; btn.innerHTML = 'Submit Case to Court';
+    }
+  } catch {
+    showAlert('Cannot connect to server.');
+    btn.disabled = false; btn.innerHTML = 'Submit Case to Court';
+  }
+}
+
+// Drag & drop
+const zone = document.getElementById('upload-zone');
+if (zone) {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor='var(--navy-600)'; });
+  zone.addEventListener('dragleave', () => { zone.style.borderColor=''; });
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.style.borderColor='';
+    for (const f of e.dataTransfer.files) { if (f.type === 'application/pdf' && !selectedFiles.find(x=>x.name===f.name)) selectedFiles.push(f); }
+    renderFileList();
+  });
+}
+
+// ── Auth Modal Controls ──
+function openAuthModal(tab = 'login') {
+  document.getElementById('auth-modal').classList.remove('hidden');
+  switchAuthTab(tab);
+}
+function quickLogin(username, password) {
+  switchAuthTab('login');
+  document.getElementById('m-username').value = username;
+  document.getElementById('m-password').value = password;
+  const form = document.getElementById('modal-login-form');
+  if (form) form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+}
+function closeAuthModal(e) {
+  if (!e || e.target.id === 'auth-modal' || e.target.classList.contains('auth-close')) {
+    document.getElementById('auth-modal').classList.add('hidden');
+  }
+}
+function switchAuthTab(tab) {
+  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.getElementById('pane-login').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('pane-register').classList.toggle('hidden', tab !== 'register');
+  clearAuthAlert();
+}
+function showAuthAlert(msg, type = 'error') {
+  const el = document.getElementById('auth-alert-box');
+  el.innerHTML = `<div class="alert alert-${type==='success'?'success':'danger'}" style="margin-bottom:1rem"><span>${type==='success'?'✓':'⚠'}</span><span>${msg}</span></div>`;
+}
+function clearAuthAlert() { document.getElementById('auth-alert-box').innerHTML = ''; }
+
+async function handleLogin(e) {
+  e.preventDefault(); clearAuthAlert();
+  const username = document.getElementById('m-username').value.trim();
+  const password = document.getElementById('m-password').value;
+  const btn = document.getElementById('modal-login-btn');
+  
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Authenticating…';
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      sessionStorage.setItem('court_user', JSON.stringify(data.user));
+      showAuthAlert(`Welcome, ${data.user.fullName}! Entering workspace…`, 'success');
+      setTimeout(() => window.location.href = '/dashboard', 600);
+    } else {
+      showAuthAlert(data.error || 'Authentication failed');
+    }
+  } catch (err) {
+    showAuthAlert('Server unreachable. Please check backend status.');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '🔐 Log In';
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault(); clearAuthAlert();
+  const body = {
+    licenseNumber: document.getElementById('m-reg-license').value.trim(),
+    fullName: document.getElementById('m-reg-fullname').value.trim(),
+    username: document.getElementById('m-reg-username').value.trim(),
+    password: document.getElementById('m-reg-password').value
+  };
+  const btn = document.getElementById('modal-register-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Verifying MoJ Record…';
+  try {
+    const res = await fetch(`${API}/auth/register-lawyer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showAuthAlert('Advocate license verified & account created! Please sign in.', 'success');
+      setTimeout(() => switchAuthTab('login'), 1200);
+    } else {
+      showAuthAlert(data.error || 'Registration failed');
+    }
+  } catch (err) {
+    showAuthAlert('Server connection error.');
+  } finally {
+    btn.disabled = false; btn.innerHTML = 'Verify License & Register';
+  }
+}
+</script>
+
+<!-- ── Auth Modal (Sign In / Register) ── -->
+<div id="auth-modal" class="auth-modal hidden" onclick="closeAuthModal(event)" style="position:fixed;inset:0;z-index:100;background:rgba(10,15,30,0.82);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1.5rem;">
+  <div class="auth-card anim-up" onclick="event.stopPropagation()" style="background:white;border-radius:var(--radius-xl);width:100%;max-width:29rem;padding:2.25rem;box-shadow:0 25px 50px rgba(0,0,0,0.5);position:relative;">
+    <button class="auth-close" onclick="closeAuthModal()" style="position:absolute;top:1.25rem;right:1.25rem;background:none;border:none;font-size:1.25rem;cursor:pointer;color:var(--navy-700);opacity:0.5;">✕</button>
+    
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <span style="font-size:2.5rem;display:block;margin-bottom:0.25rem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></span>
+      <h3 style="font-family:var(--font-display);font-size:1.375rem;font-weight:700;color:var(--navy-950)">Federal Court System Access</h3>
+      <p style="font-size:0.8125rem;color:var(--navy-700);opacity:0.75">Federal Supreme Court of Ethiopia · የኢትዮጵያ ፌዴራል ጠቅላይ ፍርድ ቤት</p>
+    </div>
+
+    <div class="login-tabs" style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line);margin-bottom:1.5rem;">
+      <button class="login-tab active" id="tab-login" onclick="switchAuthTab('login')" style="padding:0.75rem;text-align:center;font-size:0.9375rem;font-weight:600;cursor:pointer;border:none;background:none;">Sign In</button>
+      <button class="login-tab" id="tab-register" onclick="switchAuthTab('register')" style="padding:0.75rem;text-align:center;font-size:0.9375rem;font-weight:500;cursor:pointer;border:none;background:none;">Register Advocate</button>
+    </div>
+
+    <div id="auth-alert-box"></div>
+
+    <div id="pane-login">
+      <!-- Quick Demo Login Buttons -->
+      <div style="background:var(--cream-100);border:1px solid var(--line);border-radius:var(--radius-md);padding:0.75rem;margin-bottom:1rem">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--navy-900);text-transform:uppercase;margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between">
+          <span>Quick Demo Accounts:</span>
+          <span style="font-weight:500;opacity:0.75">1-Click Auto Login</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(95px, 1fr));gap:0.4rem">
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600" onclick="quickLogin('admin','admin123')">
+            Admin
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600;color:var(--gold-600)" onclick="quickLogin('judge.solomon','judge123')">
+            Judge
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600;color:#0369a1" onclick="quickLogin('officer.hassan','officer123')">
+            Official (Supreme)
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600;color:#0369a1" onclick="quickLogin('officer.selam','officer123')">
+            Official (Lideta)
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600;color:#0369a1" onclick="quickLogin('officer.yonas','officer123')">
+            Official (Arada)
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600" onclick="quickLogin('clerk.ibrahim','clerk123')">
+            Clerk
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600" onclick="quickLogin('qalalew','1234')">
+            Lawyer
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600;color:#1e40af" onclick="quickLogin('prosecutor.bereket','prosecutor123')">
+            Prosecutor
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600" onclick="quickLogin('0955282973','123456')">
+            Plaintiff
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" style="border:1px solid var(--line);font-size:0.75rem;padding:0.35rem 0.4rem;justify-content:center;background:white;font-weight:600" onclick="quickLogin('0922334455','123456')">
+            Defendant
+          </button>
+        </div>
+      </div>
+
+      <form id="modal-login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="m-username">Username / Phone Number</label>
+          <input class="form-input" id="m-username" type="text" autocomplete="username" placeholder="e.g. admin or 0911234567" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="m-password">Password / Case PIN</label>
+          <input class="form-input" id="m-password" type="password" autocomplete="current-password" placeholder="Enter password or 6-digit PIN" required/>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="modal-login-btn" style="margin-top:0.5rem;font-weight:700">
+          Authenticate &amp; Log In
+        </button>
+      </form>
+    </div>
+
+    <div id="pane-register" class="hidden">
+      <div class="alert alert-info" style="margin-bottom:1rem">
+        <span>🔒</span>
+        <span>Advocate bar licenses are verified directly against the Ministry of Justice (MoJ) registry.</span>
+      </div>
+      <form id="modal-register-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label class="form-label" for="m-reg-license">MoJ License Number</label>
+          <input class="form-input" id="m-reg-license" type="text" placeholder="e.g. LAW-1001" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="m-reg-fullname">Full Name (as on MoJ record)</label>
+          <input class="form-input" id="m-reg-fullname" type="text" placeholder="e.g. John Smith" required/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="m-reg-username">Username</label>
+            <input class="form-input" id="m-reg-username" type="text" placeholder="Choose username" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="m-reg-password">Password</label>
+            <input class="form-input" id="m-reg-password" type="password" placeholder="Create password" required/>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="modal-register-btn" style="margin-top:0.5rem;font-weight:700">
+          Verify License &amp; Register
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

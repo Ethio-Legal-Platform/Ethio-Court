@@ -1,0 +1,56 @@
+[
+  {
+    "id": "BRANCH-001",
+    "name": "Federal Supreme Court (የፌዴራል ጠቅላይ ፍርድ ቤት)",
+    "location": "Addis Ababa — Sidist Kilo / Churchill Ave, Supreme Judiciary Complex",
+    "caseTypes": ["Constitutional & Administrative", "Cassation Appeals (ሰበር)", "Appellate Review"],
+    "judges": ["JUDGE-001"],
+    "courtrooms": ["Courtroom 1A (Cassation Bench)", "Courtroom 1B (Appellate Bench)", "Courtroom 2A (Constitutional Bench)"],
+    "clerks": ["CLERK-001"]
+  },
+  {
+    "id": "BRANCH-002",
+    "name": "Federal High Court — Lideta Division (የልደታ ምድብ ችሎት)",
+    "location": "Addis Ababa — Lideta Sub-City, High Court Complex",
+    "caseTypes": ["Civil Dispute", "Commercial & Contract", "Labor & Employment", "Customs & Revenue"],
+    "judges": ["JUDGE-002"],
+    "courtrooms": ["Courtroom 1A (Civil Bench)", "Courtroom 1B (Commercial Bench)", "Courtroom 2A (Labor Bench)"],
+    "clerks": ["CLERK-001"]
+  },
+  {
+    "id": "BRANCH-003",
+    "name": "Federal High Court — Arada Criminal Division (የአራዳ ወንጀል ችሎት)",
+    "location": "Addis Ababa — Arada Sub-City, Churchill Rd",
+    "caseTypes": ["Criminal Proceedings", "Financial Crimes", "Public Prosecution"],
+    "judges": ["JUDGE-001"],
+    "courtrooms": ["Courtroom 1A (Financial Crimes)", "Courtroom 1B (General Penal)", "Courtroom 2A (Public Corruption)"],
+    "clerks": ["CLERK-001"]
+  },
+  {
+    "id": "BRANCH-004",
+    "name": "Federal First Instance Court — Kirkos & Bole (የመጀመሪያ ደረጃ ፍርድ ቤት)",
+    "location": "Addis Ababa — Africa Avenue / Bole Sub-City",
+    "caseTypes": ["Family & Succession", "Small Claims", "Contract Claims"],
+    "judges": ["JUDGE-003"],
+    "courtrooms": ["Courtroom 1A (Summary Trial)", "Courtroom 1B (Contract Claims)", "Courtroom 2A (Family Bench)"],
+    "clerks": ["CLERK-001"]
+  },
+  {
+    "id": "BRANCH-005",
+    "name": "Dire Dawa Federal Circuit Court (የድሬዳዋ ፌዴራል ምድብ ችሎት)",
+    "location": "Dire Dawa City — Kebele 02, Federal Justice Center",
+    "caseTypes": ["Civil Dispute", "Commercial & Contract", "Customs & Revenue", "Criminal"],
+    "judges": ["JUDGE-002"],
+    "courtrooms": ["Courtroom 1A (Circuit Bench)", "Courtroom 1B (Customs Trial)"],
+    "clerks": ["CLERK-001"]
+  },
+  {
+    "id": "BRANCH-006",
+    "name": "Hawassa Federal Circuit Court (የሐዋሳ ፌዴራል ምድብ ችሎት)",
+    "location": "Hawassa — Sidama Regional Capital, Federal Judiciary Building",
+    "caseTypes": ["Civil Dispute", "Commercial & Contract", "Criminal"],
+    "judges": ["JUDGE-003"],
+    "courtrooms": ["Courtroom 1A (Circuit Bench)", "Courtroom 1B (Appeals)"],
+    "clerks": ["CLERK-001"]
+  }
+]

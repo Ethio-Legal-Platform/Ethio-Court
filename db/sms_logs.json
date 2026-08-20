@@ -1,0 +1,762 @@
+[
+  {
+    "id": "SMS-1787215964904-844",
+    "recipient": "251922887766",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787215964172 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T08:52:44.904Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787215964792-828",
+    "recipient": "251911998877",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787215964172 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T08:52:44.792Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787215964357-370",
+    "recipient": "251922887766",
+    "message": "Federal Court Summons: A lawsuit (CASE-1787215964172) has been filed against you by Awash International Bank S.C.. Temporary Password: DEF-289146. Access your defense portal at http://localhost:5001",
+    "sentAt": "2026-08-20T08:52:44.357Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787215964277-425",
+    "recipient": "251911998877",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787215964172, PIN: 437502. Track online at http://localhost:5001",
+    "sentAt": "2026-08-20T08:52:44.277Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787215963540-275",
+    "recipient": "251922003344",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787215962441 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T08:52:43.540Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787215963456-140",
+    "recipient": "251911002233",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787215962441 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T08:52:43.456Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787215962965-729",
+    "recipient": "251922003344",
+    "message": "Federal Court Summons: A lawsuit (CASE-1787215962441) has been filed against you by Teshome Bekele. Temporary Password: DEF-550222. Access your defense portal at http://localhost:5001",
+    "sentAt": "2026-08-20T08:52:42.966Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787215962763-587",
+    "recipient": "251911002233",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787215962441, PIN: 731281. Track online at http://localhost:5001",
+    "sentAt": "2026-08-20T08:52:42.763Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787214806823-75",
+    "recipient": "251922887766",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787214805243 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T08:33:26.823Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787214806731-504",
+    "recipient": "251911554433",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787214805243 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T08:33:26.731Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787214805773-235",
+    "recipient": "251922887766",
+    "message": "Federal Court Summons: A lawsuit (CASE-1787214805243) has been filed against you by Mulugeta Assefa. Temporary Password: DEF-775134. Access your defense portal at http://localhost:5001",
+    "sentAt": "2026-08-20T08:33:25.773Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787214805567-326",
+    "recipient": "251911554433",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787214805243, PIN: 859672. Track online at http://localhost:5001",
+    "sentAt": "2026-08-20T08:33:25.567Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787213071835-304",
+    "recipient": "251922334455",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787213071052 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T08:04:31.835Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787213071736-0",
+    "recipient": "251911778899",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787213071052 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T08:04:31.736Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787213071562-647",
+    "recipient": "251922334455",
+    "message": "Federal Court Summons: A lawsuit (CASE-1787213071052) has been filed against you by Daniel Girma. Temporary Password: DEF-801675. Access your defense portal at http://localhost:5001",
+    "sentAt": "2026-08-20T08:04:31.562Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787213071382-686",
+    "recipient": "251911778899",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787213071052, PIN: 208008. Track online at http://localhost:5001",
+    "sentAt": "2026-08-20T08:04:31.383Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787205374976-929",
+    "recipient": "251988223344",
+    "message": "Federal Supreme Court Notice: Formal Appeal registered for Case CASE-1787205373601 by Tewodros Kassahun. Case escalated to Appellate Bench.",
+    "sentAt": "2026-08-20T05:56:14.976Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787205374892-596",
+    "recipient": "251977112233",
+    "message": "Federal Supreme Court Notice: Formal Appeal registered for Case CASE-1787205373601 by Tewodros Kassahun. Case escalated to Appellate Bench.",
+    "sentAt": "2026-08-20T05:56:14.892Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787205374688-146",
+    "recipient": "251988223344",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787205373601 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T05:56:14.688Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787205374595-949",
+    "recipient": "251977112233",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787205373601 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T05:56:14.595Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787205374296-343",
+    "recipient": "251988223344",
+    "message": "Federal Court Summons: A lawsuit (CASE-1787205373601) has been filed against you by Alemayehu Tadesse. Temporary Password: DEF-714808. Access your defense portal at http://localhost:5001",
+    "sentAt": "2026-08-20T05:56:14.296Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787205373956-704",
+    "recipient": "251977112233",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787205373601, PIN: 865496. Track online at http://localhost:5001",
+    "sentAt": "2026-08-20T05:56:13.956Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787203806341-568",
+    "recipient": "251911000222",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787198244224 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T05:30:06.341Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787203806085-955",
+    "recipient": "251955282973",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787198244224 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T05:30:06.085Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787200110484-516",
+    "recipient": "251944430222",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787163049400 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T04:28:30.484Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787200110262-876",
+    "recipient": "251901457490",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787163049400 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T04:28:30.262Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787198252472-938",
+    "recipient": "251911000222",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787198244224 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T03:57:32.472Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787198252014-675",
+    "recipient": "251955282973",
+    "message": "Federal Court Judgment: Final verdict delivered in Case CASE-1787198244224 (Ruling in favor of Plaintiff/Prosecution). 30-day appeal window active until 2026-09-19.",
+    "sentAt": "2026-08-20T03:57:32.014Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787198251271-739",
+    "recipient": "251911000222",
+    "message": "Federal Court Summons: A lawsuit (CASE-1787198244224) has been filed against you by Tesfaye Lemma. Temporary Password: DEF-292125. Access your defense portal at http://localhost:5001",
+    "sentAt": "2026-08-20T03:57:31.271Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787198247992-444",
+    "recipient": "251955282973",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787198244224, PIN: 594017. Track online at http://localhost:5001",
+    "sentAt": "2026-08-20T03:57:27.992Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787168501111-291",
+    "recipient": "251944430222",
+    "message": "Federal Court Update: Advocate LAW-1002 has accepted your case representation.",
+    "sentAt": "2026-08-19T19:41:41.111Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167227449-153",
+    "recipient": "251944430222",
+    "message": "Federal Court Defense Notice: Public Defender Public Defender Dawit Kebede (State Appointed) has been assigned to represent you.",
+    "sentAt": "2026-08-19T19:20:27.449Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167073491-197",
+    "recipient": "251944430222",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:53.491Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167071465-422",
+    "recipient": "251944430222",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:51.465Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167067420-101",
+    "recipient": "251944430222",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:47.420Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167062874-181",
+    "recipient": "251901457490",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:42.874Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167060861-40",
+    "recipient": "251944430222",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:40.861Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167060843-999",
+    "recipient": "251901457490",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:40.843Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167060340-266",
+    "recipient": "251944430222",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:40.340Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167056790-328",
+    "recipient": "251901457490",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:36.790Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167056285-978",
+    "recipient": "251944430222",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:36.285Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167052238-1",
+    "recipient": "251944430222",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:32.238Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167050229-866",
+    "recipient": "251944430222",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:30.230Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167050221-501",
+    "recipient": "251901457490",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:30.221Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167049706-707",
+    "recipient": "251901457490",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:29.706Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167046163-867",
+    "recipient": "251944430222",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:26.163Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167045663-225",
+    "recipient": "251901457490",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:25.663Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167041628-578",
+    "recipient": "251901457490",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:21.628Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167039607-457",
+    "recipient": "251901457490",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:19.607Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787167035560-883",
+    "recipient": "251901457490",
+    "message": "Federal Court Hearing Notice: Case CASE-1787163049400 scheduled on 2026-08-20 at 10:30 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T19:17:15.560Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787163649602-686",
+    "recipient": "251901457490",
+    "message": "Federal Court Update: Advocate LAW-1001 has accepted your case representation.",
+    "sentAt": "2026-08-19T18:20:49.602Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787163648583-868",
+    "recipient": "251901457490",
+    "message": "Federal Court Update: Advocate LAW-1001 has accepted your case representation.",
+    "sentAt": "2026-08-19T18:20:48.583Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787163647578-392",
+    "recipient": "251901457490",
+    "message": "Federal Court Update: Advocate LAW-1001 has accepted your case representation.",
+    "sentAt": "2026-08-19T18:20:47.578Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787163645566-344",
+    "recipient": "251901457490",
+    "message": "Federal Court Update: Advocate LAW-1001 has accepted your case representation.",
+    "sentAt": "2026-08-19T18:20:45.566Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787163357190-507",
+    "recipient": "251901457490",
+    "message": "Federal Court Update: Case CASE-1787163049400 has been Approved under applicable law and assigned to court branch for first hearing scheduling.",
+    "sentAt": "2026-08-19T18:15:57.190Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787163352868-902",
+    "recipient": "251901457490",
+    "message": "Federal Court Update: Case CASE-1787163049400 has been Approved under applicable law and assigned to court branch for first hearing scheduling.",
+    "sentAt": "2026-08-19T18:15:52.868Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787163062464-655",
+    "recipient": "251944430222",
+    "message": "Federal Court Summons: A lawsuit (CASE-1787163049400) has been filed against you by Liel. Temporary Password: DEF-551326. Access your defense portal at http://localhost:5001",
+    "sentAt": "2026-08-19T18:11:02.464Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787163053612-363",
+    "recipient": "251901457490",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787163049400, PIN: 408368. Track online at http://localhost:5001",
+    "sentAt": "2026-08-19T18:10:53.612Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787162921672-909",
+    "recipient": "251901457490",
+    "message": "Federal Supreme Court Verification Code: 444259. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T18:08:41.672Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787158394651-374",
+    "recipient": "251944430222",
+    "message": "Federal Court Summons: A lawsuit (CASE-1787158378839) has been filed against you by Kalalew Terefe. Temporary Password: DEF-579449. Access your defense portal at http://localhost:5001",
+    "sentAt": "2026-08-19T16:53:14.651Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787158384023-925",
+    "recipient": "251944430222",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787158378839, PIN: 351369. Track online at http://localhost:5001",
+    "sentAt": "2026-08-19T16:53:04.023Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787158224759-766",
+    "recipient": "251944430222",
+    "message": "Federal Supreme Court Verification Code: 806348. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T16:50:24.759Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787158192075-193",
+    "recipient": "251911223399",
+    "message": "Federal Court Summons: A lawsuit (CASE-1787158187842) has been filed against you by Chala Desta. Temporary Password: DEF-776523. Access your defense portal at http://localhost:5001",
+    "sentAt": "2026-08-19T16:49:52.075Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787158190100-22",
+    "recipient": "251955282973",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787158187842, PIN: 419640. Track online at http://localhost:5001",
+    "sentAt": "2026-08-19T16:49:50.100Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787150395203-383",
+    "recipient": "251947899034",
+    "message": "Federal Supreme Court Verification Code: 602919. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T14:39:55.203Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787149829745-141",
+    "recipient": "251944430222",
+    "message": "Federal Court Hearing Notice: Case CASE-1787149283228 scheduled on 2026-08-20 at 09:00 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T14:30:29.745Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787149636814-904",
+    "recipient": "251944430222",
+    "message": "Federal Court Update: Case CASE-1787149283228 has been Approved under applicable law and assigned to court branch for first hearing scheduling.",
+    "sentAt": "2026-08-19T14:27:16.814Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787149283514-891",
+    "recipient": "251944430222",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787149283228, PIN: 418901. Track online at http://localhost:5001",
+    "sentAt": "2026-08-19T14:21:23.514Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787149064417-892",
+    "recipient": "251944430222",
+    "message": "Federal Supreme Court Verification Code: 359312. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T14:17:44.417Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787149017957-513",
+    "recipient": "251944430222",
+    "message": "Federal Supreme Court Verification Code: 444274. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T14:16:57.957Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787148925302-821",
+    "recipient": "251911000111",
+    "message": "Federal Supreme Court Verification Code: 806585. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T14:15:25.302Z",
+    "status": "STARTER_PLAN_UNWHITELISTED",
+    "error": "DEFAULT_CAMPAIGN_RECIPIENT_NOT_WHITELISTED: This is a starter (default) campaign and can only deliver to numbers verified in the dashboard. For API / production sending, purchase a paid package and use that campaign's API key. Error Code :: 10007"
+  },
+  {
+    "id": "SMS-1787148925185-361",
+    "recipient": "251955282973",
+    "message": "Federal Supreme Court Verification Code: 288174. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T14:15:25.185Z",
+    "status": "DELIVERED",
+    "error": null
+  },
+  {
+    "id": "SMS-1787148864562-839",
+    "recipient": "251911000111",
+    "message": "Federal Supreme Court Verification Code: 972267. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T14:14:24.562Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787148864545-635",
+    "recipient": "251955282973",
+    "message": "Federal Supreme Court Verification Code: 608972. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T14:14:24.545Z",
+    "status": "DISPATCHED_INTERNAL",
+    "error": null
+  },
+  {
+    "id": "SMS-1787148745209-297",
+    "recipient": "251944430222",
+    "message": "Federal Supreme Court Verification Code: 439982. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T14:12:25.209Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787148006140-94",
+    "recipient": "251944430222",
+    "message": "Federal Supreme Court Verification Code: 765963. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T14:00:06.140Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787147893478-760",
+    "recipient": "251955282973",
+    "message": "Federal Supreme Court Verification Code: 840530. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T13:58:13.478Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787147867818-236",
+    "recipient": "251955282973",
+    "message": "Federal Supreme Court Verification Code: 651092. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T13:57:47.818Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787147772510-971",
+    "recipient": "251955282973",
+    "message": "Federal Supreme Court Verification Code: 409140. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T13:56:12.510Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787147713373-245",
+    "recipient": "251911223344",
+    "message": "Federal Supreme Court Verification Code: 696016. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T13:55:13.373Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787147615307-502",
+    "recipient": "251944430222",
+    "message": "Federal Supreme Court Verification Code: 716366. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T13:53:35.307Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787147579046-750",
+    "recipient": "251955282973",
+    "message": "Federal Supreme Court Verification Code: 770372. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T13:52:59.046Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787147527251-713",
+    "recipient": "251955282973",
+    "message": "Federal Supreme Court Verification Code: 972304. Valid for 10 minutes.",
+    "sentAt": "2026-08-19T13:52:07.251Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787147385706-95",
+    "recipient": "251933445566",
+    "message": "Federal Court Hearing Notice: Case CASE-1786992211002 scheduled on 2026-09-18 at 10:15 in Courtroom 1A (Civil Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T13:49:45.706Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787147385700-865",
+    "recipient": "251911223344",
+    "message": "Federal Court Hearing Notice: Case CASE-1786992211002 scheduled on 2026-09-18 at 10:15 in Courtroom 1A (Civil Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T13:49:45.700Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787118520760-90",
+    "recipient": "251911998877",
+    "message": "Federal Court Update: Advocate LAW-1001 has accepted your case representation.",
+    "sentAt": "2026-08-19T05:48:40.760Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787118520650-10",
+    "recipient": "251911998877",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787118520643, PIN: 402957. Track online at http://localhost:5001",
+    "sentAt": "2026-08-19T05:48:40.650Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787118004387-84",
+    "recipient": "251922334455",
+    "message": "Federal Court Update: Advocate LAW-1001 has accepted your case representation.",
+    "sentAt": "2026-08-19T05:40:04.387Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787117842733-724",
+    "recipient": "251922334455",
+    "message": "Court Document Demand: In Case CASE-1786816470851, the Court orders submission of \"Transaction recipt\" by 2026-08-21.",
+    "sentAt": "2026-08-19T05:37:22.733Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787117649897-817",
+    "recipient": "251911223344",
+    "message": "Court Document Demand: In Case CASE-1786992211002, the Court orders submission of \"Transaction recipt\" by 2026-08-21.",
+    "sentAt": "2026-08-19T05:34:09.897Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787117469634-134",
+    "recipient": "251933445566",
+    "message": "Federal Court Hearing Notice: Case CASE-1786992211002 scheduled on 2026-08-19 at 09:00 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T05:31:09.634Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787117469629-506",
+    "recipient": "251911223344",
+    "message": "Federal Court Hearing Notice: Case CASE-1786992211002 scheduled on 2026-08-19 at 09:00 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-19T05:31:09.629Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787088431705-525",
+    "recipient": "251911223344",
+    "message": "Federal Court Update: Case CASE-1786992211002 has been Approved under applicable law and assigned to court branch for first hearing scheduling.",
+    "sentAt": "2026-08-18T21:27:11.705Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787088042106-508",
+    "recipient": "251911000111",
+    "message": "Federal Supreme Court Notice: Final judgment delivered in Case CASE-1787088041961. 30-day appeal window active until 2026-09-17.",
+    "sentAt": "2026-08-18T21:20:42.106Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787088042016-45",
+    "recipient": "251911000111",
+    "message": "Federal Court Hearing Notice: Case CASE-1787088041961 scheduled on 2026-09-10 at 10:15 in Courtroom 1A (Cassation Bench). Please attend punctually.",
+    "sentAt": "2026-08-18T21:20:42.016Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787088041995-208",
+    "recipient": "251911000111",
+    "message": "Federal Court Update: Case CASE-1787088041961 has been Approved under applicable law and assigned to court branch for first hearing scheduling.",
+    "sentAt": "2026-08-18T21:20:41.995Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1787088041972-46",
+    "recipient": "251911000111",
+    "message": "Federal Court Case Filed! Case ID: CASE-1787088041961, PIN: 289429. Track online at http://localhost:5001",
+    "sentAt": "2026-08-18T21:20:41.972Z",
+    "status": "DELIVERED"
+  },
+  {
+    "id": "SMS-1786983834625-522",
+    "recipient": "251955282973",
+    "message": "Federal Court Order Issued for fedral (CASE-1786816470851): \"Summons Hearing Notice\". Login to court portal to view details.",
+    "sentAt": "2026-08-17T16:23:54.625Z",
+    "status": "DELIVERED"
+  }
+]

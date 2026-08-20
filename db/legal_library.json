@@ -1,0 +1,130 @@
+[
+  {
+    "category": "Constitutional Law",
+    "code": "FDRE Constitution (1995)",
+    "description": "Constitution of the Federal Democratic Republic of Ethiopia (Proclamation No. 1/1995)",
+    "chapters": [
+      {
+        "chapter": "Chapter 3: Fundamental Rights and Freedoms",
+        "articles": [
+          { "article": "Article 13", "title": "Scope of Application and Interpretation", "summary": "All federal and state legislative, executive and judicial organs have the responsibility to respect and enforce the provisions of this Chapter." },
+          { "article": "Article 19", "title": "Right of Persons Arrested", "summary": "Persons arrested have the right to be informed promptly of the reasons for their arrest and any charges against them in a language they understand." },
+          { "article": "Article 20", "title": "Right of Accused Persons", "summary": "Accused persons have the right to a public trial by an ordinary court of law within a reasonable time, to be presumed innocent until proven guilty, and to full legal representation." },
+          { "article": "Article 25", "title": "Right to Equality", "summary": "All persons are equal before the law and are entitled without any discrimination to the equal protection of the law." },
+          { "article": "Article 37", "title": "Right of Access to Justice", "summary": "Everyone has the right to bring a justiciable matter to, and to obtain a decision or judgment by, a court of law or any other competent body with judicial power." },
+          { "article": "Article 40", "title": "Right to Property", "summary": "Every Ethiopian citizen has the right to the ownership of private property, including the right to acquire, use, and dispose of property." }
+        ]
+      },
+      {
+        "chapter": "Chapter 9: Structure and Powers of the Courts",
+        "articles": [
+          { "article": "Article 78", "title": "Independence of the Judiciary", "summary": "An independent judiciary is established by the Constitution. Supreme Federal judicial authority is vested in the Federal Supreme Court." },
+          { "article": "Article 79", "title": "Judicial Powers", "summary": "Judicial powers, both at Federal and State levels, are vested in the courts. Courts of any level shall be free from any interference of any state organ or any other authority." },
+          { "article": "Article 80", "title": "Jurisdiction of Courts & Cassation Division", "summary": "The Federal Supreme Court has the highest and final judicial authority. The Federal Supreme Court has a power of cassation over any final court decision containing a fundamental error of law." }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Criminal Law",
+    "code": "Federal Criminal Code (Proclamation No. 414/2004)",
+    "description": "Criminal Code of the Federal Democratic Republic of Ethiopia",
+    "chapters": [
+      {
+        "chapter": "Book 1: General Part — Criminal Liability",
+        "articles": [
+          { "article": "Article 23", "title": "Principle of Legality", "summary": "No one shall be punished for an act or omission which was not defined as an offense by law at the time when it was committed." },
+          { "article": "Article 32", "title": "Principal Offender & Accomplices", "summary": "A person who commits a crime by himself or through an intermediary is liable as a principal offender." }
+        ]
+      },
+      {
+        "chapter": "Book 5: Crimes Against Property & Financial Crimes",
+        "articles": [
+          { "article": "Article 665", "title": "Theft and Misappropriation", "summary": "Whoever intentionally takes another person's movable property without consent with intent to appropriate it is punishable with rigorous imprisonment." },
+          { "article": "Article 692", "title": "Fraud and Deceitful Misrepresentation", "summary": "Whoever intentionally misleads another person by deceptive statements or concealment of material facts to obtain an unlawful financial gain is punishable with rigorous imprisonment and fine." },
+          { "article": "Article 706", "title": "Breach of Trust & Embezzlement", "summary": "Whoever, having received money, documents, or property in trust, misappropriates or uses them for personal benefit contrary to trust commitments commits breach of trust." }
+        ]
+      },
+      {
+        "chapter": "Book 6: Crimes Against the Public & State",
+        "articles": [
+          { "article": "Article 407", "title": "Abuse of Power by Public Servants", "summary": "Any public official who intentionally uses their office to procure an improper advantage or cause injury to the rights of another commits a federal offense." },
+          { "article": "Article 443", "title": "Perjury and False Testimony Before Court", "summary": "Whoever gives false testimony, false statements, or submits forged evidence in judicial proceedings is punishable under rigorous penal terms." }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Civil & Commercial Law",
+    "code": "Civil Code of Ethiopia (Proclamation No. 165/1960)",
+    "description": "The Civil Code regulating Contracts, Obligations, Property, and Tort",
+    "chapters": [
+      {
+        "chapter": "Title XII: Contracts in General",
+        "articles": [
+          { "article": "Article 1675", "title": "Definition of Contract", "summary": "A contract is an agreement whereby two or more persons as between themselves create, vary or extinguish obligations of a proprietary nature." },
+          { "article": "Article 1731", "title": "Binding Nature of Contracts", "summary": "The provisions of a contract lawfully formed shall be binding on the parties as though they were law." },
+          { "article": "Article 1771", "title": "Effects of Non-Performance", "summary": "Where a party does not perform their contractual obligations, the other party may demand performance, cancel the contract, or claim damages for non-performance." },
+          { "article": "Article 1791", "title": "Damages and Compensation", "summary": "The party who fails to perform shall be liable to pay damages for loss caused to the other party as a direct consequence of non-performance." },
+          { "article": "Article 1792", "title": "Force Majeure Standard", "summary": "Force majeure results from an unforeseeable and insurmountable occurrence that makes performance of contractual obligations absolutely impossible." }
+        ]
+      },
+      {
+        "chapter": "Title XIII: Extra-Contractual Liability (Tort)",
+        "articles": [
+          { "article": "Article 2027", "title": "Source of Tort Liability", "summary": "Whoever causes damage to another by fault commits an offense and is liable to make good the damage." },
+          { "article": "Article 2090", "title": "Modes of Reparation", "summary": "The court shall award damages in cash or in kind to place the injured party in the position they would have been in had the tort not occurred." }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Commercial & Corporate Law",
+    "code": "Commercial Code of Ethiopia (Proclamation No. 1243/2021)",
+    "description": "The Revised Commercial Code of the FDRE",
+    "chapters": [
+      {
+        "chapter": "Book 1: Traders and Commercial Transactions",
+        "articles": [
+          { "article": "Article 5", "title": "Definition of Commercial Activities", "summary": "Persons who professionally and for gain carry on commercial activities, supply of goods, services, or financial intermediation are deemed traders." },
+          { "article": "Article 210", "title": "Duties of Commercial Registry & Disclosure", "summary": "All commercial business entities must register corporate standing and maintain verifiable statutory books." }
+        ]
+      },
+      {
+        "chapter": "Book 3: Negotiable Instruments and Banking Transactions",
+        "articles": [
+          { "article": "Article 715", "title": "Dishonored Cheques & Commercial Paper", "summary": "Drawing a negotiable cheque without sufficient funds or stopping payment unlawfully establishes strict commercial and civil liability." }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Labor & Employment",
+    "code": "Labor Proclamation (Proclamation No. 1156/2019)",
+    "description": "The Labor Law of the Federal Democratic Republic of Ethiopia",
+    "chapters": [
+      {
+        "chapter": "Part 2: Employment Relations & Termination",
+        "articles": [
+          { "article": "Article 26", "title": "Unlawful Termination of Contract", "summary": "Termination of an employment contract without lawful grounds under this Proclamation entitles the worker to reinstatement or statutory severance compensation." },
+          { "article": "Article 39", "title": "Severance Pay Calculation", "summary": "Severance compensation standards payable upon lawful or unlawful contract cessation based on service duration." }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Court Procedure & Jurisdiction",
+    "code": "Federal Courts Proclamation (Proclamation No. 1234/2021)",
+    "description": "Proclamation to Re-Determine the Powers and Jurisdiction of Federal Courts",
+    "chapters": [
+      {
+        "chapter": "Part 2: Jurisdiction of Federal Courts",
+        "articles": [
+          { "article": "Article 11", "title": "Jurisdiction of Federal First Instance Court", "summary": "The Federal First Instance Court has jurisdiction over civil cases where the claim does not exceed 10,000,000 Birr, and criminal offenses with penalty not exceeding 15 years imprisonment." },
+          { "article": "Article 12", "title": "Jurisdiction of Federal High Court", "summary": "The Federal High Court has jurisdiction over civil claims exceeding 10,000,000 Birr, international commercial arbitrations, patent disputes, and serious federal criminal matters." },
+          { "article": "Article 10", "title": "Jurisdiction of Federal Supreme Court & Cassation", "summary": "The Federal Supreme Court has jurisdiction on appellate matters from the Federal High Court, and sits with 5 judges in the Cassation Division to determine fundamental errors of law." }
+        ]
+      }
+    ]
+  }
+]
