@@ -1,5 +1,37 @@
 [
   {
+    "id": "AUD-1787245838416",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-20T17:10:38.416Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787245648472",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-20T17:07:28.472Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787245599683",
+    "action": "USER_LOGIN",
+    "user": "Court Clerk Ibrahim Tesfaye",
+    "role": "clerk",
+    "timestamp": "2026-08-20T17:06:39.683Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787245541860",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-20T17:05:41.860Z",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-1787244260687",
     "action": "ADMIN_APPROVED_AND_FORWARDED",
     "user": "System Administrator",

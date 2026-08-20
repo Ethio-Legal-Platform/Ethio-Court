@@ -97,14 +97,35 @@ function toggleAdminProfileDropdown(e) {
 }
 
 function handleAdminGlobalClick(e) {
-  const menu = document.getElementById('admin-profile-dropdown-menu');
-  const trigger = document.getElementById('admin-profile-pill-trigger');
-  if (menu && menu.classList.contains('show')) {
-    if (!menu.contains(e.target) && !trigger.contains(e.target)) {
-      menu.classList.remove('show');
+  // 1. Profile Dropdown
+  const profileMenu = document.getElementById('admin-profile-dropdown-menu');
+  const profileTrigger = document.getElementById('admin-profile-pill-trigger');
+  if (profileMenu && profileMenu.classList.contains('show')) {
+    if (!profileMenu.contains(e.target) && (!profileTrigger || !profileTrigger.contains(e.target))) {
+      profileMenu.classList.remove('show');
+    }
+  }
+
+  // 2. Notification Dropdown
+  const notifMenu = document.getElementById('admin-notif-dropdown-menu');
+  const notifTrigger = document.getElementById('admin-notif-bell-btn');
+  if (notifMenu && notifMenu.style.display === 'block') {
+    if (!notifMenu.contains(e.target) && (!notifTrigger || !notifTrigger.contains(e.target))) {
+      notifMenu.style.display = 'none';
+    }
+  }
+
+  // 3. Email / Branch Requests Dropdown
+  const emailMenu = document.getElementById('admin-email-dropdown-menu');
+  const emailTrigger = document.getElementById('admin-email-btn');
+  if (emailMenu && emailMenu.style.display === 'block') {
+    if (!emailMenu.contains(e.target) && (!emailTrigger || !emailTrigger.contains(e.target))) {
+      emailMenu.style.display = 'none';
     }
   }
 }
+
+document.addEventListener('click', handleAdminGlobalClick);
 
 function openAdminEditProfileModal() {
   const menu = document.getElementById('admin-profile-dropdown-menu');
