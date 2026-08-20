@@ -11,6 +11,7 @@ router.get('/cases/:id', caseController.getCaseById);
 router.post('/cases', upload.array('documents', 10), caseController.createCase);
 
 // Admin Screening & Branch Forwarding
+router.post('/cases/:id/mark-viewed', caseController.markCaseAsViewed);
 router.post('/cases/admin-review', caseController.adminScreeningReview);
 
 // Branch Official Scheduling

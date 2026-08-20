@@ -206,6 +206,7 @@ function renderAdminCurrentView() {
 
   if (currentAdminView === 'dashboard') {
     renderAdminDashboard(container);
+    updateAdminNotificationUi();
   } else if (currentAdminView === 'cases_management') {
     renderCasesManagementView(container);
   } else if (currentAdminView === 'user_management') {
@@ -713,23 +714,33 @@ function renderRatingsEvaluationView(container) {
     '</div>';
 }
 
+
 function renderNotificationsView(container) {
+  const unchecked = getUncheckedRequestedCases();
   container.innerHTML = 
     '<div class="admin-header-row">' +
       '<div>' +
-        '<h1 class="admin-greeting-title">System Notifications &amp; Alerts</h1>' +
-        '<div class="admin-greeting-sub">Real-time alerts, daily backup notifications, and security advisories.</div>' +
+        '<h1 class="admin-greeting-title">Unchecked Case Request Notifications</h1>' +
+        '<div class="admin-greeting-sub">Newly submitted court filings requiring administrative screening and branch assignment.</div>' +
       '</div>' +
+      '<button class="btn-export-dashboard" onclick="switchAdminView(\'cases_management\'); setCaseCategoryFilter(\'requested\')">Go to Requested Cases</button>' +
     '</div>' +
     '<div class="admin-panel-card">' +
-      (allNotifications && allNotifications.length ? allNotifications.map(n => 
-        '<div class="notif-feed-item">' +
-          '<div class="notif-feed-icon" style="background:#e0f2fe;color:#0284c7">' + ICONS.bell + '</div>' +
-          '<div><div class="notif-feed-title">' + (n.title || n.message) + '</div><div class="notif-feed-time">' + new Date(n.createdAt || Date.now()).toLocaleString() + '</div></div>' +
+      (unchecked.length ? unchecked.map(c => 
+        '<div class="notif-feed-item" style="cursor:pointer;padding:1rem;display:flex;justify-content:space-between;align-items:center" onclick="handleOpenUncheckedCase(\'' + c.caseId + '\')">' +
+          '<div style="display:flex;align-items:center;gap:1rem">' +
+            '<div class="notif-feed-icon" style="background:#fff7ed;color:#ea580c">' + ICONS.briefcase + '</div>' +
+            '<div>' +
+              '<div class="notif-feed-title" style="font-size:0.9rem"><strong>' + c.caseId + '</strong> — ' + (c.caseTitle || c.petitioner + ' vs. ' + c.respondent) + '</div>' +
+              '<div class="notif-feed-time">Filer: ' + (c.petitioner || 'Litigant') + ' (' + (c.filerPhone || 'No Phone') + ') · Submitted ' + (c.filingDate ? new Date(c.filingDate).toLocaleString() : 'Recently') + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<button class="btn-export-dashboard" style="padding:0.4rem 0.85rem;font-size:0.75rem" onclick="event.stopPropagation(); handleOpenUncheckedCase(\'' + c.caseId + '\')">⚖️ Review &amp; Dismiss from Notifications</button>' +
         '</div>'
-      ).join('') : '<p style="color:#64748b">No alerts.</p>') +
+      ).join('') : '<div style="padding:2.5rem;text-align:center;color:#64748b"><div style="font-size:1.5rem;margin-bottom:0.5rem">✓</div><strong>All Caught Up!</strong><br>No unchecked case requests currently pending.</div>') +
     '</div>';
 }
+
 
 function renderReportsAnalyticsView(container) {
   renderAdminDashboard(container);
@@ -1350,6 +1361,7 @@ function generateBranchChartHtml(branchId) {
 // ── Functional Admin Case Review & Legal Check Assistant ──
 
 async function openAdminReviewModal(caseId) {
+  markCaseAsViewedOnServer(caseId);
   const caseItem = allCases.find(c => c.caseId === caseId) || { caseId, petitioner: 'Filer', respondent: 'Respondent', caseType: 'Civil' };
   
   let legalLibrary = [];
@@ -1540,4 +1552,82 @@ async function handleAdminReviewSubmit(e, caseId) {
   } catch (err) {
     alert('Error submitting review: ' + err.message);
   }
+}
+
+
+// ── Unchecked Case Request Notifications ──
+function getUncheckedRequestedCases() {
+  return (allCases || []).filter(c => {
+    const isPending = c.status === 'pending_screening' || c.screeningStatus === 'pending' || !c.screeningStatus || c.status === 'pending';
+    return isPending && c.adminViewed !== true;
+  });
+}
+
+function updateAdminNotificationUi() {
+  const unchecked = getUncheckedRequestedCases();
+  const badge = document.getElementById('admin-notif-count-badge');
+  const dropBadge = document.getElementById('notif-dropdown-badge');
+  const listContainer = document.getElementById('admin-notif-dropdown-list');
+
+  if (badge) {
+    if (unchecked.length > 0) {
+      badge.textContent = unchecked.length;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  if (dropBadge) {
+    dropBadge.textContent = unchecked.length + ' Pending';
+  }
+
+  if (listContainer) {
+    if (unchecked.length === 0) {
+      listContainer.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#64748b;font-size:0.8rem">✓ All case requests have been checked.</div>';
+    } else {
+      listContainer.innerHTML = unchecked.map(c => {
+        const filedDate = c.filingDate ? new Date(c.filingDate).toLocaleDateString('en-US', {month:'short', day:'2-digit'}) : 'Recent';
+        return '<div style="padding:0.75rem 1rem;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:background 0.15s ease" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'transparent\'" onclick="handleOpenUncheckedCase(\'' + c.caseId + '\')">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center">' +
+            '<strong style="color:var(--fsc-navy-main);font-size:0.8rem">' + c.caseId + '</strong>' +
+            '<span style="font-size:0.7rem;color:#94a3b8">' + filedDate + '</span>' +
+          '</div>' +
+          '<div style="font-size:0.775rem;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:2px 0">' + (c.caseTitle || c.petitioner + ' vs. ' + c.respondent) + '</div>' +
+          '<div style="font-size:0.7rem;color:#0284c7">Filer: ' + (c.petitioner || 'Litigant') + ' · Click to review &rarr;</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
+}
+
+function toggleAdminNotifDropdown(e) {
+  if (e) e.stopPropagation();
+  const drop = document.getElementById('admin-notif-dropdown-menu');
+  if (drop) {
+    const isVisible = drop.style.display === 'block';
+    drop.style.display = isVisible ? 'none' : 'block';
+    if (!isVisible) updateAdminNotificationUi();
+  }
+}
+
+async function markCaseAsViewedOnServer(caseId) {
+  const c = (allCases || []).find(it => it.caseId === caseId);
+  if (c) {
+    c.adminViewed = true;
+    c.adminViewedAt = new Date().toISOString();
+  }
+  updateAdminNotificationUi();
+
+  try {
+    await fetch(API + '/cases/' + caseId + '/mark-viewed', { method: 'POST' });
+  } catch (err) {}
+}
+
+async function handleOpenUncheckedCase(caseId) {
+  const drop = document.getElementById('admin-notif-dropdown-menu');
+  if (drop) drop.style.display = 'none';
+
+  await markCaseAsViewedOnServer(caseId);
+  openAdminReviewModal(caseId);
 }

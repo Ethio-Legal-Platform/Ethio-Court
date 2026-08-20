@@ -606,7 +606,19 @@ async function getLegalLibrary(req, res) {
   res.json(articles);
 }
 
+
+async function markCaseAsViewed(req, res) {
+  const { id } = req.params;
+  const updated = await dbService.updateOne('cases', { caseId: id }, {
+    adminViewed: true,
+    adminViewedAt: new Date().toISOString()
+  });
+  if (!updated) return res.status(404).json({ error: 'Case not found' });
+  res.json({ success: true, case: updated });
+}
+
 module.exports = {
+  markCaseAsViewed,
   getAllCases,
   getCaseById,
   searchCases,
