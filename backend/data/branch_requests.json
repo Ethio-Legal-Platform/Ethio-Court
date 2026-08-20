@@ -1,0 +1,41 @@
+[
+  {
+    "id": "REQ-BR-101",
+    "branchId": "BRANCH-002",
+    "branchName": "Federal High Court — Lideta Division",
+    "senderName": "Officer Tesfaye Girma",
+    "senderRole": "Branch Official",
+    "requestType": "Representation Pending Sourcing",
+    "caseId": "CASE-1787215964172",
+    "priority": "High",
+    "message": "Defendant selected state public defense representation. Requesting central MoJ roster allocation for Commercial Division Bench.",
+    "timestamp": "2026-08-20T16:01:06.850Z",
+    "adminChecked": false
+  },
+  {
+    "id": "REQ-BR-102",
+    "branchId": "BRANCH-001",
+    "branchName": "Federal Supreme Court (Sidist Kilo)",
+    "senderName": "Hon. Judge Bekele Seyoum",
+    "senderRole": "Presiding Judge",
+    "requestType": "Courtroom Reallocation Request",
+    "caseId": "CASE-1787215962441",
+    "priority": "Urgent",
+    "message": "Due to high public and press interest in the Constitutional review docket, requesting bench relocation from Courtroom 1B to Ceremonial Main Chamber 1A.",
+    "timestamp": "2026-08-20T15:01:06.851Z",
+    "adminChecked": false
+  },
+  {
+    "id": "REQ-BR-103",
+    "branchId": "BRANCH-004",
+    "branchName": "Federal First Instance — Kirkos & Bole",
+    "senderName": "Clerk Kalkidan Mengistu",
+    "senderRole": "Court Clerk",
+    "requestType": "Postponement Beyond Soft Cap",
+    "caseId": "CASE-178719224815",
+    "priority": "Standard",
+    "message": "Counsel submitted 3rd postponement request citing certified medical emergency abroad. Escalated to central registry for judicial discretion.",
+    "timestamp": "2026-08-20T14:01:06.851Z",
+    "adminChecked": false
+  }
+]

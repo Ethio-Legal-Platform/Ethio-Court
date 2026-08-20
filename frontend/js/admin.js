@@ -16,6 +16,7 @@ let allLicenses = [];
 let allNotifications = [];
 let allSmsLogs = [];
 let allAuditLogs = [];
+let allBranchRequests = [];
 let selectedChartBranch = "ALL";
 let currentCaseFilter = "requested";
 let currentAuditRoleFilter = "all";
@@ -207,6 +208,7 @@ function renderAdminCurrentView() {
   if (currentAdminView === 'dashboard') {
     renderAdminDashboard(container);
     updateAdminNotificationUi();
+    updateAdminEmailUi();
   } else if (currentAdminView === 'cases_management') {
     renderCasesManagementView(container);
   } else if (currentAdminView === 'user_management') {
@@ -1630,4 +1632,150 @@ async function handleOpenUncheckedCase(caseId) {
 
   await markCaseAsViewedOnServer(caseId);
   openAdminReviewModal(caseId);
+}
+
+
+// ── Branch Requests & Email Dropdown System ──
+function getUncheckedBranchRequests() {
+  return (allBranchRequests || []).filter(r => r.adminChecked !== true);
+}
+
+function updateAdminEmailUi() {
+  const unchecked = getUncheckedBranchRequests();
+  const badge = document.getElementById('admin-email-count-badge');
+  const dropBadge = document.getElementById('email-dropdown-badge');
+  const listContainer = document.getElementById('admin-email-dropdown-list');
+
+  if (badge) {
+    if (unchecked.length > 0) {
+      badge.textContent = unchecked.length;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  if (dropBadge) {
+    dropBadge.textContent = unchecked.length + ' Pending';
+  }
+
+  if (listContainer) {
+    if (unchecked.length === 0) {
+      listContainer.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#64748b;font-size:0.8rem">✓ No pending branch requests.</div>';
+    } else {
+      listContainer.innerHTML = unchecked.map(r => {
+        const timeStr = r.timestamp ? new Date(r.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Recent';
+        const isUrgent = r.priority === 'Urgent' || r.priority === 'High';
+        return '<div style="padding:0.75rem 1rem;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:background 0.15s ease" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'transparent\'" onclick="handleOpenBranchRequest(\'' + r.id + '\')">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center">' +
+            '<span class="status-pill ' + (isUrgent ? 'pill-red' : 'pill-blue') + '" style="font-size:0.65rem">' + (r.priority || 'Standard').toUpperCase() + '</span>' +
+            '<span style="font-size:0.7rem;color:#94a3b8">' + timeStr + '</span>' +
+          '</div>' +
+          '<div style="font-weight:700;font-size:0.8rem;color:var(--fsc-navy-main);margin-top:3px">' + r.requestType + '</div>' +
+          '<div style="font-size:0.725rem;color:#64748b">' + r.branchName + ' (' + r.senderName + ')</div>' +
+          '<div style="font-size:0.75rem;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">' + r.message + '</div>' +
+          '<div style="font-size:0.7rem;color:#0284c7;margin-top:3px">Click to inspect details &rarr;</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
+}
+
+function toggleAdminEmailDropdown(e) {
+  if (e) e.stopPropagation();
+  const drop = document.getElementById('admin-email-dropdown-menu');
+  const notifDrop = document.getElementById('admin-notif-dropdown-menu');
+  if (notifDrop) notifDrop.style.display = 'none';
+
+  if (drop) {
+    const isVisible = drop.style.display === 'block';
+    drop.style.display = isVisible ? 'none' : 'block';
+    if (!isVisible) updateAdminEmailUi();
+  }
+}
+
+async function markBranchRequestAsCheckedOnServer(reqId) {
+  const r = (allBranchRequests || []).find(it => it.id === reqId);
+  if (r) {
+    r.adminChecked = true;
+    r.adminCheckedAt = new Date().toISOString();
+  }
+  updateAdminEmailUi();
+
+  try {
+    await fetch(API + '/branch-requests/' + reqId + '/mark-read', { method: 'POST' });
+  } catch (err) {}
+}
+
+async function handleOpenBranchRequest(reqId) {
+  const drop = document.getElementById('admin-email-dropdown-menu');
+  if (drop) drop.style.display = 'none';
+
+  await markBranchRequestAsCheckedOnServer(reqId);
+  openBranchRequestDetailModal(reqId);
+}
+
+function openBranchRequestDetailModal(reqId) {
+  const r = allBranchRequests.find(it => it.id === reqId) || { id: reqId, requestType: 'Branch Inquiry', branchName: 'Court Branch', message: 'No details available.' };
+  
+  document.getElementById('admin-modal-title').textContent = 'Branch Communication & Request — ' + r.id;
+  document.getElementById('admin-modal-body').innerHTML = 
+    '<div style="line-height:1.7">' +
+      '<div style="background:#f8fafc;padding:0.75rem 1rem;border-radius:6px;margin-bottom:1rem;border:1px solid #e2e8f0">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+          '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:1.05rem">' + r.requestType + '</div>' +
+          '<span class="status-pill ' + (r.priority === 'Urgent' || r.priority === 'High' ? 'pill-red' : 'pill-blue') + '">' + (r.priority || 'Standard').toUpperCase() + ' PRIORITY</span>' +
+        '</div>' +
+        '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">From: <strong>' + r.senderName + '</strong> (' + r.senderRole + ') · ' + r.branchName + '</div>' +
+      '</div>' +
+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;font-size:0.85rem">' +
+        '<div><strong>Originating Branch:</strong> ' + r.branchName + '</div>' +
+        '<div><strong>Associated Case ID:</strong> ' + (r.caseId || 'N/A') + '</div>' +
+        '<div><strong>Dispatched Timestamp:</strong> ' + new Date(r.timestamp).toLocaleString() + '</div>' +
+        '<div><strong>Status:</strong> <span style="color:#16a34a;font-weight:700">Checked &amp; Dismissed from Inbox</span></div>' +
+      '</div>' +
+
+      '<div style="margin-top:0.75rem;padding:0.85rem;background:#ffffff;border:1px solid #bae6fd;border-radius:6px;background:#f0f9ff">' +
+        '<div style="font-size:0.75rem;font-weight:700;color:#0369a1;text-transform:uppercase;margin-bottom:0.25rem">Request Narrative / Inquiry</div>' +
+        '<div style="font-size:0.875rem;color:#0c4a6e">' + r.message + '</div>' +
+      '</div>' +
+
+      '<form onsubmit="handleRespondBranchRequest(event, \'' + r.id + '\')" style="margin-top:1rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Administrative Response / Order</label>' +
+        '<textarea id="admin-branch-reply" class="top-search-input" style="width:100%;height:60px;border-radius:6px" placeholder="Enter administrative instructions or confirmation to the branch..."></textarea>' +
+        '<div style="display:flex;gap:0.5rem;margin-top:0.75rem">' +
+          '<button type="submit" class="btn-export-dashboard" style="flex:1">Send Response to Branch</button>' +
+          '<button type="button" class="btn-view-sm" style="padding:0.65rem 1rem" onclick="closeAdminModal()">Close</button>' +
+        '</div>' +
+      '</form>' +
+    '</div>';
+
+  openAdminModal();
+}
+
+function handleRespondBranchRequest(e, reqId) {
+  e.preventDefault();
+  const reply = document.getElementById('admin-branch-reply').value.trim();
+  alert('Administrative response dispatched to the branch.');
+  closeAdminModal();
+}
+
+function openAllBranchRequestsModal() {
+  document.getElementById('admin-modal-title').textContent = 'All Branch Communication & Requests';
+  document.getElementById('admin-modal-body').innerHTML = 
+    '<div style="max-height:350px;overflow-y:auto">' +
+      allBranchRequests.map(r => 
+        '<div style="padding:0.75rem;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:0.5rem;background:#ffffff">' +
+          '<div style="display:flex;justify-content:space-between">' +
+            '<strong>' + r.requestType + '</strong>' +
+            '<span class="status-pill ' + (r.adminChecked ? 'pill-green' : 'pill-orange') + '">' + (r.adminChecked ? 'CHECKED' : 'PENDING') + '</span>' +
+          '</div>' +
+          '<div style="font-size:0.75rem;color:#64748b">' + r.branchName + ' · ' + r.senderName + '</div>' +
+          '<div style="font-size:0.8rem;color:#1e293b;margin-top:3px">' + r.message + '</div>' +
+        '</div>'
+      ).join('') +
+    '</div>' +
+    '<button class="btn btn-outline" style="width:100%;margin-top:1rem;padding:0.6rem" onclick="closeAdminModal()">Close</button>';
+  openAdminModal();
 }

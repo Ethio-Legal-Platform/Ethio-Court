@@ -344,7 +344,9 @@
         "lawyerLicenseNumber": "LAW-1001",
         "submittedAt": "2026-08-20T08:33:26.859Z"
       }
-    }
+    },
+    "adminViewed": true,
+    "adminViewedAt": "2026-08-20T16:54:41.703Z"
   },
   {
     "caseId": "CASE-1787213071052",
