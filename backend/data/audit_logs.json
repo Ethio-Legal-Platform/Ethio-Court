@@ -1,5 +1,21 @@
 [
   {
+    "id": "AUD-1787247038151",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Hassan",
+    "role": "officer",
+    "timestamp": "2026-08-20T17:30:38.151Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787247026320",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-20T17:30:26.320Z",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-1787245838416",
     "action": "USER_LOGIN",
     "user": "System Administrator",
