@@ -1,5 +1,19 @@
 [
   {
+    "id": "LAWYER-000",
+    "username": "kebede.lawyer",
+    "password": "password123",
+    "fullName": "Kebede Haile Mariam",
+    "email": "kebede.lawyer@fsc.gov.et",
+    "phone": "+251 91 122 3344",
+    "licenseNumber": "LAW-1001",
+    "specialization": "Criminal & Commercial Law",
+    "role": "lawyer",
+    "isGovernmentLawyer": false,
+    "currentCaseload": 4,
+    "registeredAt": "2026-08-15T17:58:34.032Z"
+  },
+  {
     "id": "LAWYER-001",
     "username": "qalalew",
     "password": "1234",

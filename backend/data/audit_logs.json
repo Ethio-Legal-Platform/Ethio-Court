@@ -1,5 +1,61 @@
 [
   {
+    "id": "AUD-1787241315584",
+    "action": "USER_LOGIN",
+    "user": "Tesfaye Alemu",
+    "role": "officer",
+    "timestamp": "2026-08-20T15:55:15.584Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787241287163",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-20T15:54:47.163Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787241287158",
+    "action": "USER_LOGIN",
+    "user": "Kalkidan Mengistu",
+    "role": "clerk",
+    "timestamp": "2026-08-20T15:54:47.158Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787241287150",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-20T15:54:47.150Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787241287145",
+    "action": "USER_LOGIN",
+    "user": "Kebede Haile Mariam",
+    "role": "lawyer",
+    "timestamp": "2026-08-20T15:54:47.145Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787241287138",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-20T15:54:47.138Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787241148590",
+    "action": "USER_LOGIN",
+    "user": "Kalkidan Mengistu",
+    "role": "clerk",
+    "timestamp": "2026-08-20T15:52:28.590Z",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUDIT-1787215965287-241",
     "caseId": "CASE-1787215964172",
     "actor": {

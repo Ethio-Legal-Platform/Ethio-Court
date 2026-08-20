@@ -59,4 +59,26 @@ async function verifyLawyer(req, res) {
   return res.status(404).json({ verified: false, error: 'License number not found in Ministry of Justice registry' });
 }
 
-module.exports = { login, verifyLawyer };
+async function registerLawyer(req, res) {
+  const { licenseNumber, fullName, username, password } = req.body;
+  if (!licenseNumber || !username || !password) {
+    return res.status(400).json({ error: 'License number, username, and password required' });
+  }
+  const license = await dbService.findOne('moj_licenses', { licenseNumber: licenseNumber.trim() });
+  if (!license) {
+    return res.status(400).json({ error: 'Ministry of Justice license not found or not certified' });
+  }
+  const newLawyer = {
+    id: 'LAW-' + Date.now(),
+    username,
+    password,
+    fullName: fullName || license.fullName,
+    licenseNumber: license.licenseNumber,
+    role: 'advocate',
+    status: 'active'
+  };
+  await dbService.insert('lawyers', newLawyer);
+  return res.status(201).json({ success: true, user: newLawyer });
+}
+
+module.exports = { login, verifyLawyer, registerLawyer };
