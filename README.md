@@ -1,8 +1,4 @@
-﻿# Ethio-Court
-
-Skeleton structure for the Ethio-Court legal and court management platform.
-
-# ??? Federal Supreme Court of Ethiopia � Electronic Case Management & E-Filing System (EF-CMS)
+﻿# ??? Federal Supreme Court of Ethiopia � Electronic Case Management & E-Filing System (EF-CMS)
 
 <div align="center">
 
