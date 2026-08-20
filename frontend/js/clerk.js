@@ -924,3 +924,72 @@ function closeClerkModal() {
   const modal = document.getElementById('universal-clerk-modal');
   if (modal) modal.style.display = 'none';
 }
+
+
+// ── Clerk Hearing Session Summary Logger (Section 7) ──
+function openHearingSummaryModal(caseId) {
+  document.getElementById('clerk-modal-title').textContent = 'Log Hearing Session Activity & Attendance — ' + caseId;
+  document.getElementById('clerk-modal-body').innerHTML = 
+    '<form onsubmit="handleLogSessionSubmit(event, \'' + caseId + '\')">' +
+      '<div style="background:#f8fafc;padding:0.75rem;border-radius:6px;border:1px solid #e2e8f0;margin-bottom:0.75rem">' +
+        '<div style="font-weight:700;font-size:0.8rem;margin-bottom:0.35rem">Party Attendance Verification</div>' +
+        '<div style="display:flex;gap:1.5rem;font-size:0.8rem">' +
+          '<label style="display:flex;align-items:center;gap:0.35rem"><input type="checkbox" id="sess-plaintiff-pres" checked/> Plaintiff / Counsel Present</label>' +
+          '<label style="display:flex;align-items:center;gap:0.35rem"><input type="checkbox" id="sess-def-pres" checked/> Defendant / Counsel Present</label>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="margin-bottom:0.75rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Topics Discussed During Session</label>' +
+        '<input type="text" id="sess-topics" class="top-search-input" value="Oral arguments on documentary evidence admissibility and preliminary objections." required/>' +
+      '</div>' +
+
+      '<div style="margin-bottom:0.75rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Session Summary Notes</label>' +
+        '<textarea id="sess-summary" class="top-search-input" style="width:100%;height:60px" required>Parties presented submissions. Court ordered cross-examination for next hearing session.</textarea>' +
+      '</div>' +
+
+      '<div style="margin-bottom:1rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Follow-up Hearing Date (if verbally ordered by Judge)</label>' +
+        '<input type="date" id="sess-next-date" class="top-search-input" value="2026-06-12"/>' +
+      '</div>' +
+
+      '<div style="display:flex;gap:0.5rem">' +
+        '<button type="submit" class="btn-clerk-primary" style="flex:1">Save &amp; Publish Session Summary</button>' +
+        '<button type="button" class="btn-clerk-outline" style="padding:0.6rem 1rem" onclick="closeClerkModal()">Cancel</button>' +
+      '</div>' +
+    '</form>';
+  openClerkModal();
+}
+
+async function handleLogSessionSubmit(e, caseId) {
+  e.preventDefault();
+  const plaintiffPresent = document.getElementById('sess-plaintiff-pres').checked;
+  const defendantPresent = document.getElementById('sess-def-pres').checked;
+  const topicsDiscussed = document.getElementById('sess-topics').value.trim();
+  const summaryNotes = document.getElementById('sess-summary').value.trim();
+  const nextHearingDate = document.getElementById('sess-next-date').value;
+
+  try {
+    const res = await fetch(API + '/cases/log-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId,
+        plaintiffPresent,
+        defendantPresent,
+        topicsDiscussed,
+        summaryNotes,
+        nextHearingDate,
+        clerkName: currentClerk.fullName || 'Court Clerk'
+      })
+    });
+    if (res.ok) {
+      alert('Hearing session summary recorded and added to chronological case history.');
+      closeClerkModal();
+      await loadClerkData();
+    }
+  } catch (err) {
+    alert('Error recording session: ' + err.message);
+  }
+}

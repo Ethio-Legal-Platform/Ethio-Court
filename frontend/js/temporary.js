@@ -819,3 +819,102 @@ function closeLitigantModal() {
   const modal = document.getElementById('universal-litigant-modal');
   if (modal) modal.style.display = 'none';
 }
+
+
+// ── Defendant Representation Selector & Lawyer Appointment Modal (Section 4 & 3) ──
+function openChooseRepresentationModal(caseId) {
+  document.getElementById('litigant-modal-title').textContent = 'Choose Legal Representation Option';
+  document.getElementById('litigant-modal-body').innerHTML = 
+    '<div style="margin-bottom:1rem;color:#475569;font-size:0.8rem">Select how you wish to be represented in this court proceeding:</div>' +
+    '<div style="display:grid;gap:0.75rem;margin-bottom:1.25rem">' +
+      '<div style="padding:1rem;border:1.5px solid #0284c7;border-radius:8px;background:#f0f9ff;cursor:pointer" onclick="handleSelectRepType(\'' + caseId + '\', \'self\')">' +
+        '<div style="font-weight:700;color:#0369a1">Option 1: Self-Representation</div>' +
+        '<div style="font-size:0.75rem;color:#0284c7;margin-top:2px">Manage your own defense, submit evidence, and receive direct court summons.</div>' +
+      '</div>' +
+
+      '<div style="padding:1rem;border:1.5px solid #cbd5e1;border-radius:8px;background:#ffffff;cursor:pointer" onclick="openAppointLawyerInputModal(\'' + caseId + '\')">' +
+        '<div style="font-weight:700;color:var(--fsc-navy-main)">Option 2: Appoint a Private Lawyer</div>' +
+        '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">Enter a licensed advocate\'s Ministry of Justice license number (e.g. LAW-1001).</div>' +
+      '</div>' +
+
+      '<div style="padding:1rem;border:1.5px solid #16a34a;border-radius:8px;background:#f0fdf4;cursor:pointer" onclick="handleSelectRepType(\'' + caseId + '\', \'government_lawyer\')">' +
+        '<div style="font-weight:700;color:#15803d">Option 3: Request Government-Appointed Public Defender</div>' +
+        '<div style="font-size:0.75rem;color:#16a34a;margin-top:2px">The court will auto-assign an available public defense counsel with the lightest caseload.</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn btn-outline" style="width:100%;padding:0.6rem" onclick="closeLitigantModal()">Cancel</button>';
+  openLitigantModal();
+}
+
+async function handleSelectRepType(caseId, choiceType) {
+  try {
+    const res = await fetch(API + '/cases/defendant-representation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caseId, choiceType, defendantName: currentLitigant.fullName || 'Defendant' })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert('Representation option confirmed: ' + choiceType.replace('_', ' ').toUpperCase());
+      closeLitigantModal();
+      await loadLitigantData();
+    }
+  } catch (e) {
+    alert('Error selecting representation: ' + e.message);
+  }
+}
+
+function openAppointLawyerInputModal(caseId) {
+  document.getElementById('litigant-modal-title').textContent = 'Appoint Licensed Advocate';
+  document.getElementById('litigant-modal-body').innerHTML = 
+    '<form onsubmit="handleSendLawyerRequest(event, \'' + caseId + '\')">' +
+      '<div style="margin-bottom:1rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Advocate License Number (MoJ)</label>' +
+        '<input type="text" id="app-lawyer-license" class="top-search-input" style="width:100%" placeholder="e.g. LAW-1001" required/>' +
+      '</div>' +
+      '<div style="display:flex;gap:0.5rem">' +
+        '<button type="submit" class="btn btn-primary" style="flex:1;background:var(--fsc-navy-main);color:#fff;border:none;padding:0.65rem;border-radius:6px;font-weight:700">Send Appointment Request</button>' +
+        '<button type="button" class="btn btn-outline" style="padding:0.65rem 1rem" onclick="closeLitigantModal()">Cancel</button>' +
+      '</div>' +
+    '</form>';
+  openLitigantModal();
+}
+
+async function handleSendLawyerRequest(e, caseId) {
+  e.preventDefault();
+  const licenseNumber = document.getElementById('app-lawyer-license').value.trim();
+  try {
+    const res = await fetch(API + '/cases/lawyer-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caseId, licenseNumber, clientName: currentLitigant.fullName || 'Client' })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(data.message || 'Appointment request dispatched to lawyer.');
+      closeLitigantModal();
+      await loadLitigantData();
+    } else {
+      alert(data.error || 'Failed to dispatch request');
+    }
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
+async function handleRemoveLawyer(caseId) {
+  if (!confirm('Are you sure you want to revoke your lawyer\'s appointment? Full control will return to your account.')) return;
+  try {
+    const res = await fetch(API + '/cases/lawyer-remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caseId, clientName: currentLitigant.fullName || 'Client' })
+    });
+    if (res.ok) {
+      alert('Lawyer removed. Full control returned to client.');
+      await loadLitigantData();
+    }
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}

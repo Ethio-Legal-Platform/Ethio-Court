@@ -1110,3 +1110,99 @@ function generateBranchChartHtml(branchId) {
     </div>
   `;
 }
+
+
+// ── Functional Admin Case Review & Legal Check Assistant ──
+async function openAdminReviewModal(caseId) {
+  const caseItem = allCases.find(c => c.caseId === caseId) || { caseId, petitioner: 'Filer', respondent: 'Respondent', caseType: 'Civil' };
+  let legalLibrary = [];
+  try {
+    const res = await fetch(API + '/legal-library');
+    if (res.ok) legalLibrary = await res.json();
+  } catch (e) {}
+
+  const legalOptionsHtml = legalLibrary.map(l => 
+    '<option value="' + l.article + ' - ' + l.title + '">' + l.article + ': ' + l.title + ' (' + l.category + ')</option>'
+  ).join('');
+
+  document.getElementById('admin-modal-title').textContent = 'Admin Screening & Branch Assignment — ' + caseId;
+  document.getElementById('admin-modal-body').innerHTML = 
+    '<form onsubmit="handleAdminReviewSubmit(event, \'' + caseId + '\')">' +
+      '<div style="background:#f8fafc;padding:0.75rem 1rem;border-radius:6px;margin-bottom:1rem;border:1px solid #e2e8f0">' +
+        '<div style="font-weight:700;color:var(--fsc-navy-main)">' + (caseItem.caseTitle || caseItem.petitioner + ' vs. ' + caseItem.respondent) + '</div>' +
+        '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">Filer: ' + (caseItem.petitioner || 'Plaintiff') + ' | Phone: ' + (caseItem.filerPhone || 'N/A') + '</div>' +
+      '</div>' +
+
+      '<div style="margin-bottom:0.75rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Applicable Law / Legal Article Check</label>' +
+        '<select id="rev-legal-article" class="top-search-input" style="width:100%;border-radius:6px">' +
+          '<option value="Civil Code Art. 2024 - Breach of Commercial Contract">Civil Code Art. 2024 - Breach of Commercial Contract</option>' +
+          '<option value="Commercial Code Art. 715 - Negotiable Instruments & Banking Default">Commercial Code Art. 715 - Negotiable Instruments &amp; Banking Default</option>' +
+          '<option value="Criminal Code Art. 675 - Fraud & Financial Deception">Criminal Code Art. 675 - Fraud &amp; Financial Deception</option>' +
+          '<option value="FDRE Constitution Art. 37 - Right to Access to Justice">FDRE Constitution Art. 37 - Right to Access to Justice</option>' +
+          legalOptionsHtml +
+        '</select>' +
+      '</div>' +
+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
+        '<div>' +
+          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Screening Decision</label>' +
+          '<select id="rev-decision" class="top-search-input" style="width:100%;border-radius:6px">' +
+            '<option value="approved" selected>Approve &amp; Forward to Branch</option>' +
+            '<option value="rejected">Decline / Dismiss Filing</option>' +
+          '</select>' +
+        '</div>' +
+        '<div>' +
+          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Target Court Branch</label>' +
+          '<select id="rev-branch" class="top-search-input" style="width:100%;border-radius:6px">' +
+            '<option value="Federal Supreme Court (Sidist Kilo)">Federal Supreme Court (Sidist Kilo)</option>' +
+            '<option value="Federal High Court — Lideta Division">Federal High Court — Lideta Division</option>' +
+            '<option value="Federal High Court — Arada Criminal">Federal High Court — Arada Criminal</option>' +
+            '<option value="Federal First Instance — Kirkos & Bole">Federal First Instance — Kirkos &amp; Bole</option>' +
+            '<option value="Dire Dawa Federal Circuit Court">Dire Dawa Federal Circuit Court</option>' +
+          '</select>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="margin-bottom:1rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Review Notes / Instructions</label>' +
+        '<textarea id="rev-comments" class="top-search-input" style="width:100%;height:65px;border-radius:6px" placeholder="Enter judicial classification and notes..."></textarea>' +
+      '</div>' +
+
+      '<div style="display:flex;gap:0.5rem">' +
+        '<button type="submit" class="btn-export-dashboard" style="flex:1">Submit Screening Decision</button>' +
+        '<button type="button" class="btn-view-sm" style="padding:0.6rem 1rem" onclick="closeAdminModal()">Cancel</button>' +
+      '</div>' +
+    '</form>';
+  openAdminModal();
+}
+
+async function handleAdminReviewSubmit(e, caseId) {
+  e.preventDefault();
+  const decision = document.getElementById('rev-decision').value;
+  const branchAssigned = document.getElementById('rev-branch').value;
+  const relevantLawArticle = document.getElementById('rev-legal-article').value;
+  const comments = document.getElementById('rev-comments').value.trim();
+
+  try {
+    const res = await fetch(API + '/cases/admin-review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId,
+        decision,
+        branchAssigned,
+        relevantLawArticle,
+        comments,
+        adminName: currentAdmin.fullName || 'Admin User'
+      })
+    });
+    if (res.ok) {
+      alert('Screening decision submitted successfully. Case forwarded to ' + branchAssigned);
+      closeAdminModal();
+      await loadAdminData();
+    }
+  } catch (err) {
+    alert('Error submitting review: ' + err.message);
+  }
+}

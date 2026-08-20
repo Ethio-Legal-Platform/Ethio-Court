@@ -5,8 +5,8 @@
     "caseType": "Corporate",
     "dateDecided": "2026-08-20",
     "status": "Decided",
-    "judgeId": "JUDGE-002",
-    "judgeName": "Hon. Judge Bekele Seyoum",
+    "judgeId": "JUDGE-001",
+    "judgeName": "Hon. Judge Solomon Desta",
     "plaintiffClientId": "0911998877",
     "plaintiffClientName": "Awash International Bank S.C.",
     "plaintiffLawyerLicense": "LAW-1001",
@@ -20,36 +20,25 @@
     "judgeRatingDefendant": 3.8,
     "clientRatingDefendant": null,
     "verdict": {
+      "verdictDate": "2026-08-20T16:24:30.197Z",
       "winningParty": "plaintiff",
-      "winningSide": "plaintiff",
-      "losingSide": "defendant",
-      "winnerName": "Awash International Bank S.C.",
-      "loserName": "Blue Nile Holdings PLC",
-      "outcomeSummary": "Plaintiff Won (Awash International Bank S.C.) — Defendant Lost (Blue Nile Holdings PLC)",
-      "judgmentRemedy": "Defendant ordered to settle bond liabilities.",
-      "finalStatement": "Court finds in favor of Plaintiff based on commercial law.",
-      "verdictDate": "2026-08-20T08:52:44.414Z",
-      "appealDeadline": "2026-09-19T08:52:44.414Z",
-      "appealFiled": false,
-      "judgeId": "JUDGE-002",
-      "judgeName": "Hon. Judge Bekele Seyoum",
-      "advocateRatings": [
+      "judgmentRemedy": "Default liability awarded",
+      "finalStatement": "Case concluded in favor of Plaintiff.",
+      "appealDeadline": "2026-09-19T16:24:30.197Z",
+      "judgeName": "Hon. Judge Solomon Desta",
+      "ratings": [
         {
-          "licenseNumber": "LAW-1001",
-          "lawyerName": "Kebede Haile Mariam",
-          "rating": 4.9,
-          "side": "plaintiff"
+          "side": "plaintiff",
+          "rating": 5
         },
         {
-          "licenseNumber": "LAW-1002",
-          "lawyerName": "Tigist Alemu Bekele",
-          "rating": 3.8,
-          "side": "defense"
+          "side": "defense",
+          "rating": 4
         }
       ]
     },
     "tempPin": "437502",
-    "jurisdiction": "Addis Ababa",
+    "jurisdiction": "Federal Supreme Court (Sidist Kilo)",
     "description": "Commercial contract default on infrastructure guarantees.",
     "incidentDate": null,
     "incidentLocation": "",
@@ -80,12 +69,27 @@
     "assignedJudgeId": null,
     "assignedOfficerId": null,
     "assignedClerkId": null,
-    "courtroom": null,
+    "courtroom": "Courtroom 4",
     "officialLetterSent": false,
     "adminLegalCheck": null,
     "twoStageEvidence": [],
     "appointments": [],
-    "postponements": [],
+    "postponements": {
+      "plaintiffCount": 1,
+      "defendantCount": 0,
+      "requests": [
+        {
+          "id": "POSTP-1787243070165",
+          "side": "plaintiff",
+          "requestedBy": "Counsel",
+          "reason": "Awaiting certified bank guarantee documents from National Bank",
+          "requestedDate": "Next available week",
+          "countForSide": 1,
+          "status": "auto_approved",
+          "timestamp": "2026-08-20T16:24:30.165Z"
+        }
+      ]
+    },
     "judgeNotes": [],
     "documentRequests": [],
     "filedAt": "2026-08-20T08:52:44.173Z",
@@ -99,7 +103,64 @@
         "lawyerLicenseNumber": "LAW-1001",
         "submittedAt": "2026-08-20T08:52:44.922Z"
       }
-    }
+    },
+    "screeningStatus": "approved",
+    "screeningNotes": "",
+    "relevantLawArticle": "Commercial Code Art. 715",
+    "reviewedBy": "Admin User",
+    "reviewedAt": "2026-08-20T16:24:30.056Z",
+    "clerkName": "Kalkidan Mengistu",
+    "hearingDate": "2026-06-05",
+    "hearingTime": "10:00 AM",
+    "estimatedDuration": "1 hour",
+    "scheduledBy": "Branch Official",
+    "pendingLawyerRequest": {
+      "lawyerId": "LAWYER-000",
+      "lawyerName": "Kebede Haile Mariam",
+      "licenseNumber": "LAW-1001",
+      "side": "plaintiff",
+      "requestedBy": "Awash International Bank",
+      "requestedAt": "2026-08-20T16:24:30.127Z",
+      "status": "pending"
+    },
+    "defendantActivated": true,
+    "defendantRepresentation": {
+      "type": "government_lawyer",
+      "lawyerId": "LAWYER-003",
+      "lawyerName": "Public Defender Dawit Kebede (State Appointed)",
+      "licenseNumber": "LAW-2001",
+      "chosenAt": "2026-08-20T16:24:30.156Z"
+    },
+    "documents": [],
+    "sessionSummaries": [
+      {
+        "id": "SESS-1787243017042",
+        "date": "2026-08-20T16:23:37.042Z",
+        "clerkName": "Kalkidan Mengistu",
+        "attendance": {
+          "plaintiffPresent": true,
+          "defendantPresent": true
+        },
+        "topicsDiscussed": "Examination of bank statements",
+        "sessionActivities": "Evidence dossier marked and admitted",
+        "summaryNotes": "Court adjourned to deliver final judgment.",
+        "nextHearingDate": null
+      },
+      {
+        "id": "SESS-1787243070185",
+        "date": "2026-08-20T16:24:30.185Z",
+        "clerkName": "Kalkidan Mengistu",
+        "attendance": {
+          "plaintiffPresent": true,
+          "defendantPresent": true
+        },
+        "topicsDiscussed": "Examination of bank statements",
+        "sessionActivities": "Evidence dossier marked and admitted",
+        "summaryNotes": "Court adjourned to deliver final judgment.",
+        "nextHearingDate": null
+      }
+    ],
+    "appealDeadline": "2026-09-19T16:24:30.197Z"
   },
   {
     "caseId": "CASE-1787215962441",

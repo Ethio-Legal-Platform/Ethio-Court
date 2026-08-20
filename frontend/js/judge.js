@@ -810,3 +810,194 @@ function closeJudgeModal() {
   const modal = document.getElementById('universal-judge-modal');
   if (modal) modal.style.display = 'none';
 }
+
+
+// ── Side-by-Side Submission Viewer & Evidence Classification Gate (Section 8 & 12.4) ──
+function openSideBySideViewer(caseId) {
+  const caseItem = allCourtCases.find(c => c.caseId === caseId) || { caseId, documents: [] };
+  const docs = caseItem.documents || [];
+
+  const docsHtml = docs.length ? docs.map(d => {
+    const isSealed = d.classificationStatus === 'sealed';
+    const isShared = d.classificationStatus === 'shared';
+    return '<div style="padding:0.75rem;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:0.5rem;background:' + (isSealed ? '#fef2f2' : '#f8fafc') + '">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<div>' +
+          '<strong>' + d.name + '</strong> (' + (d.size || '1.2 MB') + ')<br>' +
+          '<span style="font-size:0.75rem;color:#64748b">Uploaded by: ' + (d.uploadedBy || 'Counsel') + ' | Status: </span>' +
+          '<span class="judge-pill ' + (isSealed ? 'pill-orange' : (isShared ? 'pill-green' : 'pill-blue')) + '">' + (d.classificationStatus || 'Pending Review').toUpperCase() + '</span>' +
+        '</div>' +
+        '<div style="display:flex;gap:0.35rem">' +
+          '<button class="btn-open-case" style="padding:0.25rem 0.5rem;font-size:0.75rem" onclick="classifyDoc(\'' + caseId + '\', \'' + (d.id || d.name) + '\', \'shared\')">Mark Shared</button>' +
+          '<button class="btn-open-case" style="padding:0.25rem 0.5rem;font-size:0.75rem;background:#ef4444" onclick="classifyDoc(\'' + caseId + '\', \'' + (d.id || d.name) + '\', \'sealed\')">Seal Evidence</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('') : '<p style="color:#64748b">No evidentiary submissions uploaded yet.</p>';
+
+  document.getElementById('judge-modal-title').textContent = 'Side-by-Side Submissions & Evidence Gate — ' + caseId;
+  document.getElementById('judge-modal-body').innerHTML = 
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">' +
+      '<div style="border:1px solid #cbd5e1;border-radius:8px;padding:0.75rem;background:#ffffff">' +
+        '<div style="font-weight:700;color:var(--fsc-navy-main);margin-bottom:0.5rem">Plaintiff Submissions</div>' +
+        docsHtml +
+      '</div>' +
+      '<div style="border:1px solid #cbd5e1;border-radius:8px;padding:0.75rem;background:#ffffff">' +
+        '<div style="font-weight:700;color:var(--fsc-navy-main);margin-bottom:0.5rem">Defendant Submissions</div>' +
+        '<div style="padding:1rem;text-align:center;color:#64748b;background:#f8fafc;border-radius:6px">Defendant Statement of Defense &amp; Counter-Affidavit admitted on record.</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn btn-outline" style="width:100%;padding:0.6rem" onclick="closeJudgeModal()">Close Viewer</button>';
+  openJudgeModal();
+}
+
+async function classifyDoc(caseId, docId, classification) {
+  try {
+    const res = await fetch(API + '/cases/classify-evidence', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caseId, docId, classification, judgeName: currentJudge.fullName || 'Judge' })
+    });
+    if (res.ok) {
+      alert('Evidence item classified as ' + classification.toUpperCase());
+      await loadJudgeData();
+      openSideBySideViewer(caseId);
+    }
+  } catch (e) {
+    alert('Classification error: ' + e.message);
+  }
+}
+
+// ── Case Notepad with Timestamp (Section 8) ──
+function openJudgeNotepad(caseId) {
+  const caseItem = allCourtCases.find(c => c.caseId === caseId) || { caseId, caseNotes: [] };
+  const notes = caseItem.caseNotes || [];
+
+  const notesHtml = notes.map(n => 
+    '<div style="padding:0.6rem 0.75rem;background:#fefce8;border-left:3px solid #eab308;margin-bottom:0.5rem;border-radius:4px">' +
+      '<div style="font-size:0.7rem;color:#854d0e;font-weight:700">' + new Date(n.timestamp).toLocaleString() + ' — ' + n.author + '</div>' +
+      '<div style="font-size:0.8rem;color:#1e293b;margin-top:2px">' + n.note + '</div>' +
+    '</div>'
+  ).join('');
+
+  document.getElementById('judge-modal-title').textContent = 'Judicial Case Notes (Timestamped) — ' + caseId;
+  document.getElementById('judge-modal-body').innerHTML = 
+    '<div style="max-height:220px;overflow-y:auto;margin-bottom:1rem">' +
+      (notesHtml || '<p style="color:#64748b">No notes entered yet.</p>') +
+    '</div>' +
+    '<form onsubmit="handleAddJudgeNote(event, \'' + caseId + '\')">' +
+      '<textarea id="judge-new-note" class="judge-search-input" style="width:100%;height:60px;margin-bottom:0.75rem" placeholder="Enter judicial observation..." required></textarea>' +
+      '<div style="display:flex;gap:0.5rem">' +
+        '<button type="submit" class="btn btn-primary" style="flex:1;background:var(--fsc-navy-main);color:#fff;border:none;padding:0.6rem;border-radius:6px;font-weight:700">Add Note</button>' +
+        '<button type="button" class="btn btn-outline" style="padding:0.6rem 1rem" onclick="closeJudgeModal()">Close</button>' +
+      '</div>' +
+    '</form>';
+  openJudgeModal();
+}
+
+async function handleAddJudgeNote(e, caseId) {
+  e.preventDefault();
+  const note = document.getElementById('judge-new-note').value.trim();
+  try {
+    const res = await fetch(API + '/cases/add-note', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caseId, note, author: currentJudge.fullName || 'Hon. Judge Solomon Desta', role: 'judge' })
+    });
+    if (res.ok) {
+      await loadJudgeData();
+      openJudgeNotepad(caseId);
+    }
+  } catch (err) {}
+}
+
+// ── Final Statement & Verdict Entry with Lawyer Ratings (Section 8 & 10) ──
+function openVerdictModal(caseId) {
+  document.getElementById('judge-modal-title').textContent = 'Enter Final Verdict & Advocate Performance Ratings — ' + caseId;
+  document.getElementById('judge-modal-body').innerHTML = 
+    '<form onsubmit="handleIssueVerdictSubmit(event, \'' + caseId + '\')">' +
+      '<div style="margin-bottom:0.75rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Winning Party</label>' +
+        '<select id="verd-winner" class="judge-search-input" style="width:100%">' +
+          '<option value="plaintiff">Plaintiff (Full Remedy Granted)</option>' +
+          '<option value="defendant">Defendant (Case Dismissed)</option>' +
+          '<option value="mutual_settlement">Mutual Court-Supervised Settlement</option>' +
+        '</select>' +
+      '</div>' +
+
+      '<div style="margin-bottom:0.75rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Judgment Remedy &amp; Order</label>' +
+        '<input type="text" id="verd-remedy" class="judge-search-input" value="Commercial damages of ETB 2,450,000 awarded plus legal costs." required/>' +
+      '</div>' +
+
+      '<div style="margin-bottom:0.75rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Final Statement / Judicial Reason</label>' +
+        '<textarea id="verd-statement" class="judge-search-input" style="width:100%;height:65px" required>Based on undisputed bank guarantees and contract breaches per Art. 2024 of Civil Code, judgment is entered for Plaintiff.</textarea>' +
+      '</div>' +
+
+      '<div style="background:#f8fafc;padding:0.75rem;border-radius:6px;border:1px solid #e2e8f0;margin-bottom:1rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Rate Advocate / Prosecutor Performance (1 to 5 Stars)</label>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">' +
+          '<div>' +
+            '<span style="font-size:0.75rem;color:#475569">Plaintiff Advocate:</span>' +
+            '<select id="verd-rate-p" class="judge-search-input" style="width:100%;margin-top:2px">' +
+              '<option value="5">★★★★★ (5/5 - Exceptional)</option>' +
+              '<option value="4" selected>★★★★☆ (4/5 - Proficient)</option>' +
+              '<option value="3">★★★☆☆ (3/5 - Competent)</option>' +
+            '</select>' +
+          '</div>' +
+          '<div>' +
+            '<span style="font-size:0.75rem;color:#475569">Defense Advocate:</span>' +
+            '<select id="verd-rate-d" class="judge-search-input" style="width:100%;margin-top:2px">' +
+              '<option value="5">★★★★★ (5/5)</option>' +
+              '<option value="4">★★★★☆ (4/5)</option>' +
+              '<option value="3" selected>★★★☆☆ (3/5)</option>' +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:0.7rem;color:#64748b;margin-top:0.4rem">Ratings will sync to the advocate ranking directory. 30-day appeal countdown starts immediately.</div>' +
+      '</div>' +
+
+      '<div style="display:flex;gap:0.5rem">' +
+        '<button type="submit" class="btn btn-primary" style="flex:1;background:#16a34a;color:#fff;border:none;padding:0.75rem;border-radius:6px;font-weight:700;cursor:pointer">Deliver Final Verdict</button>' +
+        '<button type="button" class="btn btn-outline" style="padding:0.75rem 1rem" onclick="closeJudgeModal()">Cancel</button>' +
+      '</div>' +
+    '</form>';
+  openJudgeModal();
+}
+
+async function handleIssueVerdictSubmit(e, caseId) {
+  e.preventDefault();
+  const winningParty = document.getElementById('verd-winner').value;
+  const judgmentRemedy = document.getElementById('verd-remedy').value.trim();
+  const finalStatement = document.getElementById('verd-statement').value.trim();
+  const rateP = parseInt(document.getElementById('verd-rate-p').value, 10);
+  const rateD = parseInt(document.getElementById('verd-rate-d').value, 10);
+
+  const lawyerRatings = [
+    { side: 'plaintiff', rating: rateP, remarks: 'Oral advocacy and brief preparation' },
+    { side: 'defense', rating: rateD, remarks: 'Defense representation' }
+  ];
+
+  try {
+    const res = await fetch(API + '/cases/verdict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId,
+        winningParty,
+        judgmentRemedy,
+        finalStatement,
+        lawyerRatings,
+        judgeName: currentJudge.fullName || 'Hon. Judge Solomon Desta'
+      })
+    });
+    if (res.ok) {
+      alert('Final verdict entered successfully. 30-day statutory appeal window activated.');
+      closeJudgeModal();
+      await loadJudgeData();
+    }
+  } catch (err) {
+    alert('Error issuing verdict: ' + err.message);
+  }
+}

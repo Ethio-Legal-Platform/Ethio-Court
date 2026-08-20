@@ -1,5 +1,102 @@
 [
   {
+    "id": "AUD-1787243070200",
+    "action": "FINAL_VERDICT_ISSUED",
+    "user": "Judge",
+    "role": "judge",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:24:30.200Z",
+    "details": "Winner: plaintiff | Appeal Deadline: 30 days"
+  },
+  {
+    "id": "AUD-1787243070188",
+    "action": "HEARING_SESSION_LOGGED",
+    "user": "Court Clerk",
+    "role": "clerk",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:24:30.188Z"
+  },
+  {
+    "id": "AUD-1787243070177",
+    "action": "EVIDENCE_CLASSIFIED_SHARED",
+    "user": "Judge",
+    "role": "judge",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:24:30.177Z",
+    "details": "Doc: DOC-1 set to shared"
+  },
+  {
+    "id": "AUD-1787243070167",
+    "action": "POSTPONEMENT_REQUESTED",
+    "user": "Litigant",
+    "role": "plaintiff",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:24:30.167Z",
+    "details": "Reason: Awaiting certified bank guarantee documents from National Bank | Status: auto_approved"
+  },
+  {
+    "id": "AUD-1787243070106",
+    "action": "HEARING_SCHEDULED",
+    "user": "Branch Official",
+    "role": "official",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:24:30.106Z",
+    "details": "Judge: Hon. Judge Solomon Desta, Courtroom: Courtroom 4, Date: 2026-06-05 at 10:00 AM"
+  },
+  {
+    "id": "AUD-1787243070058",
+    "action": "ADMIN_APPROVED_AND_FORWARDED",
+    "user": "Admin User",
+    "role": "admin",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:24:30.058Z",
+    "details": "Assigned to Federal Supreme Court (Sidist Kilo). Law Check: Commercial Code Art. 715"
+  },
+  {
+    "id": "AUD-1787243017056",
+    "action": "FINAL_VERDICT_ISSUED",
+    "user": "Judge",
+    "role": "judge",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:23:37.056Z",
+    "details": "Winner: plaintiff | Appeal Deadline: 30 days"
+  },
+  {
+    "id": "AUD-1787243017045",
+    "action": "HEARING_SESSION_LOGGED",
+    "user": "Court Clerk",
+    "role": "clerk",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:23:37.045Z"
+  },
+  {
+    "id": "AUD-1787243017035",
+    "action": "EVIDENCE_CLASSIFIED_SHARED",
+    "user": "Judge",
+    "role": "judge",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:23:37.035Z",
+    "details": "Doc: DOC-1 set to shared"
+  },
+  {
+    "id": "AUD-1787243016996",
+    "action": "HEARING_SCHEDULED",
+    "user": "Branch Official",
+    "role": "official",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:23:36.996Z",
+    "details": "Judge: Hon. Judge Solomon Desta, Courtroom: Courtroom 4, Date: 2026-06-05 at 10:00 AM"
+  },
+  {
+    "id": "AUD-1787243016986",
+    "action": "ADMIN_APPROVED_AND_FORWARDED",
+    "user": "Admin User",
+    "role": "admin",
+    "caseId": "CASE-1787215964172",
+    "timestamp": "2026-08-20T16:23:36.986Z",
+    "details": "Assigned to Federal Supreme Court (Sidist Kilo). Law Check: Commercial Code Art. 715"
+  },
+  {
     "id": "AUD-1787241392895",
     "action": "USER_LOGIN",
     "user": "System Administrator",
