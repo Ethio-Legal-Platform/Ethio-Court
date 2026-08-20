@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Federal Supreme Court of Ethiopia — Official Workspace</title>
+  <title>Federal Supreme Court of Ethiopia — Branch Official Workspace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -819,6 +819,181 @@
     .modal-box-body { padding: 1.35rem; max-height: 80vh; overflow-y: auto; }
     .modal-close-btn { background: transparent; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer; }
     .modal-close-btn:hover { color: #0f172a; }
+  
+    /* 4-Col KPI Grid */
+    .official-kpi-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .official-kpi-card {
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: var(--fsc-radius-lg);
+      padding: 1.15rem 1.25rem;
+      box-shadow: var(--fsc-shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .official-kpi-top {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .official-kpi-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .kpi-orange { background: #fff7ed; color: #ea580c; }
+    .kpi-blue { background: #e0f2fe; color: #0284c7; }
+    .kpi-green { background: #dcfce7; color: #16a34a; }
+    .kpi-purple { background: #f3e8ff; color: #9333ea; }
+
+    .official-kpi-label {
+      font-size: 0.725rem;
+      font-weight: 700;
+      color: var(--fsc-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .official-kpi-number {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--fsc-navy-main);
+      line-height: 1.2;
+      margin-top: 2px;
+    }
+
+    .official-kpi-delta {
+      font-size: 0.725rem;
+      color: #64748b;
+      margin-top: 0.5rem;
+      padding-top: 0.4rem;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    /* Panels & Tables */
+    .official-panel-card {
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: var(--fsc-radius-lg);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--fsc-shadow-sm);
+      margin-bottom: 1.25rem;
+    }
+
+    .official-panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .official-panel-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--fsc-navy-main);
+    }
+
+    .official-panel-sub {
+      font-size: 0.775rem;
+      color: var(--fsc-text-muted);
+      margin-top: 2px;
+    }
+
+    .official-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.825rem;
+    }
+
+    .official-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      font-size: 0.725rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--fsc-border);
+    }
+
+    .official-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--fsc-text-main);
+      vertical-align: middle;
+    }
+
+    .official-table tr:hover { background: #fbfcfe; }
+
+    .case-link-bold {
+      font-weight: 700;
+      color: #0284c7;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .case-link-bold:hover { text-decoration: underline; }
+
+    /* Action Buttons - Outline */
+    .btn-schedule-action {
+      background: transparent;
+      color: var(--fsc-navy-main);
+      border: 1.5px solid var(--fsc-navy-main);
+      font-weight: 700;
+      font-size: 0.775rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+    .btn-schedule-action:hover {
+      background: #f1f5f9;
+      border-color: #0284c7;
+      color: #0284c7;
+      transform: translateY(-1px);
+    }
+
+    /* View All Button */
+    .btn-view-all-link {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: var(--fsc-navy-main);
+      font-weight: 700;
+      font-size: 0.775rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+    .btn-view-all-link:hover {
+      background: #ffffff;
+      border-color: #0284c7;
+      color: #0284c7;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+
   </style>
 </head>
 <body onclick="handleOfficialGlobalClick(event)">
@@ -900,13 +1075,12 @@
     </div>
   </header>
 
-  <!-- Layout Body (Sidebar + Content) -->
-  <div class="official-layout-body">
-
-    <!-- Left Dark Sidebar (Scrollable on overflow with custom scrollbar) -->
+  <!-- Body Content Layout -->
+  <div class="official-main-container">
+    <!-- Sidebar -->
     <aside class="official-sidebar">
       <div>
-        <div class="official-sidebar-section-title">Main Navigation</div>
+        <div class="official-sidebar-section-title">Screening Navigation</div>
         <div class="official-nav-group">
           <button class="official-nav-btn active" onclick="switchOfficialView('dashboard')">
             <div class="official-nav-btn-left">
@@ -916,145 +1090,52 @@
           </button>
           <button class="official-nav-btn" onclick="switchOfficialView('filing_queue')">
             <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/></svg>
               <span>Filing Queue</span>
             </div>
-            <span class="badge-orange-pill">14</span>
           </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('cases')">
+          <button class="official-nav-btn" onclick="switchOfficialView('reviewed_cases')">
             <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
-              <span>Cases</span>
-            </div>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('evidence_review')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
-              <span>Evidence Review</span>
-            </div>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('judge_assignment')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 13-7.5 7.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L11 10"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/></svg>
-              <span>Judge Assignment</span>
-            </div>
-          </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('court_calendar')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg>
-              <span>Court Calendar</span>
-            </div>
-          </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('document_demands')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
-              <span>Document Demands</span>
-            </div>
-            <span class="badge-orange-pill">2</span>
-          </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('postponement_requests')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span>Postponement Requests</span>
-            </div>
-            <span class="badge-orange-pill">5</span>
-          </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('notifications')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-              <span>Notifications</span>
-            </div>
-          </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('reports')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-              <span>Reports</span>
-            </div>
-          </button>
-        </div>
-
-        <div class="official-sidebar-section-title" style="margin-top:0.4rem">Administration</div>
-        <div class="official-nav-group">
-          <button class="official-nav-btn" onclick="switchOfficialView('users_roles')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              <span>Users &amp; Roles</span>
-            </div>
-          </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('court_divisions')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>
-              <span>Court Divisions</span>
-            </div>
-          </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('judges_staff')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 13-7.5 7.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L11 10"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/></svg>
-              <span>Judges &amp; Staff</span>
-            </div>
-          </button>
-          <button class="official-nav-btn" onclick="openOfficialSettingsModal()">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              <span>System Settings</span>
-            </div>
-          </button>
-          <button class="official-nav-btn" onclick="switchOfficialView('audit_log')">
-            <div class="official-nav-btn-left">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
-              <span>Audit Log</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <span>Reviewed Cases</span>
             </div>
           </button>
         </div>
       </div>
 
-      <!-- Bottom Chamber Box -->
-      <div class="official-sidebar-chamber-box">
-        <div style="color:var(--fsc-gold-main)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>
+      <div class="official-sidebar-status-box">
+        <div class="official-status-node">
+          <div class="official-status-dot"></div>
+          <span style="font-weight:700;color:#ffffff;font-size:0.75rem">SCREENING UNIT ACTIVE</span>
         </div>
-        <div class="official-chamber-text">
-          <span class="official-chamber-label">Court Division</span>
-          <span class="official-chamber-title">Federal Supreme Court</span>
-          <span class="official-chamber-sub">Screening Unit</span>
-        </div>
+        <div class="official-status-time" id="sidebar-live-date">May 24, 2026</div>
+        <div class="official-status-time" id="sidebar-live-clock" style="font-weight:700;color:#38bdf8">10:43:22 AM</div>
       </div>
     </aside>
 
-    <!-- Main Workspace (ONLY THIS AREA SCROLLS) -->
-    <main class="official-main-content">
-      <div id="dynamic-official-workspace">
-        <!-- Rendered dynamically via official.js -->
-      </div>
+    <!-- Main Content Workspace -->
+    <main class="official-content-pane" id="dynamic-official-workspace">
+      <!-- Injected Dynamically by official.js -->
     </main>
   </div>
 
   <!-- Institutional Footer -->
   <footer class="official-institutional-footer">
-    <div class="footer-security-tag">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <span>Secure. Transparent. Accessible Justice.</span>
+    <div style="display:flex;align-items:center;gap:0.5rem">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Judicial Case Management System · Branch Official Station</span>
     </div>
-    <div>
-      &copy; 2026 Federal Supreme Court of Ethiopia. All rights reserved.
-    </div>
-    <div>
-      Version 1.0.0
-    </div>
+    <span>Federal Supreme Court of Ethiopia &copy; 2026</span>
   </footer>
 
-  <!-- Universal Modal System -->
-  <div class="modal-backdrop" id="universal-official-modal">
+  <!-- Official Modal System -->
+  <div class="modal-backdrop" id="official-modal-backdrop">
     <div class="modal-box">
       <div class="modal-box-header">
-        <div class="modal-box-title" id="official-modal-title">Screening Action</div>
-        <button class="modal-close-btn" onclick="closeOfficialModal()">✕</button>
+        <div class="modal-box-title" id="official-modal-title">Official Action Modal</div>
+        <button class="modal-close-btn" onclick="closeOfficialModal()">&times;</button>
       </div>
-      <div class="modal-box-body" id="official-modal-body">
-        <!-- Injected modal content -->
-      </div>
+      <div class="modal-box-body" id="official-modal-body"></div>
     </div>
   </div>
 
