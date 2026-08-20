@@ -784,16 +784,29 @@ async function syncEndpoint(url) {
 }
 
 function openAdminCaseModal(caseId) {
-  const c = allCases.find(it => it.caseId === caseId) || { caseId: caseId, caseTitle: 'Court Case', jurisdiction: 'Federal Supreme Court', status: 'evidence_stage' };
+  const c = allCases.find(it => it.caseId === caseId) || { caseId: caseId, caseTitle: 'Court Case', jurisdiction: 'Federal Supreme Court', status: 'pending_screening' };
+  const isPending = c.status === 'pending_screening' || c.screeningStatus === 'pending' || !c.screeningStatus;
+  
   document.getElementById('admin-modal-title').textContent = 'Admin Docket Overview — ' + c.caseId;
   document.getElementById('admin-modal-body').innerHTML = 
     '<div style="line-height:1.7">' +
-      '<h3 style="font-size:1.05rem;font-weight:700;color:var(--fsc-navy-main);margin-bottom:0.5rem">' + (c.caseTitle || '') + '</h3>' +
-      '<div><strong>Bench:</strong> ' + (c.jurisdiction || 'Federal Supreme Court') + '</div>' +
-      '<div><strong>Status:</strong> <span class="status-pill pill-green">' + ((c.status || 'Active')).toUpperCase() + '</span></div>' +
-      '<div><strong>Presiding Judge:</strong> ' + (c.judgeName || 'Hon. Judge Solomon Desta') + '</div>' +
-      '<div style="margin-top:1rem;display:flex;gap:0.5rem">' +
-        '<button class="btn btn-primary" style="flex:1;padding:0.6rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer" onclick="closeAdminModal()">Close</button>' +
+      '<div style="background:#f8fafc;padding:0.75rem 1rem;border-radius:6px;margin-bottom:1rem;border:1px solid #e2e8f0">' +
+        '<h3 style="font-size:1.05rem;font-weight:700;color:var(--fsc-navy-main);margin-bottom:0.25rem">' + (c.caseTitle || c.petitioner + ' vs. ' + c.respondent) + '</h3>' +
+        '<div style="font-size:0.8rem;color:#64748b">Filer: <strong>' + (c.petitioner || 'Plaintiff') + '</strong> | Contact: ' + (c.filerPhone || 'N/A') + '</div>' +
+      '</div>' +
+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;font-size:0.85rem">' +
+        '<div><strong>Branch / Division:</strong> ' + (c.jurisdiction || 'Federal Supreme Court') + '</div>' +
+        '<div><strong>Screening Status:</strong> <span class="status-pill ' + (c.screeningStatus === 'approved' ? 'pill-green' : (c.screeningStatus === 'rejected' ? 'pill-orange' : 'pill-blue')) + '">' + ((c.screeningStatus || c.status || 'Pending Review')).toUpperCase() + '</span></div>' +
+        '<div><strong>Presiding Judge:</strong> ' + (c.judgeName || 'Unassigned') + '</div>' +
+        '<div><strong>Courtroom:</strong> ' + (c.courtroom || 'TBD') + '</div>' +
+      '</div>' +
+
+      (c.relevantLawArticle ? '<div style="font-size:0.8rem;margin-bottom:0.75rem;padding:0.5rem;background:#f0f9ff;border-radius:4px;color:#0369a1"><strong>Checked Legal Article:</strong> ' + c.relevantLawArticle + '</div>' : '') +
+
+      '<div style="margin-top:1.25rem;display:flex;gap:0.5rem">' +
+        '<button class="btn-export-dashboard" style="flex:1" onclick="closeAdminModal(); openAdminReviewModal(\'' + c.caseId + '\')">⚖️ Review &amp; Approve / Decline Filing</button>' +
+        '<button class="btn-view-sm" style="padding:0.6rem 1rem" onclick="closeAdminModal()">Close</button>' +
       '</div>' +
     '</div>';
   openAdminModal();

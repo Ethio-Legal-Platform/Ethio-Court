@@ -1,5 +1,13 @@
 [
   {
+    "id": "AUD-1787243233496",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-20T16:27:13.496Z",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-1787243070200",
     "action": "FINAL_VERDICT_ISSUED",
     "user": "Judge",
