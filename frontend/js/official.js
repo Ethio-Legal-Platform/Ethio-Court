@@ -352,29 +352,110 @@ function renderReviewedCasesView(container) {
 }
 
 // ── 4. Interactive First Hearing Scheduling Modal (Section 5) ──
+
+// ── Real-Time Availability Check & First Hearing Scheduling (Section 5) ──
+async function onOfficialDateSelected(dateVal) {
+  const statusNote = document.getElementById('off-sched-avail-status');
+  const judgeSelect = document.getElementById('sched-judge');
+  const lawyerSelect = document.getElementById('sched-lawyer');
+  const submitBtn = document.getElementById('off-sched-submit-btn');
+
+  if (!dateVal) {
+    if (statusNote) statusNote.innerHTML = '<span style="color:#64748b">Please select a hearing date first to verify chamber and advocate availability.</span>';
+    if (judgeSelect) judgeSelect.disabled = true;
+    if (lawyerSelect) lawyerSelect.disabled = true;
+    return;
+  }
+
+  if (statusNote) statusNote.innerHTML = '<span style="color:#0284c7">Querying judge chamber rosters and advocate calendars for ' + dateVal + '...</span>';
+
+  try {
+    const res = await fetch(API + '/availability?date=' + dateVal);
+    if (!res.ok) throw new Error('Failed to fetch availability');
+    const data = await res.json();
+
+    if (judgeSelect) {
+      judgeSelect.disabled = false;
+      const judges = data.judges || [];
+      judgeSelect.innerHTML = '<option value="" disabled selected>-- Select an Available Presiding Judge --</option>' +
+        judges.map(j => {
+          if (j.isAvailable) {
+            return '<option value="' + j.fullName + '|' + j.id + '">' + j.fullName + ' — ' + j.statusText + '</option>';
+          } else {
+            return '<option value="' + j.fullName + '|' + j.id + '" disabled style="color:#94a3b8;background:#f1f5f9">✕ ' + j.fullName + ' — ' + j.statusText + '</option>';
+          }
+        }).join('');
+    }
+
+    if (lawyerSelect) {
+      lawyerSelect.disabled = false;
+      const lawyers = data.lawyers || [];
+      lawyerSelect.innerHTML = '<option value="" selected>-- No Advocate Assigned / Self-Represented --</option>' +
+        lawyers.map(l => {
+          if (l.isAvailable) {
+            return '<option value="' + l.licenseNumber + '|' + l.fullName + '">' + l.fullName + ' (' + l.licenseNumber + ') — ' + (l.isGovernmentLawyer ? 'Public Defender · ' : '') + 'Available</option>';
+          } else {
+            return '<option value="' + l.licenseNumber + '|' + l.fullName + '" disabled style="color:#94a3b8;background:#f1f5f9">✕ ' + l.fullName + ' (' + l.licenseNumber + ') — ' + l.statusText + '</option>';
+          }
+        }).join('');
+    }
+
+    const availableJudgesCount = (data.judges || []).filter(j => j.isAvailable).length;
+    const availableLawyersCount = (data.lawyers || []).filter(l => l.isAvailable).length;
+
+    if (statusNote) {
+      statusNote.innerHTML = '<span style="color:#16a34a;font-weight:700">✓ Calendars Verified for ' + dateVal + ':</span> ' +
+        '<span style="color:#334155">' + availableJudgesCount + ' Judges Available · ' + availableLawyersCount + ' Lawyers Free</span>';
+    }
+
+    if (submitBtn) submitBtn.disabled = false;
+  } catch (e) {
+    if (statusNote) statusNote.innerHTML = '<span style="color:#dc2626">Error: ' + e.message + '</span>';
+  }
+}
+
 function openOfficialScheduleModal(caseId) {
   const caseItem = allCases.find(c => c.caseId === caseId) || { caseId, petitioner: 'Filer', respondent: 'Respondent', caseTitle: 'Court Case' };
 
-  document.getElementById('official-modal-title').textContent = 'First Hearing & Courtroom Allocation — ' + caseId;
+  document.getElementById('official-modal-title').textContent = 'First Hearing & Chamber Allocation — ' + caseId;
   document.getElementById('official-modal-body').innerHTML = 
     '<form onsubmit="handleOfficialScheduleSubmit(event, \'' + caseId + '\')">' +
       '<div style="background:#f8fafc;padding:0.75rem 1rem;border-radius:6px;margin-bottom:1rem;border:1px solid #e2e8f0">' +
         '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:1rem">' + (caseItem.caseTitle || caseItem.petitioner + ' vs. ' + caseItem.respondent) + '</div>' +
-        '<div style="font-size:0.775rem;color:#64748b;margin-top:2px">Filer: ' + (caseItem.petitioner || 'Plaintiff') + ' | Branch: ' + (caseItem.jurisdiction || 'Federal Supreme Court') + '</div>' +
+        '<div style="font-size:0.775rem;color:#64748b;margin-top:2px">Case ID: <strong>' + caseItem.caseId + '</strong> | Filer: ' + (caseItem.petitioner || 'Plaintiff') + ' | Branch: ' + (caseItem.jurisdiction || 'Federal Supreme Court') + '</div>' +
       '</div>' +
 
+      '<!-- Step 1: Date First -->' +
+      '<div style="background:#f0f9ff;padding:0.85rem 1rem;border-radius:8px;border:1.5px solid #bae6fd;margin-bottom:1rem">' +
+        '<label style="font-weight:800;color:#0369a1;display:block;margin-bottom:0.35rem;font-size:0.85rem">' +
+          '📅 Step 1: Select First Hearing Date (Enables Chamber & Advocate Availability Verification)' +
+        '</label>' +
+        '<input type="date" id="sched-date" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff;font-weight:700;color:var(--fsc-navy-main)" onchange="onOfficialDateSelected(this.value)" required/>' +
+        '<div id="off-sched-avail-status" style="margin-top:0.4rem;font-size:0.75rem;font-weight:600">' +
+          '<span style="color:#64748b">Select a date above to verify free/busy chamber and lawyer slots.</span>' +
+        '</div>' +
+      '</div>' +
+
+      '<!-- Step 2: Presiding Judge -->' +
+      '<div style="margin-bottom:0.75rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">⚖️ Step 2: Choose Presiding Judge (Only Available Benches Enabled)</label>' +
+        '<select id="sched-judge" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff" disabled required>' +
+          '<option value="" disabled selected>-- Select a hearing date first --</option>' +
+        '</select>' +
+      '</div>' +
+
+      '<!-- Step 3: Assigned Lawyer -->' +
+      '<div style="margin-bottom:0.75rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">👥 Step 3: Choose Appearing / State Advocate (Only Conflict-Free Counsel Enabled)</label>' +
+        '<select id="sched-lawyer" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff" disabled>' +
+          '<option value="" disabled selected>-- Select a hearing date first --</option>' +
+        '</select>' +
+      '</div>' +
+
+      '<!-- Step 4: Courtroom & Time -->' +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
         '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">1. Select Presiding Judge (Availability Check)</label>' +
-          '<select id="sched-judge" class="top-search-input" style="width:100%;border-radius:6px" required>' +
-            '<option value="Hon. Judge Solomon Desta|JUDGE-001">Hon. Judge Solomon Desta (Civil Bench · Available)</option>' +
-            '<option value="Hon. Judge Bekele Seyoum|JUDGE-002">Hon. Judge Bekele Seyoum (Commercial Bench · Available)</option>' +
-            '<option value="Hon. Judge Meron Haile|JUDGE-003">Hon. Judge Meron Haile (Cassation Bench · Available)</option>' +
-          '</select>' +
-        '</div>' +
-
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">2. Assign Courtroom</label>' +
+          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">🏛️ Courtroom</label>' +
           '<select id="sched-courtroom" class="top-search-input" style="width:100%;border-radius:6px" required>' +
             '<option value="Courtroom 1A (Cassation Bench)">Courtroom 1A (Cassation Bench)</option>' +
             '<option value="Courtroom 1B (Appellate Bench)">Courtroom 1B (Appellate Bench)</option>' +
@@ -382,16 +463,9 @@ function openOfficialScheduleModal(caseId) {
             '<option value="Courtroom 4 (Main Trial Room)" selected>Courtroom 4 (Main Trial Room)</option>' +
           '</select>' +
         '</div>' +
-      '</div>' +
-
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">3. First Hearing Date</label>' +
-          '<input type="date" id="sched-date" class="top-search-input" style="width:100%;border-radius:6px" value="2026-06-08" required/>' +
-        '</div>' +
 
         '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">4. Hearing Time Slot (Sub-Hour Granularity)</label>' +
+          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">⏰ Session Time Slot (Sub-Hour Granularity)</label>' +
           '<select id="sched-time" class="top-search-input" style="width:100%;border-radius:6px" required>' +
             '<option value="09:00 AM">09:00 AM - 10:00 AM</option>' +
             '<option value="09:30 AM" selected>09:30 AM - 10:30 AM</option>' +
@@ -403,9 +477,9 @@ function openOfficialScheduleModal(caseId) {
         '</div>' +
       '</div>' +
 
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem">' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem">' +
         '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">5. Assign Court Clerk</label>' +
+          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">📋 Assigned Court Clerk</label>' +
           '<select id="sched-clerk" class="top-search-input" style="width:100%;border-radius:6px">' +
             '<option value="Kalkidan Mengistu" selected>Kalkidan Mengistu (Senior Registrar)</option>' +
             '<option value="Yared Bekele">Yared Bekele (Chamber Clerk)</option>' +
@@ -413,23 +487,20 @@ function openOfficialScheduleModal(caseId) {
         '</div>' +
 
         '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">6. Estimated Session Duration</label>' +
+          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">⏱️ Estimated Duration</label>' +
           '<input type="text" id="sched-duration" class="top-search-input" style="width:100%;border-radius:6px" value="1 hour" required/>' +
         '</div>' +
       '</div>' +
 
-      '<div style="background:#f0f9ff;padding:0.75rem;border-radius:6px;border:1px solid #bae6fd;margin-bottom:1.25rem;font-size:0.75rem;color:#0369a1">' +
-        '<strong>Automated Notifications:</strong> Saving will dispatch in-app notifications and SMS summons to Plaintiff (' + (caseItem.filerPhone || 'Filer') + ') and Defendant.' +
-      '</div>' +
-
       '<div style="display:flex;gap:0.5rem">' +
-        '<button type="submit" class="btn-schedule-action" style="flex:1;padding:0.75rem;font-size:0.85rem;justify-content:center">Confirm &amp; Dispatch First Hearing Summons</button>' +
+        '<button type="submit" id="off-sched-submit-btn" class="btn-schedule-action" style="flex:1;padding:0.75rem;font-size:0.85rem;justify-content:center" disabled>Confirm &amp; Dispatch Summons</button>' +
         '<button type="button" class="btn btn-outline" style="padding:0.75rem 1rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeOfficialModal()">Cancel</button>' +
       '</div>' +
     '</form>';
 
   openOfficialModal();
 }
+
 
 async function handleOfficialScheduleSubmit(e, caseId) {
   e.preventDefault();

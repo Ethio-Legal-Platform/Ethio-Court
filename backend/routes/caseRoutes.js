@@ -6,6 +6,7 @@ const upload = require('../middleware/uploadMiddleware');
 
 // Case CRUD & Search
 router.get('/cases', caseController.getAllCases);
+router.get('/availability', caseController.checkAvailability);
 router.get('/cases/search', caseController.searchCases);
 router.get('/cases/:id', caseController.getCaseById);
 router.post('/cases', upload.array('documents', 10), caseController.createCase);

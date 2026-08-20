@@ -817,29 +817,184 @@ function handleIssueOrderSubmit(e) {
   closeClerkModal();
 }
 
-function openScheduleHearingModal() {
-  document.getElementById('clerk-modal-title').textContent = 'Schedule Court Hearing';
+
+// ── Real-Time Availability Check & Hearing Scheduler (Section 5 & 7) ──
+let currentAvailabilityData = null;
+
+async function onClerkDateSelected(dateVal) {
+  const statusNote = document.getElementById('sched-avail-status');
+  const judgeSelect = document.getElementById('clerk-sched-judge');
+  const lawyerSelect = document.getElementById('clerk-sched-lawyer');
+  const submitBtn = document.getElementById('clerk-sched-submit-btn');
+
+  if (!dateVal) {
+    if (statusNote) statusNote.innerHTML = '<span style="color:#64748b">Please select a hearing date first to verify chamber and advocate calendars.</span>';
+    if (judgeSelect) judgeSelect.disabled = true;
+    if (lawyerSelect) lawyerSelect.disabled = true;
+    return;
+  }
+
+  if (statusNote) statusNote.innerHTML = '<span style="color:#0284c7">Checking real-time calendar availability for ' + dateVal + '...</span>';
+
+  try {
+    const res = await fetch(API + '/availability?date=' + dateVal);
+    if (!res.ok) throw new Error('Failed to fetch availability');
+    currentAvailabilityData = await res.json();
+
+    // Populate Available Judges (Disable/Filter busy judges)
+    if (judgeSelect) {
+      judgeSelect.disabled = false;
+      const judges = currentAvailabilityData.judges || [];
+      judgeSelect.innerHTML = '<option value="" disabled selected>-- Select an Available Presiding Judge --</option>' +
+        judges.map(j => {
+          if (j.isAvailable) {
+            return '<option value="' + j.fullName + '|' + j.id + '">' + j.fullName + ' — ' + j.statusText + '</option>';
+          } else {
+            return '<option value="' + j.fullName + '|' + j.id + '" disabled style="color:#94a3b8;background:#f1f5f9">✕ ' + j.fullName + ' — ' + j.statusText + '</option>';
+          }
+        }).join('');
+    }
+
+    // Populate Available Lawyers (Disable/Filter booked lawyers)
+    if (lawyerSelect) {
+      lawyerSelect.disabled = false;
+      const lawyers = currentAvailabilityData.lawyers || [];
+      lawyerSelect.innerHTML = '<option value="" selected>-- No Advocate Assigned / Self-Represented --</option>' +
+        lawyers.map(l => {
+          if (l.isAvailable) {
+            return '<option value="' + l.licenseNumber + '|' + l.fullName + '">' + l.fullName + ' (' + l.licenseNumber + ') — ' + (l.isGovernmentLawyer ? 'Public Defender · ' : '') + 'Available</option>';
+          } else {
+            return '<option value="' + l.licenseNumber + '|' + l.fullName + '" disabled style="color:#94a3b8;background:#f1f5f9">✕ ' + l.fullName + ' (' + l.licenseNumber + ') — ' + l.statusText + '</option>';
+          }
+        }).join('');
+    }
+
+    const availableJudgesCount = (currentAvailabilityData.judges || []).filter(j => j.isAvailable).length;
+    const availableLawyersCount = (currentAvailabilityData.lawyers || []).filter(l => l.isAvailable).length;
+
+    if (statusNote) {
+      statusNote.innerHTML = '<span style="color:#16a34a;font-weight:700">✓ Calendar Verified for ' + dateVal + ':</span> ' +
+        '<span style="color:#334155">' + availableJudgesCount + ' Judges Available · ' + availableLawyersCount + ' Lawyers Free</span>';
+    }
+
+    if (submitBtn) submitBtn.disabled = false;
+  } catch (e) {
+    if (statusNote) statusNote.innerHTML = '<span style="color:#dc2626">Error querying calendar availability: ' + e.message + '</span>';
+  }
+}
+
+function openScheduleHearingModal(caseId) {
+  const targetCaseId = caseId || 'CASE-' + Date.now();
+  const c = allCases.find(it => it.caseId === targetCaseId) || { caseId: targetCaseId, caseTitle: 'Registry Docket', petitioner: 'Plaintiff', filerPhone: '+251 911 123 456' };
+
+  document.getElementById('clerk-modal-title').textContent = 'Sequential Hearing & Availability Scheduler — ' + c.caseId;
   document.getElementById('clerk-modal-body').innerHTML = 
-    '<form onsubmit="handleScheduleSubmit(event)">' +
+    '<form onsubmit="handleClerkScheduleSubmit(event, \'' + c.caseId + '\')">' +
+      '<div style="background:#f8fafc;padding:0.75rem 1rem;border-radius:6px;margin-bottom:1rem;border:1px solid #e2e8f0">' +
+        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.95rem">' + (c.caseTitle || c.petitioner + ' vs. Respondent') + '</div>' +
+        '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">Case ID: <strong>' + c.caseId + '</strong> | Litigant: ' + (c.petitioner || 'Filer') + ' (' + (c.filerPhone || 'Phone N/A') + ')</div>' +
+      '</div>' +
+
+      '<!-- Step 1: Select Date First -->' +
+      '<div style="background:#f0f9ff;padding:0.85rem 1rem;border-radius:8px;border:1.5px solid #bae6fd;margin-bottom:1rem">' +
+        '<label style="font-weight:800;color:#0369a1;display:block;margin-bottom:0.35rem;font-size:0.85rem">' +
+          '📅 Step 1: Select Hearing Date (Required for Availability Verification)' +
+        '</label>' +
+        '<input type="date" id="clerk-sched-date" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff;font-weight:700;color:var(--fsc-navy-main)" onchange="onClerkDateSelected(this.value)" required/>' +
+        '<div id="sched-avail-status" style="margin-top:0.4rem;font-size:0.75rem;font-weight:600">' +
+          '<span style="color:#64748b">Select a date above to query judge chamber rosters and advocate personal calendars.</span>' +
+        '</div>' +
+      '</div>' +
+
+      '<!-- Step 2: Presiding Judge -->' +
       '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Case Number</label>' +
-        '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" value="CASE-178721596417" required/>' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">⚖️ Step 2: Choose Presiding Judge (Only Available Benches Enabled)</label>' +
+        '<select id="clerk-sched-judge" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff" disabled required>' +
+          '<option value="" disabled selected>-- Select a hearing date first --</option>' +
+        '</select>' +
       '</div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
+
+      '<!-- Step 3: Lawyer Selection -->' +
+      '<div style="margin-bottom:0.75rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">👥 Step 3: Choose Assigned / Appearing Advocate (Only Conflict-Free Counsel Enabled)</label>' +
+        '<select id="clerk-sched-lawyer" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff" disabled>' +
+          '<option value="" disabled selected>-- Select a hearing date first --</option>' +
+        '</select>' +
+      '</div>' +
+
+      '<!-- Step 4: Courtroom & Time -->' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem">' +
         '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Hearing Date</label>' +
-          '<input type="date" class="top-search-input" style="border-radius:6px;width:100%" value="2026-05-28" required/>' +
+          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">🏛️ Courtroom</label>' +
+          '<select id="clerk-sched-courtroom" class="top-search-input" style="width:100%;border-radius:6px" required>' +
+            '<option value="Courtroom 1A (Cassation Bench)">Courtroom 1A (Cassation Bench)</option>' +
+            '<option value="Courtroom 1B (Appellate Bench)">Courtroom 1B (Appellate Bench)</option>' +
+            '<option value="Courtroom 2A (Commercial Division)">Courtroom 2A (Commercial Division)</option>' +
+            '<option value="Courtroom 4 (Main Trial Room)" selected>Courtroom 4 (Main Trial Room)</option>' +
+          '</select>' +
         '</div>' +
+
         '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Time &amp; Courtroom</label>' +
-          '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" value="10:00 AM — Courtroom 4" required/>' +
+          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">⏰ Session Time Slot</label>' +
+          '<select id="clerk-sched-time" class="top-search-input" style="width:100%;border-radius:6px" required>' +
+            '<option value="09:00 AM">09:00 AM - 10:00 AM</option>' +
+            '<option value="09:30 AM" selected>09:30 AM - 10:30 AM</option>' +
+            '<option value="10:30 AM">10:30 AM - 11:30 AM</option>' +
+            '<option value="11:15 AM">11:15 AM - 12:15 PM</option>' +
+            '<option value="02:00 PM">02:00 PM - 03:00 PM</option>' +
+            '<option value="03:30 PM">03:30 PM - 04:30 PM</option>' +
+          '</select>' +
         '</div>' +
       '</div>' +
-      '<button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Set Hearing &amp; Dispatch SMS</button>' +
+
+      '<div style="display:flex;gap:0.5rem">' +
+        '<button type="submit" id="clerk-sched-submit-btn" class="btn-clerk-primary" style="flex:1;padding:0.75rem" disabled>Confirm Docket &amp; Dispatch Summons</button>' +
+        '<button type="button" class="btn-clerk-outline" style="padding:0.75rem 1rem" onclick="closeClerkModal()">Cancel</button>' +
+      '</div>' +
     '</form>';
+
   openClerkModal();
 }
 
+async function handleClerkScheduleSubmit(e, caseId) {
+  e.preventDefault();
+  const dateVal = document.getElementById('clerk-sched-date').value;
+  const judgeRaw = document.getElementById('clerk-sched-judge').value.split('|');
+  const judgeName = judgeRaw[0];
+  const judgeId = judgeRaw[1] || 'JUDGE-001';
+  const lawyerRaw = document.getElementById('clerk-sched-lawyer').value.split('|');
+  const lawyerLicense = lawyerRaw[0] || null;
+  const lawyerName = lawyerRaw[1] || null;
+  const courtroom = document.getElementById('clerk-sched-courtroom').value;
+  const hearingTime = document.getElementById('clerk-sched-time').value;
+
+  try {
+    const res = await fetch(API + '/cases/schedule-hearing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId,
+        judgeId,
+        judgeName,
+        courtroom,
+        hearingDate: dateVal,
+        hearingTime,
+        clerkName: currentClerk.fullName || 'Court Clerk',
+        estimatedDuration: '1 hour',
+        lawyerLicense,
+        lawyerName
+      })
+    });
+
+    if (res.ok) {
+      alert('✓ Hearing scheduled successfully for ' + dateVal + ' at ' + hearingTime + ' before ' + judgeName + '. Summons dispatched.');
+      closeClerkModal();
+      await loadClerkData();
+    }
+  } catch (err) {
+    alert('Error scheduling hearing: ' + err.message);
+  }
+}
 function handleScheduleSubmit(e) {
   e.preventDefault();
   alert('Hearing scheduled and automated notices sent.');

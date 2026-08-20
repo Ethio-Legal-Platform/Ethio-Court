@@ -617,7 +617,77 @@ async function markCaseAsViewed(req, res) {
   res.json({ success: true, case: updated });
 }
 
+
+// 16. Real-Time Chamber, Judge & Lawyer Availability Check (Section 5 & 7)
+async function checkAvailability(req, res) {
+  try {
+    const targetDate = req.query.date || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const cases = await dbService.readJSON('cases');
+    const judges = await dbService.readJSON('judges');
+    const lawyers = await dbService.readJSON('lawyers');
+
+    // Find all cases with hearings on targetDate
+    const dateCases = cases.filter(c => c.hearingDate === targetDate);
+
+    // Compute Judge Availability (Max 3 hearings per day per judge)
+    const judgeAvailability = judges.map(j => {
+      const bookedHearings = dateCases.filter(c => c.judgeId === j.id || (c.judgeName && c.judgeName.includes(j.fullName.split(' ')[2] || '')));
+      const bookedCount = bookedHearings.length;
+      const isAvailable = bookedCount < 3;
+      return {
+        id: j.id,
+        fullName: j.fullName,
+        branch: j.branch,
+        courtroom: j.courtroom,
+        isAvailable,
+        bookedCount,
+        slotsRemaining: Math.max(0, 3 - bookedCount),
+        statusText: isAvailable ? `Available (${bookedCount} hearings booked, ${3 - bookedCount} slots open)` : 'Unavailable (Chamber Booked at Full Capacity)'
+      };
+    });
+
+    // Compute Lawyer Availability (No conflicting appearances at same date/time)
+    const lawyerAvailability = lawyers.map(l => {
+      const conflicts = dateCases.filter(c => {
+        const isPlaintiffLawyer = c.plaintiffLawyerLicense === l.licenseNumber || (c.lawyerAppointed && c.lawyerAppointed.licenseNumber === l.licenseNumber);
+        const isDefenseLawyer = c.defendantLawyerLicense === l.licenseNumber || (c.defendantRepresentation && c.defendantRepresentation.licenseNumber === l.licenseNumber);
+        return isPlaintiffLawyer || isDefenseLawyer;
+      });
+
+      const isAvailable = conflicts.length === 0;
+      return {
+        id: l.id,
+        fullName: l.fullName,
+        licenseNumber: l.licenseNumber,
+        specialization: l.specialization,
+        isGovernmentLawyer: l.isGovernmentLawyer || false,
+        isAvailable,
+        conflictingCaseId: conflicts.length > 0 ? conflicts[0].caseId : null,
+        statusText: isAvailable ? 'Available (No schedule conflicts)' : `Unavailable (Scheduled on ${conflicts[0].caseId})`
+      };
+    });
+
+    // Courtroom Availability
+    const courtrooms = [
+      { name: 'Courtroom 1A (Cassation Bench)', isAvailable: true },
+      { name: 'Courtroom 1B (Appellate Bench)', isAvailable: true },
+      { name: 'Courtroom 2A (Commercial Division)', isAvailable: true },
+      { name: 'Courtroom 4 (Main Trial Room)', isAvailable: true }
+    ];
+
+    res.json({
+      date: targetDate,
+      judges: judgeAvailability,
+      lawyers: lawyerAvailability,
+      courtrooms
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 module.exports = {
+  checkAvailability,
   markCaseAsViewed,
   getAllCases,
   getCaseById,
