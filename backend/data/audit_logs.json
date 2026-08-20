@@ -1,5 +1,13 @@
 [
   {
+    "id": "AUD-1787248089364",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-20T17:48:09.364Z",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-1787247675173",
     "action": "HEARING_SCHEDULED",
     "user": "Branch Official Hassan",
