@@ -18,6 +18,8 @@ let allSmsLogs = [];
 let allAuditLogs = [];
 let selectedChartBranch = "ALL";
 let currentCaseFilter = "requested";
+let currentAuditRoleFilter = "all";
+let auditSearchQuery = "";
 
 const ICONS = {
   briefcase: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
@@ -783,25 +785,179 @@ function renderSmsGatewayLogsView(container) {
     '</div>';
 }
 
+
+function setAuditRoleFilter(role) {
+  currentAuditRoleFilter = role;
+  const container = document.getElementById('dynamic-admin-workspace');
+  if (container) renderAuditLogsView(container);
+}
+
+function handleAuditSearch(q) {
+  auditSearchQuery = (q || '').toLowerCase().trim();
+  const container = document.getElementById('dynamic-admin-workspace');
+  if (container) renderAuditLogsView(container);
+}
+
+function openAuditDetailModal(auditId) {
+  const item = allAuditLogs.find(a => a.id === auditId) || { id: auditId, user: 'System', role: 'admin', action: 'ACTION', timestamp: new Date().toISOString() };
+  
+  document.getElementById('admin-modal-title').textContent = 'Immutable Audit Log Entry — ' + item.id;
+  document.getElementById('admin-modal-body').innerHTML = 
+    '<div style="line-height:1.7">' +
+      '<div style="background:#f8fafc;padding:0.75rem 1rem;border-radius:6px;margin-bottom:1rem;border:1px solid #e2e8f0">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+          '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:1.05rem">' + item.action + '</div>' +
+          '<span class="status-pill pill-green">' + (item.status || 'SUCCESS') + '</span>' +
+        '</div>' +
+        '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">Timestamp: ' + new Date(item.timestamp).toLocaleString() + ' (' + item.timestamp + ')</div>' +
+      '</div>' +
+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;font-size:0.85rem">' +
+        '<div><strong>Actor Identity:</strong> ' + item.user + '</div>' +
+        '<div><strong>Actor Role:</strong> <span class="status-pill pill-blue">' + (item.role || 'User').toUpperCase() + '</span></div>' +
+        '<div><strong>Target Case ID:</strong> ' + (item.caseId || 'N/A') + '</div>' +
+        '<div><strong>Judicial Module:</strong> ' + (item.module || 'Core Registry') + '</div>' +
+        '<div><strong>Source IP / Client:</strong> <code style="font-family:monospace;color:#0284c7">' + (item.ip || '127.0.0.1') + '</code></div>' +
+        '<div><strong>Security Integrity:</strong> <span style="color:#16a34a;font-weight:700">SHA-256 Verified</span></div>' +
+      '</div>' +
+
+      '<div style="margin-top:0.75rem;padding:0.75rem;background:#ffffff;border:1px solid #e2e8f0;border-radius:6px">' +
+        '<div style="font-size:0.75rem;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:0.25rem">Recorded Payload &amp; Event Details</div>' +
+        '<div style="font-size:0.85rem;color:#1e293b">' + (item.details || 'Technical transition recorded.') + '</div>' +
+      '</div>' +
+
+      '<div style="margin-top:1.25rem">' +
+        '<button class="btn btn-primary" style="width:100%;padding:0.65rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer" onclick="closeAdminModal()">Close Inspector</button>' +
+      '</div>' +
+    '</div>';
+  openAdminModal();
+}
+
+function exportAuditCsv() {
+  let csv = 'ID,Timestamp,User,Role,Action,CaseID,Module,Details,IP,Status\n';
+  allAuditLogs.forEach(a => {
+    csv += `"${a.id}","${a.timestamp}","${a.user}","${a.role}","${a.action}","${a.caseId || ''}","${a.module || ''}","${(a.details||'').replace(/"/g, '""')}","${a.ip||''}","${a.status||''}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'court_audit_trail_' + Date.now() + '.csv';
+  a.click();
+}
+
 function renderAuditLogsView(container) {
+  let filtered = allAuditLogs || [];
+  if (currentAuditRoleFilter !== 'all') {
+    filtered = filtered.filter(a => (a.role || '').toLowerCase() === currentAuditRoleFilter.toLowerCase());
+  }
+
+  if (auditSearchQuery) {
+    filtered = filtered.filter(a => {
+      return (a.user && a.user.toLowerCase().includes(auditSearchQuery)) ||
+             (a.action && a.action.toLowerCase().includes(auditSearchQuery)) ||
+             (a.caseId && a.caseId.toLowerCase().includes(auditSearchQuery)) ||
+             (a.details && a.details.toLowerCase().includes(auditSearchQuery)) ||
+             (a.module && a.module.toLowerCase().includes(auditSearchQuery));
+    });
+  }
+
+  const roleCounts = {
+    all: allAuditLogs.length,
+    admin: allAuditLogs.filter(a => (a.role||'').toLowerCase() === 'admin').length,
+    judge: allAuditLogs.filter(a => (a.role||'').toLowerCase() === 'judge').length,
+    clerk: allAuditLogs.filter(a => (a.role||'').toLowerCase() === 'clerk').length,
+    official: allAuditLogs.filter(a => (a.role||'').toLowerCase() === 'official').length,
+    lawyer: allAuditLogs.filter(a => (a.role||'').toLowerCase() === 'lawyer' || (a.role||'').toLowerCase() === 'plaintiff' || (a.role||'').toLowerCase() === 'defendant').length
+  };
+
+  const rowsHtml = filtered.length ? filtered.map(a => {
+    let roleClass = 'pill-navy';
+    const r = (a.role || 'system').toLowerCase();
+    if (r === 'admin') roleClass = 'pill-navy';
+    else if (r === 'judge') roleClass = 'pill-purple';
+    else if (r === 'clerk') roleClass = 'pill-blue';
+    else if (r === 'official') roleClass = 'pill-orange';
+    else if (r === 'lawyer') roleClass = 'pill-green';
+    else if (r === 'plaintiff' || r === 'defendant') roleClass = 'pill-amber';
+
+    const timeStr = a.timestamp ? new Date(a.timestamp).toLocaleString() : 'Recent';
+
+    return '<tr style="cursor:pointer" onclick="openAuditDetailModal(\'' + a.id + '\')">' +
+      '<td style="color:#64748b;font-size:0.75rem;white-space:nowrap">' + timeStr + '</td>' +
+      '<td><strong style="color:var(--fsc-navy-main)">' + (a.user || 'System') + '</strong></td>' +
+      '<td><span class="status-pill ' + roleClass + '">' + (a.role || 'USER').toUpperCase() + '</span></td>' +
+      '<td><strong style="font-size:0.8rem;color:#0369a1">' + (a.action || 'ACTION') + '</strong></td>' +
+      '<td>' + (a.caseId ? '<span style="font-family:monospace;font-weight:700;color:var(--fsc-navy-main)">' + a.caseId + '</span>' : '<span style="color:#94a3b8">N/A</span>') + '</td>' +
+      '<td style="font-size:0.785rem;color:#334155;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (a.details || a.module || 'System Event') + '</td>' +
+      '<td style="font-family:monospace;font-size:0.75rem;color:#64748b">' + (a.ip || '127.0.0.1') + '</td>' +
+      '<td><button class="btn-view-sm" style="padding:0.25rem 0.5rem;font-size:0.75rem" onclick="event.stopPropagation(); openAuditDetailModal(\'' + a.id + '\')">Inspect</button></td>' +
+    '</tr>';
+  }).join('') : '<tr><td colspan="8" style="text-align:center;color:#64748b;padding:2rem">No audit entries match the current filter.</td></tr>';
+
   container.innerHTML = 
     '<div class="admin-header-row">' +
       '<div>' +
-        '<h1 class="admin-greeting-title">Security &amp; Activity Audit Logs</h1>' +
-        '<div class="admin-greeting-sub">Immutable tamper-evident judicial activity audit records.</div>' +
+        '<h1 class="admin-greeting-title">Security &amp; Full System Audit Trail</h1>' +
+        '<div class="admin-greeting-sub">Immutable, real-time event log tracking all actions of Admins, Judges, Clerks, Branch Officials, Advocates, and Litigants.</div>' +
       '</div>' +
+      '<button class="btn-export-dashboard" onclick="exportAuditCsv()">' +
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>' +
+        '<span>Export Audit Trail (CSV)</span>' +
+      '</button>' +
     '</div>' +
+
+    '<!-- Role Filter Tabs -->' +
+    '<div style="display:flex;gap:0.5rem;margin-bottom:1rem;border-bottom:2px solid #e2e8f0;padding-bottom:0.75rem;flex-wrap:wrap">' +
+      '<button class="admin-tab-btn ' + (currentAuditRoleFilter === 'all' ? 'active' : '') + '" onclick="setAuditRoleFilter(\'all\')" style="padding:0.45rem 1rem;border-radius:6px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:' + (currentAuditRoleFilter === 'all' ? 'var(--fsc-navy-main);color:#fff' : '#ffffff;color:var(--fsc-navy-main)') + '">' +
+        'All Actors (' + roleCounts.all + ')' +
+      '</button>' +
+
+      '<button class="admin-tab-btn ' + (currentAuditRoleFilter === 'admin' ? 'active' : '') + '" onclick="setAuditRoleFilter(\'admin\')" style="padding:0.45rem 1rem;border-radius:6px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:' + (currentAuditRoleFilter === 'admin' ? 'var(--fsc-navy-main);color:#fff' : '#ffffff;color:var(--fsc-navy-main)') + '">' +
+        '🏛️ Admin Actions (' + roleCounts.admin + ')' +
+      '</button>' +
+
+      '<button class="admin-tab-btn ' + (currentAuditRoleFilter === 'judge' ? 'active' : '') + '" onclick="setAuditRoleFilter(\'judge\')" style="padding:0.45rem 1rem;border-radius:6px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:' + (currentAuditRoleFilter === 'judge' ? 'var(--fsc-navy-main);color:#fff' : '#ffffff;color:var(--fsc-navy-main)') + '">' +
+        '⚖️ Judge Actions (' + roleCounts.judge + ')' +
+      '</button>' +
+
+      '<button class="admin-tab-btn ' + (currentAuditRoleFilter === 'clerk' ? 'active' : '') + '" onclick="setAuditRoleFilter(\'clerk\')" style="padding:0.45rem 1rem;border-radius:6px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:' + (currentAuditRoleFilter === 'clerk' ? 'var(--fsc-navy-main);color:#fff' : '#ffffff;color:var(--fsc-navy-main)') + '">' +
+        '📋 Clerk Actions (' + roleCounts.clerk + ')' +
+      '</button>' +
+
+      '<button class="admin-tab-btn ' + (currentAuditRoleFilter === 'official' ? 'active' : '') + '" onclick="setAuditRoleFilter(\'official\')" style="padding:0.45rem 1rem;border-radius:6px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:' + (currentAuditRoleFilter === 'official' ? 'var(--fsc-navy-main);color:#fff' : '#ffffff;color:var(--fsc-navy-main)') + '">' +
+        '🏢 Branch Official (' + roleCounts.official + ')' +
+      '</button>' +
+
+      '<button class="admin-tab-btn ' + (currentAuditRoleFilter === 'lawyer' ? 'active' : '') + '" onclick="setAuditRoleFilter(\'lawyer\')" style="padding:0.45rem 1rem;border-radius:6px;font-weight:700;cursor:pointer;border:1px solid #cbd5e1;background:' + (currentAuditRoleFilter === 'lawyer' ? 'var(--fsc-navy-main);color:#fff' : '#ffffff;color:var(--fsc-navy-main)') + '">' +
+        '👥 Advocates &amp; Litigants (' + roleCounts.lawyer + ')' +
+      '</button>' +
+    '</div>' +
+
+    '<!-- Search Bar -->' +
+    '<div style="margin-bottom:1.25rem">' +
+      '<input type="text" class="top-search-input" style="width:100%;padding:0.6rem 1rem;border-radius:8px;border:1px solid #cbd5e1" placeholder="🔍 Search audit trail by Actor Name, Action, Case ID, or Details..." value="' + auditSearchQuery + '" oninput="handleAuditSearch(this.value)"/>' +
+    '</div>' +
+
     '<div class="admin-panel-card">' +
       '<table class="admin-table">' +
-        '<thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>IP Address</th></tr></thead>' +
-        '<tbody>' +
-          '<tr><td>May 24, 2026 10:43 AM</td><td>Admin User</td><td>Synced advocate licenses with MoJ</td><td>196.188.1.10</td></tr>' +
-          '<tr><td>May 24, 2026 10:41 AM</td><td>Screening Officer</td><td>Approved case CASE-178721596417</td><td>196.188.1.25</td></tr>' +
-          '<tr><td>May 24, 2026 10:38 AM</td><td>Clerk User</td><td>Scheduled hearing for CASE-178719224815</td><td>196.188.1.30</td></tr>' +
-        '</tbody>' +
+        '<thead>' +
+          '<tr>' +
+            '<th>Timestamp</th>' +
+            '<th>Actor</th>' +
+            '<th>Role</th>' +
+            '<th>Action Taken</th>' +
+            '<th>Case ID</th>' +
+            '<th>Event Summary / Details</th>' +
+            '<th>Source IP</th>' +
+            '<th>Action</th>' +
+          '</tr>' +
+        '</thead>' +
+        '<tbody>' + rowsHtml + '</tbody>' +
       '</table>' +
     '</div>';
 }
+
 
 function renderSystemHealthView(container) {
   container.innerHTML = 

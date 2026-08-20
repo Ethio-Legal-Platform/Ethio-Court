@@ -1,3 +1,4 @@
+const auditService = require('../services/auditService');
 'use strict';
 const dbService = require('../services/dbService');
 

@@ -1,5 +1,6 @@
 'use strict';
 const dbService = require('../services/dbService');
+const auditService = require('../services/auditService');
 const { dispatchWebhook } = require('../services/webhookDispatcher');
 
 // 1. Get All Cases

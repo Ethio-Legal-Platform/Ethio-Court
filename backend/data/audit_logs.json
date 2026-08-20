@@ -1,5 +1,23 @@
 [
   {
+    "id": "AUD-1787244260687",
+    "action": "ADMIN_APPROVED_AND_FORWARDED",
+    "user": "System Administrator",
+    "role": "admin",
+    "caseId": "CASE-178719224815",
+    "timestamp": "2026-08-20T16:44:20.687Z",
+    "details": "Assigned to Federal Supreme Court (Sidist Kilo). Law Check: Commercial Code Art. 715 - Banking Guarantees"
+  },
+  {
+    "id": "AUD-1787244210612",
+    "action": "ADMIN_APPROVED_AND_FORWARDED",
+    "user": "System Administrator",
+    "role": "admin",
+    "caseId": "CASE-1787215962441",
+    "timestamp": "2026-08-20T16:43:30.612Z",
+    "details": "Assigned to Federal Supreme Court (Sidist Kilo). Law Check: Commercial Code Art. 715 - Banking Guarantees"
+  },
+  {
     "id": "AUD-1787244044067",
     "action": "ADMIN_APPROVED_AND_FORWARDED",
     "user": "Admin User",

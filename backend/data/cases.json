@@ -168,7 +168,7 @@
     "caseTitle": "Teshome v. Alemayehu — Boundary Dispute",
     "caseType": "Land",
     "dateDecided": "2026-08-20",
-    "status": "Decided",
+    "status": "forwarded_to_branch",
     "judgeId": null,
     "judgeName": "Hon. Presiding Judge",
     "plaintiffClientId": "0911002233",
@@ -200,7 +200,7 @@
       "advocateRatings": []
     },
     "tempPin": "731281",
-    "jurisdiction": "Addis Ababa",
+    "jurisdiction": "Federal Supreme Court (Sidist Kilo)",
     "description": "Dispute without appointed legal advocates.",
     "incidentDate": null,
     "incidentLocation": "",
@@ -240,7 +240,13 @@
     "judgeNotes": [],
     "documentRequests": [],
     "filedAt": "2026-08-20T08:52:42.442Z",
-    "updatedAt": "2026-08-20T08:52:43.006Z"
+    "updatedAt": "2026-08-20T08:52:43.006Z",
+    "screeningStatus": "approved",
+    "screeningNotes": "",
+    "caseCategory": "Land",
+    "relevantLawArticle": "Commercial Code Art. 715 - Banking Guarantees",
+    "reviewedBy": "System Administrator",
+    "reviewedAt": "2026-08-20T16:43:30.608Z"
   },
   {
     "caseId": "CASE-1787214805243",
@@ -1446,8 +1452,8 @@
     "caseId": "CASE-178719224815",
     "caseTitle": "Mulualem Desta vs. Ethio Telecom",
     "caseType": "Civil",
-    "status": "assigned",
-    "jurisdiction": "Lideta Division Bench",
+    "status": "forwarded_to_branch",
+    "jurisdiction": "Federal Supreme Court (Sidist Kilo)",
     "assignedBranchId": "branch-lideta",
     "courtroom": "Courtroom 1",
     "judgeId": "JUDGE-001",
@@ -1487,7 +1493,13 @@
       }
     ],
     "filedAt": "2026-05-05T09:00:00.000Z",
-    "updatedAt": "2026-05-23T14:30:00.000Z"
+    "updatedAt": "2026-05-23T14:30:00.000Z",
+    "screeningStatus": "approved",
+    "screeningNotes": "",
+    "caseCategory": "Civil",
+    "relevantLawArticle": "Commercial Code Art. 715 - Banking Guarantees",
+    "reviewedBy": "System Administrator",
+    "reviewedAt": "2026-08-20T16:44:20.677Z"
   },
   {
     "caseId": "CASE-178715887332",
