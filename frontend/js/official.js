@@ -205,410 +205,132 @@ function renderOfficialCurrentView() {
 }
 
 function renderOfficialDashboard(container) {
-  const queueCasesList = [
-    { caseId: 'CASE-178721596417', filerName: 'Awash International Bank', caseType: 'Corporate', filedOn: 'May 24, 2026 10:32 AM', docCount: 6, priority: 'High', priorityClass: 'prio-high' },
-    { caseId: 'CASE-178721612233', filerName: 'Abebe Kebede', caseType: 'Civil', filedOn: 'May 24, 2026 10:15 AM', docCount: 3, priority: 'Medium', priorityClass: 'prio-medium' },
-    { caseId: 'CASE-178721605884', filerName: 'Hana Tesfaye', caseType: 'Labour', filedOn: 'May 24, 2026 09:58 AM', docCount: 4, priority: 'Low', priorityClass: 'prio-low' },
-    { caseId: 'CASE-178721598765', filerName: 'Zewdu Getachew', caseType: 'Land', filedOn: 'May 24, 2026 09:47 AM', docCount: 5, priority: 'Medium', priorityClass: 'prio-medium' },
-    { caseId: 'CASE-178721595551', filerName: 'Yealemwork Alemu', caseType: 'Family', filedOn: 'May 24, 2026 09:35 AM', docCount: 2, priority: 'Low', priorityClass: 'prio-low' }
-  ];
+  const queueCasesList = allCases.filter(c => c.status === 'pending_screening' || c.screeningStatus === 'pending' || !c.screeningStatus || c.status === 'pending');
+  const reviewedCasesList = allCases.filter(c => c.screeningStatus && c.screeningStatus !== 'pending');
 
-  const queueRowsHtml = queueCasesList.map(c => 
-    '<tr>' +
+  const pendingCount = queueCasesList.length;
+  const underScreeningCount = allCases.filter(c => c.status === 'pending_screening').length;
+  const approvedCount = allCases.filter(c => c.screeningStatus === 'approved').length;
+  const clarificationCount = allCases.filter(c => c.screeningStatus === 'clarification').length;
+  const rejectedCount = allCases.filter(c => c.screeningStatus === 'rejected').length;
+
+  const queueRowsHtml = queueCasesList.length ? queueCasesList.slice(0, 6).map(c => {
+    const filedDate = c.filingDate ? new Date(c.filingDate).toLocaleString() : 'Recent';
+    const docLen = c.documents ? c.documents.length : 1;
+    return '<tr>' +
       '<td><a class="case-link-bold" onclick="openFilingReviewModal(\'' + c.caseId + '\')">' + c.caseId + '</a></td>' +
-      '<td><strong style="color:var(--fsc-navy-main)">' + c.filerName + '</strong></td>' +
-      '<td style="color:#64748b">' + c.caseType + '</td>' +
-      '<td style="color:#64748b;font-size:0.75rem">' + c.filedOn + '</td>' +
-      '<td><div style="display:flex;align-items:center;gap:0.3rem"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> <span>' + c.docCount + '</span></div></td>' +
-      '<td><span class="priority-pill ' + c.priorityClass + '">' + c.priority + '</span></td>' +
+      '<td><strong style="color:var(--fsc-navy-main)">' + (c.petitioner || c.filerName || 'Filer') + '</strong></td>' +
+      '<td style="color:#64748b">' + (c.caseType || 'Civil') + '</td>' +
+      '<td style="color:#64748b;font-size:0.75rem">' + filedDate + '</td>' +
+      '<td><div style="display:flex;align-items:center;gap:0.3rem"><span>' + docLen + ' docs</span></div></td>' +
+      '<td><span class="priority-pill prio-medium">MEDIUM</span></td>' +
       '<td><button class="btn-review-sm" onclick="openFilingReviewModal(\'' + c.caseId + '\')">Review</button></td>' +
-    '</tr>'
-  ).join('');
+    '</tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;color:#64748b;padding:1.5rem">No pending filings in screening queue.</td></tr>';
 
-  const reviewedCasesList = [
-    { caseId: 'CASE-178721548800', title: 'Yalemwork Alemu vs. Hibret Insurance', filer: 'Yalemwork Alemu', caseType: 'Civil', reviewedOn: 'May 24, 2026 09:30 AM', actionTaken: 'Assigned to Judge', status: 'Assigned', statusClass: 'prio-low', category: 'assigned' },
-    { caseId: 'CASE-178721552233', title: 'Aster Manufacturing vs. Ministry of Revenues', filer: 'Aster Manufacturing', caseType: 'Corporate', reviewedOn: 'May 24, 2026 09:15 AM', actionTaken: 'Requested Clarification', status: 'Clarification', statusClass: 'prio-medium', category: 'clarification' },
-    { caseId: 'CASE-178721545566', title: 'Abebe Kebede vs. Ethio Post', filer: 'Abebe Kebede', caseType: 'Labour', reviewedOn: 'May 24, 2026 09:02 AM', actionTaken: 'Approved & Routed', status: 'Approved', statusClass: 'prio-low', category: 'approved' },
-    { caseId: 'CASE-178721543322', title: 'Kidane Tekle vs. Government of Ethiopia', filer: 'Kidane Tekle', caseType: 'Land', reviewedOn: 'May 24, 2026 08:45 AM', actionTaken: 'Rejected', status: 'Rejected', statusClass: 'prio-high', category: 'rejected' }
-  ];
-
-  const filteredReviewed = currentReviewedTab === 'all' ? reviewedCasesList : reviewedCasesList.filter(r => r.category === currentReviewedTab || (currentReviewedTab === 'approved' && r.status === 'Approved'));
-
-  const reviewedRowsHtml = filteredReviewed.map(r => 
-    '<tr>' +
+  const reviewedRowsHtml = reviewedCasesList.length ? reviewedCasesList.slice(0, 6).map(r => {
+    const revDate = r.reviewedAt ? new Date(r.reviewedAt).toLocaleString() : 'Recent';
+    return '<tr>' +
       '<td><a class="case-link-bold" onclick="openFilingReviewModal(\'' + r.caseId + '\')">' + r.caseId + '</a></td>' +
-      '<td><strong style="color:var(--fsc-navy-main)">' + r.title + '</strong></td>' +
-      '<td style="color:#64748b">' + r.filer + '</td>' +
-      '<td style="color:#64748b">' + r.caseType + '</td>' +
-      '<td style="color:#64748b;font-size:0.75rem">' + r.reviewedOn + '</td>' +
-      '<td style="color:var(--fsc-navy-main);font-weight:600">' + r.actionTaken + '</td>' +
-      '<td><span class="priority-pill ' + r.statusClass + '">' + r.status + '</span></td>' +
-      '<td>' +
-        '<div style="display:flex;align-items:center;gap:0.35rem">' +
-          '<button class="btn-review-sm" onclick="openFilingReviewModal(\'' + r.caseId + '\')">View</button>' +
-          '<button class="btn-review-sm" style="padding:0.25rem 0.4rem" onclick="openFilingReviewModal(\'' + r.caseId + '\')">⋮</button>' +
-        '</div>' +
-      '</td>' +
-    '</tr>'
-  ).join('');
+      '<td><strong style="color:var(--fsc-navy-main)">' + (r.caseTitle || r.petitioner + ' vs. ' + r.respondent) + '</strong></td>' +
+      '<td style="color:#64748b">' + (r.petitioner || 'Filer') + '</td>' +
+      '<td style="color:#64748b">' + (r.caseType || 'Civil') + '</td>' +
+      '<td style="color:#64748b;font-size:0.75rem">' + revDate + '</td>' +
+      '<td style="color:var(--fsc-navy-main);font-weight:600">' + (r.screeningStatus || 'Reviewed') + '</td>' +
+      '<td><span class="priority-pill prio-low">' + (r.screeningStatus || 'Done').toUpperCase() + '</span></td>' +
+      '<td><button class="btn-review-sm" onclick="openFilingReviewModal(\'' + r.caseId + '\')">View</button></td>' +
+    '</tr>';
+  }).join('') : '<tr><td colspan="8" style="text-align:center;color:#64748b;padding:1.5rem">No cases reviewed yet today.</td></tr>';
 
   container.innerHTML = 
     '<div class="official-greeting-row">' +
       '<h1 class="official-greeting-title">Good morning, ' + (currentOfficial.fullName || 'Tesfaye Alemu') + '</h1>' +
-      '<div class="official-greeting-sub">Here\'s your overview of case filings and pending tasks.</div>' +
+      '<div class="official-greeting-sub">Live screening queue from database.</div>' +
     '</div>' +
 
     '<div class="official-kpi-grid-5">' +
       '<div class="official-kpi-card">' +
         '<div class="official-kpi-top">' +
-          '<div class="official-kpi-icon kpi-blue">' + ICONS.fileText + '</div>' +
+          '<div class="official-kpi-icon kpi-orange">' + ICONS.inbox + '</div>' +
           '<div>' +
-            '<div class="official-kpi-label">New Filings</div>' +
-            '<div class="official-kpi-number">14</div>' +
+            '<div class="official-kpi-label">Pending Filings</div>' +
+            '<div class="official-kpi-number">' + pendingCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="official-kpi-subtext">Awaiting screening</div>' +
-        '<a class="official-kpi-link" onclick="switchOfficialView(\'filing_queue\')">View queue &rarr;</a>' +
+        '<div class="official-kpi-delta">Queue awaiting review</div>' +
       '</div>' +
 
       '<div class="official-kpi-card">' +
         '<div class="official-kpi-top">' +
-          '<div class="official-kpi-icon kpi-green">' + ICONS.calendarList + '</div>' +
+          '<div class="official-kpi-icon kpi-blue">' + ICONS.clock + '</div>' +
           '<div>' +
-            '<div class="official-kpi-label">Under Review</div>' +
-            '<div class="official-kpi-number">8</div>' +
+            '<div class="official-kpi-label">Under Screening</div>' +
+            '<div class="official-kpi-number">' + underScreeningCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="official-kpi-subtext">In progress</div>' +
-        '<a class="official-kpi-link" onclick="switchOfficialView(\'cases\')">View cases &rarr;</a>' +
+        '<div class="official-kpi-delta">Active officer intake</div>' +
       '</div>' +
 
       '<div class="official-kpi-card">' +
         '<div class="official-kpi-top">' +
-          '<div class="official-kpi-icon kpi-orange">' + ICONS.userQuestion + '</div>' +
+          '<div class="official-kpi-icon kpi-green">' + ICONS.checkCircle + '</div>' +
           '<div>' +
-            '<div class="official-kpi-label">Needs Clarification</div>' +
-            '<div class="official-kpi-number">5</div>' +
+            '<div class="official-kpi-label">Approved</div>' +
+            '<div class="official-kpi-number">' + approvedCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="official-kpi-subtext">Awaiting response</div>' +
-        '<a class="official-kpi-link" onclick="switchOfficialView(\'document_demands\')">View cases &rarr;</a>' +
+        '<div class="official-kpi-delta">Passed screening</div>' +
       '</div>' +
 
       '<div class="official-kpi-card">' +
         '<div class="official-kpi-top">' +
-          '<div class="official-kpi-icon kpi-purple">' + ICONS.judge + '</div>' +
+          '<div class="official-kpi-icon kpi-purple">' + ICONS.alertTriangle + '</div>' +
           '<div>' +
-            '<div class="official-kpi-label">Assigned to Judge</div>' +
-            '<div class="official-kpi-number">22</div>' +
+            '<div class="official-kpi-label">Clarifications</div>' +
+            '<div class="official-kpi-number">' + clarificationCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="official-kpi-subtext">This month</div>' +
-        '<a class="official-kpi-link" onclick="switchOfficialView(\'judge_assignment\')">View cases &rarr;</a>' +
+        '<div class="official-kpi-delta">Documents demanded</div>' +
       '</div>' +
 
       '<div class="official-kpi-card">' +
         '<div class="official-kpi-top">' +
-          '<div class="official-kpi-icon kpi-teal">' + ICONS.checkCircle + '</div>' +
+          '<div class="official-kpi-icon kpi-red">' + ICONS.xCircle + '</div>' +
           '<div>' +
-            '<div class="official-kpi-label">Completed</div>' +
-            '<div class="official-kpi-number">56</div>' +
+            '<div class="official-kpi-label">Rejected</div>' +
+            '<div class="official-kpi-number">' + rejectedCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="official-kpi-subtext">This month</div>' +
-        '<a class="official-kpi-link" onclick="switchOfficialView(\'cases\')">View cases &rarr;</a>' +
+        '<div class="official-kpi-delta">Defective filings</div>' +
       '</div>' +
     '</div>' +
 
-    '<div class="official-2col-layout">' +
-
-      '<div>' +
-
-        '<div class="official-panel-card">' +
-          '<div class="official-panel-header">' +
-            '<div>' +
-              '<div class="official-panel-title">' +
-                '<span>Filing Queue</span>' +
-                '<span class="badge-orange-pill">14</span>' +
-              '</div>' +
-              '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">Newly submitted cases awaiting initial screening</div>' +
-            '</div>' +
-            '<a class="official-panel-link" onclick="switchOfficialView(\'filing_queue\')">View all queue &rarr;</a>' +
-          '</div>' +
-
-          '<div style="overflow-x:auto">' +
-            '<table class="official-table">' +
-              '<thead>' +
-                '<tr>' +
-                  '<th>Case ID</th>' +
-                  '<th>Filer Name</th>' +
-                  '<th>Case Type</th>' +
-                  '<th>Filed On</th>' +
-                  '<th>Documents</th>' +
-                  '<th>Priority</th>' +
-                  '<th>Action</th>' +
-                '</tr>' +
-              '</thead>' +
-              '<tbody>' +
-                queueRowsHtml +
-              '</tbody>' +
-            '</table>' +
-          '</div>' +
-
-          '<div style="text-align:center;padding-top:0.75rem;border-top:1px solid #f1f5f9;margin-top:0.65rem">' +
-            '<a class="official-panel-link" onclick="switchOfficialView(\'filing_queue\')">View full filing queue &rarr;</a>' +
+    '<div class="official-grid-2-col">' +
+      '<div class="official-panel-card">' +
+        '<div class="official-panel-head-row">' +
+          '<div>' +
+            '<div class="official-panel-title">Filing Queue</div>' +
+            '<div class="official-panel-sub">Real-time filings awaiting screening review.</div>' +
           '</div>' +
         '</div>' +
-
-        '<div class="middle-subcards-grid">' +
-
-          '<div class="official-panel-card" style="margin-bottom:0">' +
-            '<div class="official-panel-header">' +
-              '<div class="official-panel-title">Cases by Stage</div>' +
-              '<a class="official-panel-link" onclick="switchOfficialView(\'cases\')">View all cases &rarr;</a>' +
-            '</div>' +
-
-            '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.35rem 0">' +
-              '<div style="position:relative;width:95px;height:95px;flex-shrink:0;display:flex;align-items:center;justify-content:center">' +
-                '<svg viewBox="0 0 100 100" style="width:100%;height:100%;transform:rotate(-90deg)">' +
-                  '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#2563eb" stroke-width="16" stroke-dasharray="49 238" stroke-dashoffset="0"/>' +
-                  '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#eab308" stroke-width="16" stroke-dasharray="34 238" stroke-dashoffset="-49"/>' +
-                  '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#ea580c" stroke-width="16" stroke-dasharray="23 238" stroke-dashoffset="-83"/>' +
-                  '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#16a34a" stroke-width="16" stroke-dasharray="42 238" stroke-dashoffset="-106"/>' +
-                  '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#9333ea" stroke-width="16" stroke-dasharray="38 238" stroke-dashoffset="-148"/>' +
-                  '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#0d9488" stroke-width="16" stroke-dasharray="30 238" stroke-dashoffset="-186"/>' +
-                  '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#94a3b8" stroke-width="16" stroke-dasharray="22 238" stroke-dashoffset="-216"/>' +
-                '</svg>' +
-                '<div style="position:absolute;text-align:center">' +
-                  '<div style="font-size:0.6rem;color:#64748b;font-weight:600">Total</div>' +
-                  '<div style="font-size:0.95rem;font-weight:800;color:var(--fsc-navy-main);line-height:1">126</div>' +
-                '</div>' +
-              '</div>' +
-
-              '<div style="display:flex;flex-direction:column;gap:0.25rem;font-size:0.7rem;flex:1">' +
-                '<div style="display:flex;justify-content:space-between"><span><span style="color:#2563eb">&bull;</span> Filed</span><strong style="color:var(--fsc-navy-main)">26 (20.6%)</strong></div>' +
-                '<div style="display:flex;justify-content:space-between"><span><span style="color:#eab308">&bull;</span> Under Screening</span><strong style="color:var(--fsc-navy-main)">18 (14.3%)</strong></div>' +
-                '<div style="display:flex;justify-content:space-between"><span><span style="color:#ea580c">&bull;</span> Needs Clarification</span><strong style="color:var(--fsc-navy-main)">12 (9.5%)</strong></div>' +
-                '<div style="display:flex;justify-content:space-between"><span><span style="color:#16a34a">&bull;</span> Assigned</span><strong style="color:var(--fsc-navy-main)">22 (17.5%)</strong></div>' +
-                '<div style="display:flex;justify-content:space-between"><span><span style="color:#9333ea">&bull;</span> Awaiting Evidence</span><strong style="color:var(--fsc-navy-main)">20 (15.9%)</strong></div>' +
-                '<div style="display:flex;justify-content:space-between"><span><span style="color:#0d9488">&bull;</span> Hearing</span><strong style="color:var(--fsc-navy-main)">16 (12.7%)</strong></div>' +
-                '<div style="display:flex;justify-content:space-between"><span><span style="color:#94a3b8">&bull;</span> Decided</span><strong style="color:var(--fsc-navy-main)">12 (9.5%)</strong></div>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="official-panel-card" style="margin-bottom:0">' +
-            '<div class="official-panel-header">' +
-              '<div class="official-panel-title">Recent Activity</div>' +
-              '<a class="official-panel-link" onclick="switchOfficialView(\'audit_log\')">View all activity &rarr;</a>' +
-            '</div>' +
-
-            '<div>' +
-              '<div class="activity-feed-row">' +
-                '<div class="activity-circle-icon" style="background:#dcfce7;color:#16a34a">' + ICONS.checkCircle + '</div>' +
-                '<div><div class="activity-title-text">CASE-178721548800 approved and assigned to Hon. Judge Bekele Seyoum</div><div class="activity-time-text">May 24, 2026, 10:20 AM</div></div>' +
-              '</div>' +
-
-              '<div class="activity-feed-row">' +
-                '<div class="activity-circle-icon" style="background:#e0f2fe;color:#0284c7">' + ICONS.messageHelp + '</div>' +
-                '<div><div class="activity-title-text">Clarification requested for CASE-178721612233</div><div class="activity-time-text">May 24, 2026, 10:05 AM</div></div>' +
-              '</div>' +
-
-              '<div class="activity-feed-row">' +
-                '<div class="activity-circle-icon" style="background:#f3e8ff;color:#9333ea">' + ICONS.fileDemand + '</div>' +
-                '<div><div class="activity-title-text">Document demand sent for CASE-178721559922</div><div class="activity-time-text">May 24, 2026, 09:45 AM</div></div>' +
-              '</div>' +
-
-              '<div class="activity-feed-row">' +
-                '<div class="activity-circle-icon" style="background:#ffedd5;color:#ea580c">' + ICONS.judge + '</div>' +
-                '<div><div class="activity-title-text">CASE-178721595551 assigned to Hon. Judge Solomon Desta</div><div class="activity-time-text">May 24, 2026, 09:30 AM</div></div>' +
-              '</div>' +
-
-              '<div class="activity-feed-row">' +
-                '<div class="activity-circle-icon" style="background:#ccfbf1;color:#0d9488">' + ICONS.fileText + '</div>' +
-                '<div><div class="activity-title-text">New filing received: CASE-178721596417</div><div class="activity-time-text">May 24, 2026, 10:32 AM</div></div>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-
-        '</div>' +
-
-        '<div class="official-panel-card">' +
-          '<div class="official-panel-header">' +
-            '<div class="official-panel-title">My Reviewed Cases</div>' +
-            '<button class="btn-review-sm" onclick="alert(\'Exporting reviewed cases list...\')">Export &blacktriangledown;</button>' +
-          '</div>' +
-
-          '<div class="tabs-header-wrap">' +
-            '<button class="tab-item-btn ' + (currentReviewedTab === 'all' ? 'active' : '') + '" onclick="setReviewedTab(\'all\')">All (38)</button>' +
-            '<button class="tab-item-btn ' + (currentReviewedTab === 'approved' ? 'active' : '') + '" onclick="setReviewedTab(\'approved\')">Approved (22)</button>' +
-            '<button class="tab-item-btn ' + (currentReviewedTab === 'clarification' ? 'active' : '') + '" onclick="setReviewedTab(\'clarification\')">Clarification Requested (8)</button>' +
-            '<button class="tab-item-btn ' + (currentReviewedTab === 'rejected' ? 'active' : '') + '" onclick="setReviewedTab(\'rejected\')">Rejected (3)</button>' +
-            '<button class="tab-item-btn ' + (currentReviewedTab === 'assigned' ? 'active' : '') + '" onclick="setReviewedTab(\'assigned\')">Assigned (5)</button>' +
-          '</div>' +
-
-          '<div style="overflow-x:auto">' +
-            '<table class="official-table">' +
-              '<thead>' +
-                '<tr>' +
-                  '<th>Case ID</th>' +
-                  '<th>Title</th>' +
-                  '<th>Filer</th>' +
-                  '<th>Case Type</th>' +
-                  '<th>Reviewed On</th>' +
-                  '<th>Action Taken</th>' +
-                  '<th>Status</th>' +
-                  '<th>Action</th>' +
-                '</tr>' +
-              '</thead>' +
-              '<tbody>' +
-                reviewedRowsHtml +
-              '</tbody>' +
-            '</table>' +
-          '</div>' +
-
-          '<div style="text-align:center;padding-top:0.75rem;border-top:1px solid #f1f5f9;margin-top:0.65rem">' +
-            '<a class="official-panel-link" onclick="switchOfficialView(\'cases\')">View all reviewed cases &rarr;</a>' +
-          '</div>' +
-        '</div>' +
-
+        '<table class="official-table">' +
+          '<thead><tr><th>Case ID</th><th>Filer</th><th>Type</th><th>Filed At</th><th>Docs</th><th>Priority</th><th>Action</th></tr></thead>' +
+          '<tbody>' + queueRowsHtml + '</tbody>' +
+        '</table>' +
       '</div>' +
 
-      '<div>' +
-
-        '<div class="official-panel-card">' +
-          '<div class="official-panel-header">' +
-            '<div class="official-panel-title">Quick Actions</div>' +
-          '</div>' +
-
-          '<div class="quick-actions-3x3">' +
-            '<div class="action-tile-btn" onclick="openFilingReviewModal(\'CASE-178721596417\')">' +
-              '<div style="color:#475569">' + ICONS.searchFile + '</div>' +
-              '<span>Review Filing</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openClarificationModal()">' +
-              '<div style="color:#475569">' + ICONS.messageHelp + '</div>' +
-              '<span>Request Clarification</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openAssignJudgeModal()">' +
-              '<div style="color:#475569">' + ICONS.judge + '</div>' +
-              '<span>Assign to Judge</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openDocumentDemandModal()">' +
-              '<div style="color:#475569">' + ICONS.fileDemand + '</div>' +
-              '<span>Send Document Demand</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openApproveRouteModal()">' +
-              '<div style="color:#16a34a">' + ICONS.checkCircle + '</div>' +
-              '<span>Approve &amp; Route</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openRejectModal()">' +
-              '<div style="color:#dc2626">' + ICONS.xCircle + '</div>' +
-              '<span>Reject Filing</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openScheduleHearingModal()">' +
-              '<div style="color:#475569">' + ICONS.calendarClock + '</div>' +
-              '<span>Schedule Hearing</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openPostponementModal()">' +
-              '<div style="color:#475569">' + ICONS.historyClock + '</div>' +
-              '<span>Postponement Request</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openUploadOrderModal()">' +
-              '<div style="color:#475569">' + ICONS.upload + '</div>' +
-              '<span>Upload Court Order</span>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="official-panel-card">' +
-          '<div class="official-panel-header">' +
-            '<div class="official-panel-title">Today\'s Hearings</div>' +
-            '<a class="official-panel-link" onclick="switchOfficialView(\'court_calendar\')">View calendar &rarr;</a>' +
-          '</div>' +
-
+      '<div class="official-panel-card">' +
+        '<div class="official-panel-head-row">' +
           '<div>' +
-            '<div class="hearing-slot-row">' +
-              '<div class="hearing-time-bold">09:30 AM</div>' +
-              '<div class="hearing-case-info">' +
-                '<a class="hearing-case-id" onclick="openFilingReviewModal(\'CASE-178721554411\')">CASE-178721554411</a>' +
-                '<div class="hearing-case-title">Awash Bank vs. Blue Nile Holdings</div>' +
-              '</div>' +
-              '<span class="hearing-courtroom-badge">&bull; Courtroom 4</span>' +
-            '</div>' +
-
-            '<div class="hearing-slot-row">' +
-              '<div class="hearing-time-bold">11:00 AM</div>' +
-              '<div class="hearing-case-info">' +
-                '<a class="hearing-case-id" onclick="openFilingReviewModal(\'CASE-178721559922\')">CASE-178721559922</a>' +
-                '<div class="hearing-case-title">Mulualem Desta vs. Ethio Telecom</div>' +
-              '</div>' +
-              '<span class="hearing-courtroom-badge">&bull; Courtroom 2</span>' +
-            '</div>' +
-
-            '<div class="hearing-slot-row">' +
-              '<div class="hearing-time-bold">02:00 PM</div>' +
-              '<div class="hearing-case-info">' +
-                '<a class="hearing-case-id" onclick="openFilingReviewModal(\'CASE-178721552233\')">CASE-178721552233</a>' +
-                '<div class="hearing-case-title">Aster Manufacturing vs. Ministry of Revenues</div>' +
-              '</div>' +
-              '<span class="hearing-courtroom-badge">&bull; Courtroom 3</span>' +
-            '</div>' +
-
-            '<div class="hearing-slot-row">' +
-              '<div class="hearing-time-bold">04:00 PM</div>' +
-              '<div class="hearing-case-info">' +
-                '<a class="hearing-case-id" onclick="openFilingReviewModal(\'CASE-178721648800\')">CASE-178721648800</a>' +
-                '<div class="hearing-case-title">Yalemwork Alemu vs. Hibret Insurance</div>' +
-              '</div>' +
-              '<span class="hearing-courtroom-badge">&bull; Courtroom 1</span>' +
-            '</div>' +
-          '</div>' +
-
-          '<div style="text-align:center;padding-top:0.75rem;border-top:1px solid #f1f5f9;margin-top:0.65rem">' +
-            '<a class="official-panel-link" onclick="switchOfficialView(\'court_calendar\')">View full calendar &rarr;</a>' +
+            '<div class="official-panel-title">Reviewed Cases</div>' +
+            '<div class="official-panel-sub">Screening decisions and assignments.</div>' +
           '</div>' +
         '</div>' +
-
-        '<div class="official-panel-card">' +
-          '<div class="official-panel-header">' +
-            '<div class="official-panel-title">Notifications</div>' +
-            '<a class="official-panel-link" onclick="switchOfficialView(\'notifications\')">View all &rarr;</a>' +
-          '</div>' +
-
-          '<div>' +
-            '<div class="notif-alert-row">' +
-              '<div class="notif-alert-icon" style="background:#fee2e2;color:#dc2626">!' + '</div>' +
-              '<div><div class="notif-alert-title">5 new filings added to the queue</div><div class="notif-alert-time">10 minutes ago</div></div>' +
-            '</div>' +
-
-            '<div class="notif-alert-row">' +
-              '<div class="notif-alert-icon" style="background:#e0f2fe;color:#0284c7">i' + '</div>' +
-              '<div><div class="notif-alert-title">CASE-178721559922 scheduled for hearing</div><div class="notif-alert-time">25 minutes ago</div></div>' +
-            '</div>' +
-
-            '<div class="notif-alert-row">' +
-              '<div class="notif-alert-icon" style="background:#ffedd5;color:#ea580c">&#9888;' + '</div>' +
-              '<div><div class="notif-alert-title">Document size exceeds limit in CASE-178721612233</div><div class="notif-alert-time">40 minutes ago</div></div>' +
-            '</div>' +
-
-            '<div class="notif-alert-row">' +
-              '<div class="notif-alert-icon" style="background:#dcfce7;color:#16a34a">&#10003;' + '</div>' +
-              '<div><div class="notif-alert-title">CASE-178721548800 successfully assigned</div><div class="notif-alert-time">1 hour ago</div></div>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
+        '<table class="official-table">' +
+          '<thead><tr><th>Case ID</th><th>Title</th><th>Filer</th><th>Type</th><th>Reviewed</th><th>Decision</th><th>Status</th><th>Action</th></tr></thead>' +
+          '<tbody>' + reviewedRowsHtml + '</tbody>' +
+        '</table>' +
       '</div>' +
-
     '</div>';
 }
 

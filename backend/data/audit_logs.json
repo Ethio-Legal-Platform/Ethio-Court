@@ -1,5 +1,13 @@
 [
   {
+    "id": "AUD-1787241392895",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-20T15:56:32.895Z",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-1787241315584",
     "action": "USER_LOGIN",
     "user": "Tesfaye Alemu",

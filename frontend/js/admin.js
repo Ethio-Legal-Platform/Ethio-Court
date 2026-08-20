@@ -158,21 +158,28 @@ function logoutAdmin() {
   window.location.href = '/';
 }
 
+let allMetrics = { totalCases: 0, activeCases: 0, verifiedLawyers: 0, activeJudges: 0, courtOfficers: 0 };
+let systemHealth = { status: 'HEALTHY', mongoConnection: 'ONLINE', redisCache: 'CONNECTED', smsGateway: 'ACTIVE', storageUsage: '14.2 GB' };
+
 async function loadAdminData() {
   try {
-    const [casesRes, licRes, notifsRes, smsRes, auditRes] = await Promise.all([
+    const [casesRes, notifsRes, smsRes, auditRes, metricsRes, healthRes, judgesRes] = await Promise.all([
       fetch(API + '/cases').catch(() => null),
-      fetch(API + '/licenses').catch(() => null),
       fetch(API + '/notifications').catch(() => null),
       fetch(API + '/sms/logs').catch(() => null),
-      fetch(API + '/audit-logs').catch(() => null)
+      fetch(API + '/admin/audit-logs').catch(() => null),
+      fetch(API + '/admin/metrics').catch(() => null),
+      fetch(API + '/admin/health').catch(() => null),
+      fetch(API + '/judges').catch(() => null)
     ]);
 
     if (casesRes && casesRes.ok) allCases = await casesRes.json();
-    if (licRes && licRes.ok) allLicenses = await licRes.json();
     if (notifsRes && notifsRes.ok) allNotifications = await notifsRes.json();
     if (smsRes && smsRes.ok) allSmsLogs = await smsRes.json();
     if (auditRes && auditRes.ok) allAuditLogs = await auditRes.json();
+    if (metricsRes && metricsRes.ok) allMetrics = await metricsRes.json();
+    if (healthRes && healthRes.ok) systemHealth = await healthRes.json();
+    if (judgesRes && judgesRes.ok) allLicenses = await judgesRes.json();
   } catch (err) {}
 
   renderAdminCurrentView();
@@ -231,36 +238,46 @@ function renderAdminCurrentView() {
 }
 
 function renderAdminDashboard(container) {
-  const totalCasesCount = (allCases && allCases.length) ? (allCases.length > 20 ? allCases.length : 1284) : 1284;
-  const activeCasesCount = 426;
-  const decidedCasesCount = 858;
-  const registeredUsersCount = '2,341';
-  const totalAdvocatesCount = (allLicenses && allLicenses.length) ? allLicenses.length : 37;
-  const totalJudgesCount = 42;
+  const totalCasesCount = (allCases && allCases.length) ? allCases.length : 0;
+  const activeCasesCount = (allCases && allCases.length) ? allCases.filter(c => c.status !== 'closed' && c.status !== 'decided' && c.status !== 'archived').length : 0;
+  const decidedCasesCount = (allCases && allCases.length) ? allCases.filter(c => c.status === 'closed' || c.status === 'decided' || c.status === 'verdict').length : 0;
+  const totalAdvocatesCount = allMetrics.verifiedLawyers || 0;
+  const totalJudgesCount = allMetrics.activeJudges || 0;
+  const totalStaffCount = allMetrics.courtOfficers || 0;
+  const registeredUsersCount = totalAdvocatesCount + totalJudgesCount + totalStaffCount;
 
-  const recentCasesList = [
-    { caseId: 'CASE-178721596417', title: 'Awash International Bank vs. Blue Nile Holdings', filedOn: 'May 17, 2026', status: 'HEARING', statusClass: 'pill-blue', stage: 'Hearing Stage', stepIndex: 3 },
-    { caseId: 'CASE-178719224815', title: 'Mulualem Desta vs. Ethio Telecom', filedOn: 'May 10, 2026', status: 'ASSIGNED', statusClass: 'pill-green', stage: 'Assigned', stepIndex: 1 },
-    { caseId: 'CASE-178715887332', title: 'Aster Manufacturing vs. Ministry of Revenues', filedOn: 'May 01, 2026', status: 'SCREENING', statusClass: 'pill-orange', stage: 'Screening', stepIndex: 1 },
-    { caseId: 'CASE-178712005521', title: 'Yalemwork Alemu vs. Hibret Insurance', filedOn: 'Apr 25, 2026', status: 'PENDING', statusClass: 'pill-amber', stage: 'Filed', stepIndex: 1 },
-    { caseId: 'CASE-178710445221', title: 'Tekle G. vs. Addis Ababa City Administration', filedOn: 'Apr 20, 2026', status: 'EVIDENCE', statusClass: 'pill-purple', stage: 'Evidence Stage', stepIndex: 2 }
-  ];
+  const recentCasesList = allCases.slice(0, 10);
+  const recentRowsHtml = recentCasesList.length ? recentCasesList.map(c => {
+    let statusClass = 'pill-blue';
+    let status = (c.status || 'FILED').toUpperCase();
+    if (c.status === 'pending_screening' || c.screeningStatus === 'pending') { statusClass = 'pill-orange'; status = 'SCREENING'; }
+    else if (c.status === 'assigned') { statusClass = 'pill-green'; status = 'ASSIGNED'; }
+    else if (c.status === 'scheduled' || c.status === 'hearing') { statusClass = 'pill-blue'; status = 'HEARING'; }
+    else if (c.status === 'closed' || c.status === 'decided') { statusClass = 'pill-purple'; status = 'DECIDED'; }
 
-  const recentRowsHtml = recentCasesList.map(c => 
-    '<tr>' +
+    let stepIndex = 1;
+    let stage = 'Filed';
+    if (c.status === 'screening' || c.status === 'pending_screening') { stepIndex = 1; stage = 'Screening'; }
+    else if (c.status === 'assigned') { stepIndex = 2; stage = 'Assigned'; }
+    else if (c.status === 'scheduled' || c.status === 'hearing') { stepIndex = 3; stage = 'Hearing Stage'; }
+    else if (c.status === 'closed' || c.status === 'decided') { stepIndex = 4; stage = 'Verdict Delivered'; }
+
+    const filedDate = c.filingDate ? new Date(c.filingDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : 'Recent';
+
+    return '<tr>' +
       '<td><a class="case-link-bold" onclick="openAdminCaseModal(\'' + c.caseId + '\')">' + c.caseId + '</a></td>' +
-      '<td><strong style="color:var(--fsc-navy-main)">' + c.title + '</strong></td>' +
-      '<td style="color:#64748b">' + c.filedOn + '</td>' +
-      '<td><span class="status-pill ' + c.statusClass + '">' + c.status + '</span></td>' +
+      '<td><strong style="color:var(--fsc-navy-main)">' + (c.caseTitle || c.petitioner + ' vs. ' + c.respondent) + '</strong></td>' +
+      '<td style="color:#64748b">' + filedDate + '</td>' +
+      '<td><span class="status-pill ' + statusClass + '">' + status + '</span></td>' +
       '<td>' +
         '<div style="display:flex;flex-direction:column;gap:2px">' +
           '<div class="mini-stepper">' +
             '<div class="step-node active"></div><div class="step-line"></div>' +
-            '<div class="step-node ' + (c.stepIndex >= 2 ? 'active' : '') + '"></div><div class="step-line"></div>' +
-            '<div class="step-node ' + (c.stepIndex >= 3 ? 'active' : '') + '"></div><div class="step-line"></div>' +
-            '<div class="step-node ' + (c.stepIndex >= 4 ? 'active' : '') + '"></div>' +
+            '<div class="step-node ' + (stepIndex >= 2 ? 'active' : '') + '"></div><div class="step-line"></div>' +
+            '<div class="step-node ' + (stepIndex >= 3 ? 'active' : '') + '"></div><div class="step-line"></div>' +
+            '<div class="step-node ' + (stepIndex >= 4 ? 'active' : '') + '"></div>' +
           '</div>' +
-          '<span style="font-size:0.685rem;color:#64748b">' + c.stage + '</span>' +
+          '<span style="font-size:0.685rem;color:#64748b">' + stage + '</span>' +
         '</div>' +
       '</td>' +
       '<td>' +
@@ -269,36 +286,31 @@ function renderAdminDashboard(container) {
           '<button class="btn-view-sm" style="padding:0.25rem 0.4rem" onclick="openAdminCaseModal(\'' + c.caseId + '\')">⋮</button>' +
         '</div>' +
       '</td>' +
-    '</tr>'
-  ).join('');
+    '</tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;color:#64748b;padding:1.5rem">No cases found in registry database.</td></tr>';
 
-  const auditRowsList = [
-    { time: 'May 24, 2026 10:43 AM', user: 'Admin User', role: 'Administrator', action: 'Synced advocate licenses with MoJ', module: 'MoJ Registry', ip: '196.188.1.10' },
-    { time: 'May 24, 2026 10:41 AM', user: 'Screening Officer', role: 'Court Staff', action: 'Approved case CASE-178721596417', module: 'Case Management', ip: '196.188.1.25' },
-    { time: 'May 24, 2026 10:38 AM', user: 'Clerk User', role: 'Court Clerk', action: 'Scheduled hearing for CASE-178719224815', module: 'Hearing Calendar', ip: '196.188.1.30' },
-    { time: 'May 24, 2026 10:35 AM', user: 'Judge Solomon Desta', role: 'Judge', action: 'Issued document demand in CASE-178715887332', module: 'Documents', ip: '196.188.1.15' }
-  ];
-
-  const auditRowsHtml = auditRowsList.map(a => 
-    '<tr>' +
-      '<td style="color:#64748b;white-space:nowrap">' + a.time + '</td>' +
-      '<td><strong>' + a.user + '</strong></td>' +
-      '<td><span class="status-pill pill-blue">' + a.role + '</span></td>' +
-      '<td style="color:var(--fsc-navy-main);font-weight:500">' + a.action + '</td>' +
-      '<td>' + a.module + '</td>' +
-      '<td style="font-family:monospace;color:#64748b">' + a.ip + '</td>' +
-    '</tr>'
-  ).join('');
+  const auditRowsList = allAuditLogs.slice(0, 10);
+  const auditRowsHtml = auditRowsList.length ? auditRowsList.map(a => {
+    const timeStr = a.timestamp ? new Date(a.timestamp).toLocaleString() : (a.time || 'Recent');
+    return '<tr>' +
+      '<td style="color:#64748b;white-space:nowrap">' + timeStr + '</td>' +
+      '<td><strong>' + (a.user || 'System') + '</strong></td>' +
+      '<td><span class="status-pill pill-blue">' + (a.role || 'User') + '</span></td>' +
+      '<td style="color:var(--fsc-navy-main);font-weight:500">' + (a.action || 'Action') + '</td>' +
+      '<td>' + (a.module || 'Core System') + '</td>' +
+      '<td style="font-family:monospace;color:#64748b">' + (a.ip || '127.0.0.1') + '</td>' +
+    '</tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;color:#64748b;padding:1.5rem">No audit entries logged yet.</td></tr>';
 
   container.innerHTML = 
     '<div class="admin-header-row">' +
       '<div>' +
-        '<h1 class="admin-greeting-title">Welcome back, Administrator</h1>' +
-        '<div class="admin-greeting-sub">Here\'s what\'s happening in the system today.</div>' +
+        '<h1 class="admin-greeting-title">Welcome back, ' + (currentAdmin.fullName || 'Administrator') + '</h1>' +
+        '<div class="admin-greeting-sub">Live real-time system metrics computed directly from database.</div>' +
       '</div>' +
       '<button class="btn-export-dashboard" onclick="exportAdminSummary()">' +
         '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>' +
-        '<span>Export Dashboard</span>' +
+        '<span>Export Summary</span>' +
       '</button>' +
     '</div>' +
 
@@ -308,10 +320,10 @@ function renderAdminDashboard(container) {
           '<div class="admin-kpi-icon kpi-blue">' + ICONS.briefcase + '</div>' +
           '<div>' +
             '<div class="admin-kpi-label">Total Cases</div>' +
-            '<div class="admin-kpi-number">' + totalCasesCount.toLocaleString() + '</div>' +
+            '<div class="admin-kpi-number">' + totalCasesCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="admin-kpi-delta">&nearr; 12.5% vs last month</div>' +
+        '<div class="admin-kpi-delta">Live registry count</div>' +
       '</div>' +
 
       '<div class="admin-kpi-card">' +
@@ -322,7 +334,7 @@ function renderAdminDashboard(container) {
             '<div class="admin-kpi-number">' + activeCasesCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="admin-kpi-delta">&nearr; 8.3% vs last month</div>' +
+        '<div class="admin-kpi-delta">Pending &amp; Hearing</div>' +
       '</div>' +
 
       '<div class="admin-kpi-card">' +
@@ -333,7 +345,7 @@ function renderAdminDashboard(container) {
             '<div class="admin-kpi-number">' + decidedCasesCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="admin-kpi-delta">&nearr; 15.7% vs last month</div>' +
+        '<div class="admin-kpi-delta">Concluded verdicts</div>' +
       '</div>' +
 
       '<div class="admin-kpi-card">' +
@@ -344,7 +356,7 @@ function renderAdminDashboard(container) {
             '<div class="admin-kpi-number">' + registeredUsersCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="admin-kpi-delta">&nearr; 9.4% vs last month</div>' +
+        '<div class="admin-kpi-delta">Active user accounts</div>' +
       '</div>' +
 
       '<div class="admin-kpi-card">' +
@@ -355,400 +367,49 @@ function renderAdminDashboard(container) {
             '<div class="admin-kpi-number">' + totalAdvocatesCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="admin-kpi-delta">&nearr; 2 new this month</div>' +
+        '<div class="admin-kpi-delta">Certified advocates</div>' +
       '</div>' +
 
       '<div class="admin-kpi-card">' +
         '<div class="admin-kpi-top">' +
-          '<div class="admin-kpi-icon kpi-teal">' + ICONS.scales + '</div>' +
+          '<div class="admin-kpi-icon kpi-gold">' + ICONS.scales + '</div>' +
           '<div>' +
-            '<div class="admin-kpi-label">Total Judges</div>' +
+            '<div class="admin-kpi-label">Judges &amp; Benches</div>' +
             '<div class="admin-kpi-number">' + totalJudgesCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="admin-kpi-delta neutral">No change</div>' +
+        '<div class="admin-kpi-delta">Active chambers</div>' +
       '</div>' +
     '</div>' +
 
-    '<div class="admin-3col-row">' +
-
+    '<div class="admin-grid-2-col">' +
       '<div class="admin-panel-card">' +
-        '<div class="admin-panel-header">' +
-          '<div class="admin-panel-title">' +
-            '<span>Case Trend (Last 12 Months)</span>' +
+        '<div class="admin-panel-head-row">' +
+          '<div>' +
+            '<div class="admin-panel-title">Recent Registered Cases</div>' +
+            '<div class="admin-panel-sub">Real-time dockets from electronic registry.</div>' +
           '</div>' +
-          '<div style="display:flex;align-items:center;gap:0.75rem">' +
-            '<div style="display:flex;align-items:center;gap:0.5rem;font-size:0.7rem;font-weight:600">' +
-              '<span style="color:#2563eb">&bull; Filed</span>' +
-              '<span style="color:#16a34a">&bull; Decided</span>' +
-              '<span style="color:#ea580c">&bull; Active</span>' +
-            '</div>' +
-            '<select style="font-size:0.72rem;border:1px solid #cbd5e1;border-radius:4px;padding:0.15rem 0.4rem">' +
-              '<option>Last 12 Months</option>' +
-              '<option>2026</option>' +
-              '<option>2025</option>' +
-            '</select>' +
-          '</div>' +
+          '<button class="btn-view-all-link" onclick="switchAdminView(\'cases_management\')">View All Cases &rarr;</button>' +
         '</div>' +
-
-        '<div style="position:relative;width:100%;height:180px;margin-top:0.5rem">' +
-          '<svg viewBox="0 0 540 180" style="width:100%;height:100%;overflow:visible">' +
-            '<defs>' +
-              '<linearGradient id="gradFiled" x1="0" y1="0" x2="0" y2="1">' +
-                '<stop offset="0%" stop-color="#2563eb" stop-opacity="0.2"/>' +
-                '<stop offset="100%" stop-color="#2563eb" stop-opacity="0.0"/>' +
-              '</linearGradient>' +
-              '<linearGradient id="gradDecided" x1="0" y1="0" x2="0" y2="1">' +
-                '<stop offset="0%" stop-color="#16a34a" stop-opacity="0.2"/>' +
-                '<stop offset="100%" stop-color="#16a34a" stop-opacity="0.0"/>' +
-              '</linearGradient>' +
-            '</defs>' +
-
-            '<line x1="30" y1="20" x2="520" y2="20" stroke="#f1f5f9" stroke-width="1"/>' +
-            '<line x1="30" y1="55" x2="520" y2="55" stroke="#f1f5f9" stroke-width="1"/>' +
-            '<line x1="30" y1="90" x2="520" y2="90" stroke="#f1f5f9" stroke-width="1"/>' +
-            '<line x1="30" y1="125" x2="520" y2="125" stroke="#f1f5f9" stroke-width="1"/>' +
-            '<line x1="30" y1="160" x2="520" y2="160" stroke="#f1f5f9" stroke-width="1"/>' +
-
-            '<text x="5" y="24" font-size="9" fill="#94a3b8">1,000</text>' +
-            '<text x="12" y="59" font-size="9" fill="#94a3b8">800</text>' +
-            '<text x="12" y="94" font-size="9" fill="#94a3b8">600</text>' +
-            '<text x="12" y="129" font-size="9" fill="#94a3b8">400</text>' +
-            '<text x="12" y="164" font-size="9" fill="#94a3b8">200</text>' +
-
-            '<path d="M 40 120 Q 80 110 125 95 T 210 80 T 295 65 T 380 75 T 465 70 T 510 60 L 510 160 L 40 160 Z" fill="url(#gradFiled)"/>' +
-            '<path d="M 40 120 Q 80 110 125 95 T 210 80 T 295 65 T 380 75 T 465 70 T 510 60" fill="none" stroke="#2563eb" stroke-width="2.5"/>' +
-
-            '<path d="M 40 145 Q 80 135 125 130 T 210 115 T 295 105 T 380 100 T 465 95 T 510 85 L 510 160 L 40 160 Z" fill="url(#gradDecided)"/>' +
-            '<path d="M 40 145 Q 80 135 125 130 T 210 115 T 295 105 T 380 100 T 465 95 T 510 85" fill="none" stroke="#16a34a" stroke-width="2.5"/>' +
-
-            '<path d="M 40 155 Q 80 150 125 145 T 210 145 T 295 140 T 380 130 T 465 135 T 510 135" fill="none" stroke="#ea580c" stroke-width="2.5"/>' +
-
-            '<circle cx="40" cy="120" r="3" fill="#2563eb"/>' +
-            '<circle cx="125" cy="95" r="3" fill="#2563eb"/>' +
-            '<circle cx="210" cy="80" r="3" fill="#2563eb"/>' +
-            '<circle cx="295" cy="65" r="3" fill="#2563eb"/>' +
-            '<circle cx="380" cy="75" r="3" fill="#2563eb"/>' +
-            '<circle cx="465" cy="70" r="3" fill="#2563eb"/>' +
-            '<circle cx="510" cy="60" r="3.5" fill="#2563eb"/>' +
-
-            '<text x="35" y="175" font-size="9" fill="#94a3b8">Jun</text>' +
-            '<text x="75" y="175" font-size="9" fill="#94a3b8">Jul</text>' +
-            '<text x="115" y="175" font-size="9" fill="#94a3b8">Aug</text>' +
-            '<text x="155" y="175" font-size="9" fill="#94a3b8">Sep</text>' +
-            '<text x="195" y="175" font-size="9" fill="#94a3b8">Oct</text>' +
-            '<text x="235" y="175" font-size="9" fill="#94a3b8">Nov</text>' +
-            '<text x="275" y="175" font-size="9" fill="#94a3b8">Dec</text>' +
-            '<text x="315" y="175" font-size="9" fill="#94a3b8">Jan</text>' +
-            '<text x="355" y="175" font-size="9" fill="#94a3b8">Feb</text>' +
-            '<text x="395" y="175" font-size="9" fill="#94a3b8">Mar</text>' +
-            '<text x="435" y="175" font-size="9" fill="#94a3b8">Apr</text>' +
-            '<text x="475" y="175" font-size="9" fill="#94a3b8">May</text>' +
-          '</svg>' +
-        '</div>' +
+        '<table class="admin-table">' +
+          '<thead><tr><th>Case ID</th><th>Title / Parties</th><th>Filed Date</th><th>Status</th><th>Stage</th><th>Actions</th></tr></thead>' +
+          '<tbody>' + recentRowsHtml + '</tbody>' +
+        '</table>' +
       '</div>' +
 
       '<div class="admin-panel-card">' +
-        '<div class="admin-panel-header">' +
-          '<div class="admin-panel-title">' +
-            '<span>System Health</span>' +
+        '<div class="admin-panel-head-row">' +
+          '<div>' +
+            '<div class="admin-panel-title">Security &amp; Activity Audit Log</div>' +
+            '<div class="admin-panel-sub">Immutable audit records from database.</div>' +
           '</div>' +
-          '<a class="admin-panel-link" onclick="switchAdminView(\'system_health\')">View all</a>' +
+          '<button class="btn-view-all-link" onclick="switchAdminView(\'audit_logs\')">View All &rarr;</button>' +
         '</div>' +
-
-        '<div>' +
-          '<div class="health-service-row">' +
-            '<div class="health-service-left">' +
-              '<div style="color:#16a34a">' + ICONS.database + '</div>' +
-              '<div>' +
-                '<div class="health-service-title">MongoDB Atlas</div>' +
-                '<div class="health-service-sub">Database Connection</div>' +
-              '</div>' +
-            '</div>' +
-            '<span class="health-status-badge">&bull; Healthy</span>' +
-          '</div>' +
-
-          '<div class="health-service-row">' +
-            '<div class="health-service-left">' +
-              '<div style="color:#16a34a">' + ICONS.link + '</div>' +
-              '<div>' +
-                '<div class="health-service-title">Webhook Dispatcher</div>' +
-                '<div class="health-service-sub">LEX-RATING Integration</div>' +
-              '</div>' +
-            '</div>' +
-            '<span class="health-status-badge">&bull; Healthy</span>' +
-          '</div>' +
-
-          '<div class="health-service-row">' +
-            '<div class="health-service-left">' +
-              '<div style="color:#16a34a">' + ICONS.messageSquare + '</div>' +
-              '<div>' +
-                '<div class="health-service-title">SMS Gateway</div>' +
-                '<div class="health-service-sub">Notification Service</div>' +
-              '</div>' +
-            '</div>' +
-            '<span class="health-status-badge">&bull; Healthy</span>' +
-          '</div>' +
-
-          '<div class="health-service-row">' +
-            '<div class="health-service-left">' +
-              '<div style="color:#16a34a">' + ICONS.mail + '</div>' +
-              '<div>' +
-                '<div class="health-service-title">Email Service</div>' +
-                '<div class="health-service-sub">SMTP Configuration</div>' +
-              '</div>' +
-            '</div>' +
-            '<span class="health-status-badge">&bull; Healthy</span>' +
-          '</div>' +
-
-          '<div class="health-service-row">' +
-            '<div class="health-service-left">' +
-              '<div style="color:#16a34a">' + ICONS.shield + '</div>' +
-              '<div>' +
-                '<div class="health-service-title">Backup Service</div>' +
-                '<div class="health-service-sub">Daily Backup</div>' +
-              '</div>' +
-            '</div>' +
-            '<span class="health-status-badge">&bull; Healthy</span>' +
-          '</div>' +
-        '</div>' +
+        '<table class="admin-table">' +
+          '<thead><tr><th>Timestamp</th><th>User</th><th>Role</th><th>Action</th><th>Module</th><th>IP</th></tr></thead>' +
+          '<tbody>' + auditRowsHtml + '</tbody>' +
+        '</table>' +
       '</div>' +
-
-      '<div class="admin-panel-card">' +
-        '<div class="admin-panel-header">' +
-          '<div class="admin-panel-title">' +
-            '<span>LEX-RATING Integration</span>' +
-          '</div>' +
-          '<a class="admin-panel-link" onclick="switchAdminView(\'lex_rating\')">View details</a>' +
-        '</div>' +
-
-        '<div>' +
-          '<div class="lex-metric-row">' +
-            '<div class="lex-metric-left">' + ICONS.calendar + ' <span>Last Sync</span></div>' +
-            '<span class="lex-metric-value" id="lex-last-sync">2 minutes ago</span>' +
-          '</div>' +
-
-          '<div class="lex-metric-row">' +
-            '<div class="lex-metric-left">' + ICONS.checkCircle + ' <span>Cases Synced Today</span></div>' +
-            '<span class="lex-metric-value">24</span>' +
-          '</div>' +
-
-          '<div class="lex-metric-row">' +
-            '<div class="lex-metric-left">' + ICONS.scales + ' <span>Licenses Synced Today</span></div>' +
-            '<span class="lex-metric-value">37</span>' +
-          '</div>' +
-
-          '<div class="lex-metric-row">' +
-            '<div class="lex-metric-left">' + ICONS.settings + ' <span>Failed Sync (24h)</span></div>' +
-            '<span class="lex-metric-value">0</span>' +
-          '</div>' +
-
-          '<div class="lex-metric-row">' +
-            '<div class="lex-metric-left">' + ICONS.shield + ' <span>Status</span></div>' +
-            '<span style="font-size:0.75rem;font-weight:700;color:#16a34a">&bull; Operational</span>' +
-          '</div>' +
-        '</div>' +
-
-        '<button class="btn-sync-now" id="btn-sync-lex" onclick="triggerLexRatingSync()">' +
-          'Sync Now' +
-        '</button>' +
-      '</div>' +
-
-    '</div>' +
-
-    '<div class="admin-3col-row">' +
-
-      '<div class="admin-panel-card">' +
-        '<div class="admin-panel-header">' +
-          '<div class="admin-panel-title">' +
-            '<span>Recent Cases</span>' +
-          '</div>' +
-          '<a class="admin-panel-link" onclick="switchAdminView(\'cases_management\')">View all cases</a>' +
-        '</div>' +
-
-        '<div style="overflow-x:auto">' +
-          '<table class="admin-table">' +
-            '<thead>' +
-              '<tr>' +
-                '<th>Case ID</th>' +
-                '<th>Title</th>' +
-                '<th>Filed On</th>' +
-                '<th>Status</th>' +
-                '<th>Stage</th>' +
-                '<th>Action</th>' +
-              '</tr>' +
-            '</thead>' +
-            '<tbody>' +
-              recentRowsHtml +
-            '</tbody>' +
-          '</table>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="admin-panel-card">' +
-        '<div class="admin-panel-header">' +
-          '<div class="admin-panel-title">' +
-            '<span>User Distribution</span>' +
-          '</div>' +
-          '<a class="admin-panel-link" onclick="switchAdminView(\'user_management\')">View analytics</a>' +
-        '</div>' +
-
-        '<div class="donut-layout-wrap">' +
-          '<div style="position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center">' +
-            '<svg viewBox="0 0 100 100" style="width:100%;height:100%;transform:rotate(-90deg)">' +
-              '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#0b1a30" stroke-width="16" stroke-dasharray="88 238" stroke-dashoffset="0"/>' +
-              '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#16a34a" stroke-width="16" stroke-dasharray="76 238" stroke-dashoffset="-88"/>' +
-              '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#ea580c" stroke-width="16" stroke-dasharray="35 238" stroke-dashoffset="-164"/>' +
-              '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#9333ea" stroke-width="16" stroke-dasharray="10 238" stroke-dashoffset="-199"/>' +
-              '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#0284c7" stroke-width="16" stroke-dasharray="7 238" stroke-dashoffset="-209"/>' +
-              '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#ef4444" stroke-width="16" stroke-dasharray="7 238" stroke-dashoffset="-216"/>' +
-              '<circle cx="50" cy="50" r="38" fill="transparent" stroke="#94a3b8" stroke-width="16" stroke-dasharray="15 238" stroke-dashoffset="-223"/>' +
-            '</svg>' +
-            '<div style="position:absolute;text-align:center">' +
-              '<div style="font-size:0.6rem;color:#64748b;font-weight:600">Total</div>' +
-              '<div style="font-size:0.95rem;font-weight:800;color:var(--fsc-navy-main);line-height:1.1">2,341</div>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="donut-legend-list">' +
-            '<div class="legend-item-row"><div class="legend-item-left"><div class="legend-dot" style="background:#0b1a30"></div><span>Advocates</span></div><span class="legend-count">37% (865)</span></div>' +
-            '<div class="legend-item-row"><div class="legend-item-left"><div class="legend-dot" style="background:#16a34a"></div><span>Litigants</span></div><span class="legend-count">32% (749)</span></div>' +
-            '<div class="legend-item-row"><div class="legend-item-left"><div class="legend-dot" style="background:#ea580c"></div><span>Court Staff</span></div><span class="legend-count">15% (351)</span></div>' +
-            '<div class="legend-item-row"><div class="legend-item-left"><div class="legend-dot" style="background:#9333ea"></div><span>Judges</span></div><span class="legend-count">4% (94)</span></div>' +
-            '<div class="legend-item-row"><div class="legend-item-left"><div class="legend-dot" style="background:#0284c7"></div><span>Admins</span></div><span class="legend-count">3% (70)</span></div>' +
-            '<div class="legend-item-row"><div class="legend-item-left"><div class="legend-dot" style="background:#ef4444"></div><span>Prosecutors</span></div><span class="legend-count">3% (69)</span></div>' +
-            '<div class="legend-item-row"><div class="legend-item-left"><div class="legend-dot" style="background:#94a3b8"></div><span>Others</span></div><span class="legend-count">6% (143)</span></div>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="admin-panel-card">' +
-        '<div class="admin-panel-header">' +
-          '<div class="admin-panel-title">' +
-            '<span>System Notifications</span>' +
-          '</div>' +
-          '<a class="admin-panel-link" onclick="switchAdminView(\'notifications\')">View all</a>' +
-        '</div>' +
-
-        '<div>' +
-          '<div class="notif-feed-item">' +
-            '<div class="notif-feed-icon" style="background:#dcfce7;color:#16a34a">' + ICONS.checkCircle + '</div>' +
-            '<div>' +
-              '<div class="notif-feed-title">Daily backup completed successfully</div>' +
-              '<div class="notif-feed-time">Today, 02:30 AM</div>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="notif-feed-item">' +
-            '<div class="notif-feed-icon" style="background:#e0f2fe;color:#0284c7">' + ICONS.link + '</div>' +
-            '<div>' +
-              '<div class="notif-feed-title">LEX-RATING sync completed</div>' +
-              '<div class="notif-feed-time">Today, 10:43 AM</div>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="notif-feed-item">' +
-            '<div class="notif-feed-icon" style="background:#ffedd5;color:#ea580c">' + ICONS.shield + '</div>' +
-            '<div>' +
-              '<div class="notif-feed-title">High storage usage (78%)</div>' +
-              '<div class="notif-feed-time">Today, 09:15 AM</div>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="notif-feed-item">' +
-            '<div class="notif-feed-icon" style="background:#f3e8ff;color:#9333ea">' + ICONS.gavel + '</div>' +
-            '<div>' +
-              '<div class="notif-feed-title">5 cases awaiting judgment</div>' +
-              '<div class="notif-feed-time">Today, 08:05 AM</div>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="notif-feed-item">' +
-            '<div class="notif-feed-icon" style="background:#e0f2fe;color:#0284c7">' + ICONS.messageSquare + '</div>' +
-            '<div>' +
-              '<div class="notif-feed-title">SMS gateway balance low</div>' +
-              '<div class="notif-feed-time">Today, 07:45 AM</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-
-    '</div>' +
-
-    '<div class="admin-bottom-row">' +
-
-      '<div class="admin-panel-card">' +
-        '<div class="admin-panel-header">' +
-          '<div class="admin-panel-title">' +
-            '<span>Audit Log (Latest Activities)</span>' +
-          '</div>' +
-          '<a class="admin-panel-link" onclick="switchAdminView(\'audit_logs\')">View all logs</a>' +
-        '</div>' +
-
-        '<div style="overflow-x:auto">' +
-          '<table class="admin-table">' +
-            '<thead>' +
-              '<tr>' +
-                '<th>Time</th>' +
-                '<th>User</th>' +
-                '<th>Role</th>' +
-                '<th>Action</th>' +
-                '<th>Module</th>' +
-                '<th>IP Address</th>' +
-              '</tr>' +
-            '</thead>' +
-            '<tbody>' +
-              auditRowsHtml +
-            '</tbody>' +
-          '</table>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="admin-panel-card">' +
-        '<div class="admin-panel-header">' +
-          '<div class="admin-panel-title">' +
-            '<span>Quick Actions</span>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="quick-actions-2x3">' +
-          '<div class="action-tile-btn" onclick="openAddUserModal()">' +
-            '<div style="color:#475569">' + ICONS.userPlus + '</div>' +
-            '<span>Add New User</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openRegisterAdvocateModal()">' +
-            '<div style="color:#475569">' + ICONS.scales + '</div>' +
-            '<span>Register Advocate</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openAddJudgeModal()">' +
-            '<div style="color:#475569">' + ICONS.gavel + '</div>' +
-            '<span>Add Judge</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openCreateDivisionModal()">' +
-            '<div style="color:#475569">' + ICONS.building + '</div>' +
-            '<span>Create Court Division</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openAdminSettingsModal()">' +
-            '<div style="color:#475569">' + ICONS.settings + '</div>' +
-            '<span>System Settings</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openGenerateReportModal()">' +
-            '<div style="color:#475569">' + ICONS.chart + '</div>' +
-            '<span>Generate Report</span>' +
-          '</div>' +
-        '</div>' +
-
-        '<button class="btn-maintenance-full" onclick="openSystemMaintenanceModal()">' +
-          ICONS.settings +
-          '<span>System Maintenance</span>' +
-        '</button>' +
-      '</div>' +
-
     '</div>';
 }
 

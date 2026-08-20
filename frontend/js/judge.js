@@ -212,363 +212,147 @@ function renderJudgeCurrentView() {
 }
 
 function renderJudgeOverview(container) {
-  const todaysHearingsList = [
-    { time: '09:00 AM', caseId: 'CASE-178721596417', title: 'Awash International Bank vs. Blue Nile Holdings', type: 'Preliminary Hearing', parties: 'Plaintiff vs. Defendant', courtroom: 'Courtroom 4', status: 'UPCOMING', statusClass: 'pill-blue' },
-    { time: '11:00 AM', caseId: 'CASE-178719224815', title: 'Mulualem Desta vs. Ethio Telecom', type: 'Oral Arguments', parties: 'Plaintiff vs. Defendant', courtroom: 'Courtroom 4', status: 'UPCOMING', statusClass: 'pill-blue' },
-    { time: '02:00 PM', caseId: 'CASE-178715887332', title: 'Aster Manufacturing vs. Ministry of Revenues', type: 'Hearing', parties: 'Plaintiff vs. Defendant', courtroom: 'Courtroom 4', status: 'UPCOMING', statusClass: 'pill-blue' },
-    { time: '04:00 PM', caseId: 'CASE-178712005521', title: 'Yalemwork Alemu vs. Hibret Insurance', type: 'Judgment', parties: 'Plaintiff vs. Defendant', courtroom: 'Courtroom 4', status: 'JUDGMENT DUE', statusClass: 'pill-orange' }
-  ];
+  const assignedCases = allCourtCases.filter(c => {
+    if (!c.judgeName) return true;
+    return c.judgeName.toLowerCase().includes(currentJudge.fullName.toLowerCase()) || c.judgeName.includes('Solomon') || c.judgeName === 'Unassigned';
+  });
 
-  const assignedCasesList = [
-    { caseId: 'CASE-178721596417', title: 'Awash International Bank vs. Blue Nile Holdings', filedOn: 'May 17, 2026', nextHearing: 'May 27, 2026 09:30 AM', stage: 'Evidence Stage', stepIndex: 1, status: 'ACTIVE', statusClass: 'pill-green' },
-    { caseId: 'CASE-178719224815', title: 'Mulualem Desta vs. Ethio Telecom', filedOn: 'May 10, 2026', nextHearing: 'Jun 02, 2026 10:00 AM', stage: 'Assigned', stepIndex: 1, status: 'ACTIVE', statusClass: 'pill-green' },
-    { caseId: 'CASE-178715887332', title: 'Aster Manufacturing vs. Ministry of Revenues', filedOn: 'May 01, 2026', nextHearing: 'Jun 10, 2026 11:30 AM', stage: 'Hearing Stage', stepIndex: 2, status: 'ACTIVE', statusClass: 'pill-green' }
-  ];
+  const scheduledHearings = allCourtCases.filter(c => c.status === 'scheduled' || c.status === 'hearing' || c.hearingDate || c.hearingTime);
 
-  let filteredAssigned = assignedCasesList;
-  if (searchQuery) {
-    filteredAssigned = allCourtCases.length ? allCourtCases.filter(c => 
-      (c.caseId && c.caseId.toLowerCase().includes(searchQuery)) ||
-      (c.caseTitle && c.caseTitle.toLowerCase().includes(searchQuery))
-    ).map(c => ({
-      caseId: c.caseId,
-      title: c.caseTitle,
-      filedOn: new Date(c.createdAt || Date.now()).toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'}),
-      nextHearing: c.hearingTime ? 'May 27, 2026 ' + c.hearingTime : 'Jun 05, 2026 10:00 AM',
-      stage: c.status === 'closed' ? 'Decided' : (c.status === 'screening' ? 'Assigned' : 'Hearing Stage'),
-      stepIndex: c.status === 'closed' ? 4 : 2,
-      status: (c.status === 'closed' ? 'DECIDED' : 'ACTIVE'),
-      statusClass: (c.status === 'closed' ? 'pill-blue' : 'pill-green')
-    })) : assignedCasesList;
-  }
+  const assignedCount = assignedCases.length;
+  const hearingsCount = scheduledHearings.length;
+  const ordersCount = allCourtCases.filter(c => c.status === 'pending_order' || c.status === 'screening').length;
+  const decidedCount = allCourtCases.filter(c => c.status === 'closed' || c.status === 'decided' || c.status === 'verdict').length;
 
-  const hearingsRowsHtml = todaysHearingsList.map(h => 
-    '<tr>' +
-      '<td style="font-weight:700;color:#0f172a;white-space:nowrap">' + h.time + '</td>' +
+  const hearingsRowsHtml = scheduledHearings.length ? scheduledHearings.slice(0, 6).map(h => {
+    return '<tr>' +
+      '<td style="font-weight:700;color:#0f172a;white-space:nowrap">' + (h.hearingTime || '10:00 AM') + '</td>' +
       '<td>' +
         '<a class="case-link-bold" onclick="openJudgeCaseModal(\'' + h.caseId + '\')">' + h.caseId + '</a><br>' +
-        '<span style="font-size:0.75rem;color:#475569">' + h.title + '</span>' +
+        '<span style="font-size:0.75rem;color:#475569">' + (h.caseTitle || h.petitioner + ' vs. ' + h.respondent) + '</span>' +
       '</td>' +
-      '<td style="color:#475569;font-weight:500">' + h.type + '</td>' +
-      '<td style="color:#64748b;font-size:0.75rem">' + h.parties + '</td>' +
-      '<td style="color:#475569">' + h.courtroom + '</td>' +
-      '<td><span class="judge-pill " + h.statusClass + "">' + h.status + '</span></td>' +
+      '<td style="color:#475569;font-weight:500">' + (h.caseType || 'Civil Hearing') + '</td>' +
+      '<td style="color:#64748b;font-size:0.75rem">' + (h.petitioner || 'Plaintiff') + ' vs. ' + (h.respondent || 'Defendant') + '</td>' +
+      '<td style="color:#475569">' + (h.courtroom || 'Courtroom 4') + '</td>' +
+      '<td><span class="judge-pill pill-blue">UPCOMING</span></td>' +
       '<td>' +
         '<div style="display:flex;align-items:center;gap:0.4rem">' +
           '<button class="btn-open-case" onclick="openJudgeCaseModal(\'' + h.caseId + '\')">Open Case</button>' +
-          '<button class="btn-open-case" style="padding:0.35rem 0.45rem" onclick="openHearingActionMenu(\'' + h.caseId + '\')">⋮</button>' +
         '</div>' +
       '</td>' +
-    '</tr>'
-  ).join('');
+    '</tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;color:#64748b;padding:1.5rem">No scheduled hearings in chamber docket.</td></tr>';
 
-  const assignedRowsHtml = filteredAssigned.map(c => 
-    '<tr>' +
+  const assignedRowsHtml = assignedCases.length ? assignedCases.slice(0, 6).map(c => {
+    const filedDate = c.filingDate ? new Date(c.filingDate).toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'}) : 'Recent';
+    let stepIndex = 1;
+    let stage = 'Assigned';
+    if (c.status === 'scheduled' || c.status === 'hearing') { stepIndex = 2; stage = 'Hearing Stage'; }
+    else if (c.status === 'closed' || c.status === 'decided') { stepIndex = 4; stage = 'Decided'; }
+
+    return '<tr>' +
       '<td><a class="case-link-bold" onclick="openJudgeCaseModal(\'' + c.caseId + '\')">' + c.caseId + '</a></td>' +
-      '<td><strong>' + c.title + '</strong></td>' +
-      '<td style="color:#64748b">' + c.filedOn + '</td>' +
-      '<td>' + c.nextHearing + '</td>' +
+      '<td><strong style="color:var(--fsc-navy-main)">' + (c.caseTitle || c.petitioner + ' vs. ' + c.respondent) + '</strong></td>' +
+      '<td style="color:#64748b">' + filedDate + '</td>' +
+      '<td style="color:#0f172a;font-weight:500">' + (c.hearingDate || 'TBD') + '</td>' +
       '<td>' +
-        '<div style="display:flex;flex-direction:column;gap:3px">' +
-          '<div class="judge-mini-stepper">' +
+        '<div style="display:flex;flex-direction:column;gap:2px">' +
+          '<div class="mini-stepper">' +
             '<div class="step-node active"></div><div class="step-line"></div>' +
-            '<div class="step-node ' + (c.stepIndex >= 2 ? 'active' : '') + '"></div><div class="step-line"></div>' +
-            '<div class="step-node ' + (c.stepIndex >= 3 ? 'active' : '') + '"></div><div class="step-line"></div>' +
-            '<div class="step-node ' + (c.stepIndex >= 4 ? 'active' : '') + '"></div>' +
+            '<div class="step-node ' + (stepIndex >= 2 ? 'active' : '') + '"></div><div class="step-line"></div>' +
+            '<div class="step-node ' + (stepIndex >= 3 ? 'active' : '') + '"></div><div class="step-line"></div>' +
+            '<div class="step-node ' + (stepIndex >= 4 ? 'active' : '') + '"></div>' +
           '</div>' +
-          '<span style="font-size:0.7rem;color:#64748b">' + c.stage + '</span>' +
+          '<span style="font-size:0.685rem;color:#64748b">' + stage + '</span>' +
         '</div>' +
       '</td>' +
-      '<td><span class="judge-pill " + c.statusClass + "">' + c.status + '</span></td>' +
+      '<td><span class="judge-pill ' + (c.status === 'closed' ? 'pill-blue' : 'pill-green') + '">' + (c.status === 'closed' ? 'DECIDED' : 'ACTIVE') + '</span></td>' +
       '<td>' +
         '<div style="display:flex;align-items:center;gap:0.4rem">' +
           '<button class="btn-open-case" onclick="openJudgeCaseModal(\'' + c.caseId + '\')">Open Case</button>' +
-          '<button class="btn-open-case" style="padding:0.35rem 0.45rem" onclick="openCaseActionMenu(\'' + c.caseId + '\')">⋮</button>' +
         '</div>' +
       '</td>' +
-    '</tr>'
-  ).join('');
-
-  const tabs = ['Active (12)', 'Evidence Stage (4)', 'Hearing Stage (5)', 'Awaiting Judgment (3)', 'Decided (24)'];
-  const tabsHtml = tabs.map(t => 
-    '<button class="judge-tab-btn ' + (activeTabFilter === t ? 'active' : '') + '" onclick="setJudgeTabFilter(\'' + t + '\')">' + t + '</button>'
-  ).join('');
+    '</tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;color:#64748b;padding:1.5rem">No cases assigned to this chamber.</td></tr>';
 
   container.innerHTML = 
-    '<div>' +
-      '<h1 class="judge-greeting-title">Good morning, ' + (currentJudge.fullName || 'Hon. Judge Solomon Desta') + '</h1>' +
-      '<div class="judge-greeting-sub">Here\'s your overview for today.</div>' +
+    '<div class="judge-greeting-row">' +
+      '<h1 class="judge-greeting-title">Welcome, ' + (currentJudge.fullName || 'Hon. Judge Solomon Desta') + '</h1>' +
+      '<div class="judge-greeting-sub">Live chamber roster from court database.</div>' +
     '</div>' +
 
-    '<div class="judge-kpi-grid">' +
+    '<div class="judge-kpi-grid-4">' +
       '<div class="judge-kpi-card">' +
         '<div class="judge-kpi-top">' +
-          '<div class="judge-kpi-icon kpi-blue">' + ICONS.folder + '</div>' +
+          '<div class="judge-kpi-icon kpi-blue">' + ICONS.briefcase + '</div>' +
           '<div>' +
             '<div class="judge-kpi-label">Assigned Cases</div>' +
-            '<div class="judge-kpi-number">18</div>' +
+            '<div class="judge-kpi-number">' + assignedCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<a class="judge-kpi-link" onclick="switchJudgeView(\'assigned_cases\')">View all cases &rarr;</a>' +
+        '<div class="judge-kpi-delta">Active chamber caseload</div>' +
       '</div>' +
 
       '<div class="judge-kpi-card">' +
         '<div class="judge-kpi-top">' +
           '<div class="judge-kpi-icon kpi-green">' + ICONS.calendar + '</div>' +
           '<div>' +
-            '<div class="judge-kpi-label">Today\'s Hearings</div>' +
-            '<div class="judge-kpi-number">4</div>' +
+            '<div class="judge-kpi-label">Scheduled Hearings</div>' +
+            '<div class="judge-kpi-number">' + hearingsCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<a class="judge-kpi-link" onclick="switchJudgeView(\'todays_hearings\')">View schedule &rarr;</a>' +
+        '<div class="judge-kpi-delta">Upcoming docket sessions</div>' +
       '</div>' +
 
       '<div class="judge-kpi-card">' +
         '<div class="judge-kpi-top">' +
-          '<div class="judge-kpi-icon kpi-orange">' + ICONS.clock + '</div>' +
+          '<div class="judge-kpi-icon kpi-orange">' + ICONS.fileText + '</div>' +
           '<div>' +
-            '<div class="judge-kpi-label">Pending Actions</div>' +
-            '<div class="judge-kpi-number">7</div>' +
+            '<div class="judge-kpi-label">Pending Orders</div>' +
+            '<div class="judge-kpi-number">' + ordersCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<a class="judge-kpi-link" onclick="openPendingActionsModal()">View schedule &rarr;</a>' +
+        '<div class="judge-kpi-delta">Awaiting judicial review</div>' +
       '</div>' +
 
       '<div class="judge-kpi-card">' +
         '<div class="judge-kpi-top">' +
           '<div class="judge-kpi-icon kpi-purple">' + ICONS.gavel + '</div>' +
           '<div>' +
-            '<div class="judge-kpi-label">Decisions to Deliver</div>' +
-            '<div class="judge-kpi-number">5</div>' +
+            '<div class="judge-kpi-label">Decided Cases</div>' +
+            '<div class="judge-kpi-number">' + decidedCount + '</div>' +
           '</div>' +
         '</div>' +
-        '<a class="judge-kpi-link" onclick="openVerdictStudioModal()">View cases &rarr;</a>' +
+        '<div class="judge-kpi-delta">Concluded judgments</div>' +
       '</div>' +
     '</div>' +
 
-    '<div class="judge-2col-layout">' +
-
-      '<div>' +
-
-        '<div class="judge-panel-card">' +
-          '<div class="judge-panel-header">' +
-            '<div class="judge-panel-title">' +
-              ICONS.calendar +
-              '<span>Today\'s Hearings</span>' +
-            '</div>' +
-            '<a class="judge-panel-header-link" onclick="switchJudgeView(\'todays_hearings\')">View full calendar &rarr;</a>' +
-          '</div>' +
-
-          '<div style="overflow-x:auto">' +
-            '<table class="judge-table">' +
-              '<thead>' +
-                '<tr>' +
-                  '<th>Time</th>' +
-                  '<th>Case ID &amp; Title</th>' +
-                  '<th>Type</th>' +
-                  '<th>Parties</th>' +
-                  '<th>Courtroom</th>' +
-                  '<th>Status</th>' +
-                  '<th>Action</th>' +
-                '</tr>' +
-              '</thead>' +
-              '<tbody>' +
-                hearingsRowsHtml +
-              '</tbody>' +
-            '</table>' +
-          '</div>' +
-
-          '<div class="judge-card-footer">' +
-            '<a onclick="switchJudgeView(\'todays_hearings\')">View all today\'s hearings &rarr;</a>' +
-          '</div>' +
+    '<div class="judge-panel-card">' +
+      '<div class="judge-panel-head-row">' +
+        '<div>' +
+          '<div class="judge-panel-title">Today\'s Chamber Hearings</div>' +
+          '<div class="judge-panel-sub">Real-time cause list schedule.</div>' +
         '</div>' +
-
-        '<div class="judge-panel-card">' +
-          '<div class="judge-panel-header">' +
-            '<div class="judge-panel-title">' +
-              ICONS.folder +
-              '<span>My Assigned Cases</span>' +
-            '</div>' +
-            '<a class="judge-panel-header-link" onclick="switchJudgeView(\'assigned_cases\')">View all cases &rarr;</a>' +
-          '</div>' +
-
-          '<div class="judge-tabs-row">' +
-            tabsHtml +
-          '</div>' +
-
-          '<div style="overflow-x:auto">' +
-            '<table class="judge-table">' +
-              '<thead>' +
-                '<tr>' +
-                  '<th>Case ID</th>' +
-                  '<th>Title</th>' +
-                  '<th>Filed On</th>' +
-                  '<th>Next Hearing</th>' +
-                  '<th>Stage</th>' +
-                  '<th>Status</th>' +
-                  '<th>Action</th>' +
-                '</tr>' +
-              '</thead>' +
-              '<tbody>' +
-                assignedRowsHtml +
-              '</tbody>' +
-            '</table>' +
-          '</div>' +
-
-          '<div class="judge-card-footer">' +
-            '<a onclick="switchJudgeView(\'assigned_cases\')">View all assigned cases &rarr;</a>' +
-          '</div>' +
-        '</div>' +
-
+        '<button class="btn-action-outline" onclick="switchJudgeView(\'todays_hearings\')">View Full Cause List &rarr;</button>' +
       '</div>' +
+      '<table class="judge-table">' +
+        '<thead><tr><th>Time</th><th>Case Details</th><th>Hearing Type</th><th>Parties</th><th>Courtroom</th><th>Status</th><th>Actions</th></tr></thead>' +
+        '<tbody>' + hearingsRowsHtml + '</tbody>' +
+      '</table>' +
+    '</div>' +
 
-      '<div>' +
-
-        '<div class="judge-panel-card">' +
-          '<div class="judge-panel-header">' +
-            '<div class="judge-panel-title">' +
-              ICONS.clock +
-              '<span>Pending Actions</span>' +
-            '</div>' +
-            '<a class="judge-panel-header-link" onclick="openPendingActionsModal()">View all &rarr;</a>' +
-          '</div>' +
-
-          '<div>' +
-            '<div class="pending-action-item" onclick="openAdjournmentDecisionModal()">' +
-              '<div class="pending-action-left">' +
-                '<div class="pending-action-icon">' + ICONS.calendar + '</div>' +
-                '<div>' +
-                  '<div class="pending-action-title">Postponement Requests</div>' +
-                  '<div class="pending-action-sub">Awaiting your decision</div>' +
-                '</div>' +
-              '</div>' +
-              '<span class="pending-count-badge badge-orange">3</span>' +
-            '</div>' +
-
-            '<div class="pending-action-item" onclick="openDocDemandModal()">' +
-              '<div class="pending-action-left">' +
-                '<div class="pending-action-icon">' + ICONS.docDemand + '</div>' +
-                '<div>' +
-                  '<div class="pending-action-title">Document Demands</div>' +
-                  '<div class="pending-action-sub">Awaiting your order</div>' +
-                '</div>' +
-              '</div>' +
-              '<span class="pending-count-badge badge-yellow">2</span>' +
-            '</div>' +
-
-            '<div class="pending-action-item" onclick="openMotionsModal()">' +
-              '<div class="pending-action-left">' +
-                '<div class="pending-action-icon">' + ICONS.docDemand + '</div>' +
-                '<div>' +
-                  '<div class="pending-action-title">Motions to File</div>' +
-                  '<div class="pending-action-sub">Awaiting your review</div>' +
-                '</div>' +
-              '</div>' +
-              '<span class="pending-count-badge badge-green">2</span>' +
-            '</div>' +
-
-            '<div class="pending-action-item" onclick="openVerdictStudioModal()">' +
-              '<div class="pending-action-left">' +
-                '<div class="pending-action-icon">' + ICONS.gavel + '</div>' +
-                '<div>' +
-                  '<div class="pending-action-title">Cases Awaiting Judgment</div>' +
-                  '<div class="pending-action-sub">Ready for final decision</div>' +
-                '</div>' +
-              '</div>' +
-              '<span class="pending-count-badge badge-purple">5</span>' +
-            '</div>' +
-          '</div>' +
+    '<div class="judge-panel-card" style="margin-top:1.5rem">' +
+      '<div class="judge-panel-head-row">' +
+        '<div>' +
+          '<div class="judge-panel-title">Assigned Active Cases</div>' +
+          '<div class="judge-panel-sub">Live chamber cases from database.</div>' +
         '</div>' +
-
-        '<div class="judge-panel-card">' +
-          '<div class="judge-panel-header">' +
-            '<div class="judge-panel-title">' +
-              ICONS.search +
-              '<span>Quick Case Search</span>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="judge-search-box">' +
-            '<input type="text" class="judge-search-input" placeholder="Search by Case ID, Title or Party..." oninput="handleJudgeSearch(this.value)"/>' +
-            '<span class="judge-search-icon-pos">' + ICONS.search + '</span>' +
-          '</div>' +
-
-          '<div style="font-size:0.7rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.5rem">Recent Cases</div>' +
-
-          '<div>' +
-            '<div class="recent-case-row">' +
-              '<div>' +
-                '<a class="case-link-bold" style="font-size:0.75rem" onclick="openJudgeCaseModal(\'CASE-178721596417\')">CASE-178721596417</a><br>' +
-                '<span style="font-size:0.72rem;color:#475569">Awash Int. Bank vs. Blue Nile Holdings</span>' +
-              '</div>' +
-              '<span class="judge-pill pill-blue">HEARING</span>' +
-            '</div>' +
-
-            '<div class="recent-case-row">' +
-              '<div>' +
-                '<a class="case-link-bold" style="font-size:0.75rem" onclick="openJudgeCaseModal(\'CASE-178719224815\')">CASE-178719224815</a><br>' +
-                '<span style="font-size:0.72rem;color:#475569">Mulualem Desta vs. Ethio Telecom</span>' +
-              '</div>' +
-              '<span class="judge-pill pill-green">ASSIGNED</span>' +
-            '</div>' +
-
-            '<div class="recent-case-row">' +
-              '<div>' +
-                '<a class="case-link-bold" style="font-size:0.75rem" onclick="openJudgeCaseModal(\'CASE-178715887332\')">CASE-178715887332</a><br>' +
-                '<span style="font-size:0.72rem;color:#475569">Aster Manufacturing vs. Ministry of Rev.</span>' +
-              '</div>' +
-              '<span class="judge-pill pill-orange">SCREENING</span>' +
-            '</div>' +
-          '</div>' +
-
-          '<div style="margin-top:0.75rem">' +
-            '<a class="judge-kpi-link" onclick="switchJudgeView(\'assigned_cases\')">Advanced Search &rarr;</a>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="judge-panel-card">' +
-          '<div class="judge-panel-header">' +
-            '<div class="judge-panel-title">' +
-              ICONS.scales +
-              '<span>Tools &amp; Actions</span>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="tools-grid-2x3">' +
-            '<div class="tool-tile-btn" onclick="openScheduleHearingModal()">' +
-              '<div class="tool-tile-icon">' + ICONS.calendar + '</div>' +
-              '<span>Schedule Hearing</span>' +
-            '</div>' +
-
-            '<div class="tool-tile-btn" onclick="openDocDemandModal()">' +
-              '<div class="tool-tile-icon">' + ICONS.docDemand + '</div>' +
-              '<span>Document Demand</span>' +
-            '</div>' +
-
-            '<div class="tool-tile-btn" onclick="openIssueOrderModal()">' +
-              '<div class="tool-tile-icon">' + ICONS.order + '</div>' +
-              '<span>Issue Order</span>' +
-            '</div>' +
-
-            '<div class="tool-tile-btn" onclick="openRecordJudgmentModal()">' +
-              '<div class="tool-tile-icon">' + ICONS.pencil + '</div>' +
-              '<span>Record Judgment</span>' +
-            '</div>' +
-
-            '<div class="tool-tile-btn" onclick="openVerdictStudioModal()">' +
-              '<div class="tool-tile-icon">' + ICONS.gavel + '</div>' +
-              '<span>Deliver Verdict</span>' +
-            '</div>' +
-
-            '<div class="tool-tile-btn" onclick="openCloseCaseModal()">' +
-              '<div class="tool-tile-icon">' + ICONS.checkCircle + '</div>' +
-              '<span>Close Case</span>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
+        '<button class="btn-action-outline" onclick="switchJudgeView(\'assigned_cases\')">View All Assigned Cases &rarr;</button>' +
       '</div>' +
-
+      '<table class="judge-table">' +
+        '<thead><tr><th>Case ID</th><th>Title / Parties</th><th>Filed Date</th><th>Next Hearing</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead>' +
+        '<tbody>' + assignedRowsHtml + '</tbody>' +
+      '</table>' +
     '</div>';
 }
 
