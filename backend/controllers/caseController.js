@@ -1,6 +1,9 @@
 'use strict';
+const fs = require('fs');
+const path = require('path');
 const dbService = require('../services/dbService');
 const auditService = require('../services/auditService');
+const smsService = require('../services/smsService');
 const { dispatchWebhook } = require('../services/webhookDispatcher');
 
 // 1. Get All Cases
@@ -41,44 +44,64 @@ async function createCase(req, res) {
     const files = req.files || [];
     const caseId = 'CASE-' + Date.now();
     const trackingCode = 'ET-FSC-' + Math.floor(100000 + Math.random() * 900000);
-    const tempPassword = Math.floor(1000 + Math.random() * 9000).toString();
+    const tempPassword = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit PIN
 
     const docs = files.map(f => ({
       id: 'DOC-' + Date.now() + '-' + Math.round(Math.random()*1000),
       name: f.originalname,
       path: f.path,
       size: (f.size / (1024 * 1024)).toFixed(2) + ' MB',
-      uploadedBy: body.petitioner || 'Plaintiff',
+      uploadedBy: body.filerName || body.petitioner || 'Plaintiff',
       uploadedAt: new Date().toISOString(),
-      confidentialityFlag: body.confidentialityFlag || 'standard', // 'standard' or 'request_confidential'
-      classificationStatus: 'pending_review' // 'pending_review', 'shared', 'sealed'
+      confidentialityFlag: body.confidentialityFlag || 'standard',
+      classificationStatus: 'pending_review'
     }));
+
+    const filerName = body.filerName || body.petitioner || 'Litigant Citizen';
+    const filerPhone = body.filerPhone || body.phone || '+251 911 123 456';
+    const defendantName = body.defendantName || body.respondent || 'Named Respondent';
+    const defendantPhone = body.defendantPhone || body.respondentPhone || '+251 922 887 766';
 
     const newCase = {
       caseId,
       trackingCode,
-      caseTitle: body.caseTitle || ((body.petitioner || 'Plaintiff') + ' vs. ' + (body.respondent || 'Respondent')),
-      petitioner: body.petitioner || 'Anonymous Litigant',
-      filerPhone: body.filerPhone || '+251 911 123 456',
-      respondent: body.respondent || 'Named Respondent',
-      respondentPhone: body.respondentPhone || '+251 922 887 766',
+      caseTitle: body.caseTitle || (filerName + ' vs. ' + defendantName),
+      petitioner: filerName,
+      filerName: filerName,
+      filerPhone: filerPhone,
+      filerEmail: body.filerEmail || body.email || '',
+      filerAddress: body.filerAddress || body.address || '',
+      filerRole: body.filerRole || 'citizen',
+      respondent: defendantName,
+      defendantName: defendantName,
+      defendantPhone: defendantPhone,
+      defendantEmail: body.defendantEmail || '',
+      defendantAddress: body.defendantAddress || '',
+      defendantType: body.defendantType || 'Individual Citizen',
+      courtLevel: body.courtLevel || 'Federal High Court (FHC)',
       jurisdiction: body.jurisdiction || 'Federal Supreme Court (Sidist Kilo)',
       caseType: body.caseType || 'Civil Dispute',
+      description: body.description || '',
+      incidentDate: body.incidentDate || '',
+      incidentLocation: body.incidentLocation || '',
       filingDate: new Date().toISOString(),
       status: 'pending_screening',
       screeningStatus: 'pending',
       screeningNotes: '',
       relevantLawArticle: body.relevantLawArticle || '',
+      pin: tempPassword,
+      casePin: tempPassword,
+      tempPin: tempPassword,
       judgeName: 'Unassigned',
       judgeId: null,
       clerkName: 'Unassigned',
       courtroom: 'TBD',
       hearingDate: null,
       hearingTime: null,
-      isCriminal: body.caseType === 'Criminal Proceedings' || body.isCriminal === true,
-      lawyerAppointed: null, // { lawyerId, lawyerName, licenseNumber, appointedAt, side: 'plaintiff' }
+      isCriminal: body.caseType === 'Criminal Proceedings' || body.isProsecutor === 'true' || body.isProsecutor === true,
+      lawyerAppointed: null,
       defendantRepresentation: {
-        type: 'pending_choice', // 'self', 'appointed_lawyer', 'government_lawyer', 'pending_choice'
+        type: 'pending_choice',
         lawyerName: null,
         licenseNumber: null,
         chosenAt: null
@@ -116,23 +139,28 @@ async function createCase(req, res) {
       status: 'SUCCESS'
     });
 
-    // Send SMS Confirmation to Filer
+    // Send SMS Confirmation to Filer via FSC Gateway
     if (newCase.filerPhone) {
-      await dbService.insert('sms_logs', {
-        id: 'SMS-' + Date.now(),
-        time: new Date().toLocaleString(),
-        phone: newCase.filerPhone,
-        caseId: newCase.caseId,
-        type: 'Filing Confirmation',
-        message: 'Your case ' + newCase.caseId + ' has been filed. Tracking code: ' + newCase.trackingCode + '. Temp PIN: ' + tempPassword,
-        status: 'Sent',
-        statusClass: 'pill-green',
-        sentBy: 'System Auto-Gateway'
-      });
+      const filerMsg = 'FSC Court Notice: Your case ' + newCase.caseId + ' has been filed. Tracking Code: ' + newCase.trackingCode + '. Case PIN: ' + tempPassword + '. Access: http://localhost:5001/file-case';
+      await smsService.sendRawSMS(newCase.filerPhone, filerMsg, 'Filing Confirmation');
+    }
+
+    // Send Official Summons SMS to Defendant
+    if (newCase.defendantPhone) {
+      const defMsg = 'FSC Judicial Summons: Legal case ' + newCase.caseId + ' filed against you at ' + newCase.jurisdiction + '. Access docket: http://localhost:5001/file-case with PIN: ' + tempPassword;
+      await smsService.sendRawSMS(newCase.defendantPhone, defMsg, 'Judicial Summons');
     }
 
     await dispatchWebhook('CASE_FILED', { caseId: newCase.caseId, petitioner: newCase.petitioner });
-    res.status(201).json({ success: true, case: newCase, tempPassword });
+    res.status(201).json({
+      success: true,
+      case: newCase,
+      caseId: newCase.caseId,
+      trackingCode: newCase.trackingCode,
+      filerPhone: newCase.filerPhone,
+      tempPin: tempPassword,
+      tempPassword
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -228,67 +256,163 @@ async function scheduleFirstHearing(req, res) {
 
 // 7. Lawyer Appointment Request / Respond / Revoke (Section 3 & Section 12.1)
 async function requestLawyerAppointment(req, res) {
-  const { caseId, licenseNumber, side, clientName } = req.body;
-  const lawyer = await dbService.findOne('lawyers', { licenseNumber: licenseNumber.trim() });
-  if (!lawyer) return res.status(404).json({ error: 'Lawyer with license number ' + licenseNumber + ' not found' });
+  const { caseId, licenseNumber, side, clientName, note } = req.body;
+  if (!licenseNumber) return res.status(400).json({ error: 'Advocate license number required' });
+
+  const lawyers = await dbService.readJSON('lawyers');
+  const lic = licenseNumber.toString().trim().toUpperCase();
+  const lawyer = lawyers.find(l => 
+    (l.licenseNumber && l.licenseNumber.toUpperCase() === lic) || 
+    l.id === licenseNumber || 
+    l.username === licenseNumber
+  );
+
+  if (!lawyer) {
+    return res.status(404).json({ error: 'Advocate with license number "' + licenseNumber + '" not found in Federal Supreme Court Bar registry' });
+  }
 
   const caseItem = await dbService.findOne('cases', { caseId });
-  if (!caseItem) return res.status(404).json({ error: 'Case not found' });
+  if (!caseItem) return res.status(404).json({ error: 'Case ' + caseId + ' not found' });
 
-  const updated = await dbService.updateOne('cases', { caseId }, {
-    pendingLawyerRequest: {
-      lawyerId: lawyer.id,
-      lawyerName: lawyer.fullName,
-      licenseNumber: lawyer.licenseNumber,
-      side: side || 'plaintiff',
-      requestedBy: clientName || 'Client',
-      requestedAt: new Date().toISOString(),
-      status: 'pending'
-    }
-  });
+  const isDef = (side === 'defendant' || side === 'respondent');
 
-  res.json({ success: true, message: 'Appointment request sent to Advocate ' + lawyer.fullName, case: updated });
+  let updateFields = {};
+  if (isDef) {
+    updateFields = {
+      pendingDefendantLawyerRequest: {
+        lawyerId: lawyer.id,
+        lawyerName: lawyer.fullName,
+        licenseNumber: lawyer.licenseNumber,
+        side: 'defendant',
+        requestedBy: clientName || caseItem.respondent || caseItem.defendantName || 'Defendant',
+        requestedAt: new Date().toISOString(),
+        status: 'pending',
+        note: note || ''
+      },
+      defendantRepresentation: {
+        type: 'pending_request',
+        lawyerName: lawyer.fullName,
+        licenseNumber: lawyer.licenseNumber,
+        requestedAt: new Date().toISOString()
+      },
+      defendantActivated: true
+    };
+  } else {
+    updateFields = {
+      pendingLawyerRequest: {
+        lawyerId: lawyer.id,
+        lawyerName: lawyer.fullName,
+        licenseNumber: lawyer.licenseNumber,
+        side: 'plaintiff',
+        requestedBy: clientName || caseItem.petitioner || 'Plaintiff',
+        requestedAt: new Date().toISOString(),
+        status: 'pending',
+        note: note || ''
+      }
+    };
+  }
+
+  const updated = await dbService.updateOne('cases', { caseId }, updateFields);
+
+  // Send SMS to lawyer if phone exists
+  if (lawyer.phone) {
+    const msg = 'FSC Alert: ' + (isDef ? 'Defendant ' + (caseItem.respondent || 'Dagim') : 'Plaintiff ' + (caseItem.petitioner || 'Adnan')) + ' has submitted a representation request for Case ' + caseId + '. Please log in to accept or decline.';
+    await smsService.sendRawSMS(lawyer.phone, msg, 'Advocate Mandate Request');
+  }
+
+  return res.json({ success: true, message: 'Representation request successfully transmitted to Advocate ' + lawyer.fullName, case: updated });
 }
 
 async function respondLawyerAppointment(req, res) {
-  const { caseId, accept, lawyerId } = req.body;
+  const { caseId, lawyerId, action, notes } = req.body;
   const caseItem = await dbService.findOne('cases', { caseId });
   if (!caseItem) return res.status(404).json({ error: 'Case not found' });
 
-  if (accept) {
-    // Lawyer accepts appointment: client access becomes read-only (Section 3)
-    const reqData = caseItem.pendingLawyerRequest || {};
-    const updated = await dbService.updateOne('cases', { caseId }, {
-      lawyerAppointed: {
-        lawyerId: reqData.lawyerId || lawyerId,
-        lawyerName: reqData.lawyerName || 'Advocate',
-        licenseNumber: reqData.licenseNumber || 'LAW-1001',
-        side: reqData.side || 'plaintiff',
-        appointedAt: new Date().toISOString()
-      },
-      clientAccessMode: 'read_only',
-      pendingLawyerRequest: null
-    });
+  const isDefendantReq = caseItem.pendingDefendantLawyerRequest && 
+    (caseItem.pendingDefendantLawyerRequest.lawyerId === lawyerId || !caseItem.pendingLawyerRequest);
+
+  const reqData = isDefendantReq ? (caseItem.pendingDefendantLawyerRequest || {}) : (caseItem.pendingLawyerRequest || {});
+
+  if (action === 'accept') {
+    const lawyers = await dbService.readJSON('lawyers');
+    const lawyerObj = lawyers.find(l => l.id === lawyerId || l.licenseNumber === reqData.licenseNumber) || {};
+
+    const appointedLawyerName = lawyerObj.fullName || reqData.lawyerName || 'Advocate';
+    const appointedLawyerLic = lawyerObj.licenseNumber || reqData.licenseNumber || 'LAW-1001';
+
+    let updateFields = {};
+    if (isDefendantReq) {
+      updateFields = {
+        defendantRepresentation: {
+          type: 'appointed_lawyer',
+          lawyerId: lawyerId || lawyerObj.id || 'LAWYER-001',
+          lawyerName: appointedLawyerName,
+          licenseNumber: appointedLawyerLic,
+          appointedAt: new Date().toISOString(),
+          status: 'active'
+        },
+        defendantLawyerName: appointedLawyerName,
+        defendantLawyerId: lawyerId || lawyerObj.id,
+        defendantLawyerLic: appointedLawyerLic,
+        pendingDefendantLawyerRequest: null,
+        defendantActivated: true
+      };
+    } else {
+      updateFields = {
+        lawyerAppointed: {
+          lawyerId: lawyerId || lawyerObj.id || 'LAWYER-001',
+          lawyerName: appointedLawyerName,
+          licenseNumber: appointedLawyerLic,
+          appointedAt: new Date().toISOString(),
+          status: 'active'
+        },
+        lawyerName: appointedLawyerName,
+        plaintiffLawyerName: appointedLawyerName,
+        plaintiffLawyerId: lawyerId || lawyerObj.id,
+        clientAccessMode: 'read_only_with_full_visibility',
+        pendingLawyerRequest: null
+      };
+    }
+
+    const updated = await dbService.updateOne('cases', { caseId }, updateFields);
+
+    const clientPhone = isDefendantReq ? (caseItem.defendantPhone || caseItem.phone) : (caseItem.filerPhone || caseItem.phone);
+    if (clientPhone) {
+      const msg = 'FSC Alert: Advocate ' + appointedLawyerName + ' has accepted your legal representation mandate for case ' + caseId + '. Official representation active.';
+      await smsService.sendRawSMS(clientPhone, msg, 'Lawyer Mandate Accepted');
+    }
 
     await dbService.insert('audit_logs', {
       id: 'AUD-' + Date.now(),
       action: 'LAWYER_APPOINTMENT_ACCEPTED',
-      user: reqData.lawyerName || 'Lawyer',
+      user: appointedLawyerName,
       role: 'lawyer',
       caseId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      details: isDefendantReq ? 'Appointed for Defendant (Dagim)' : 'Appointed for Plaintiff (Adnan)'
     });
 
     return res.json({ success: true, status: 'accepted', case: updated });
   } else {
-    // Lawyer declines appointment (Section 12.1)
-    const declineCount = (caseItem.lawyerDeclinesCount || 0) + 1;
-    const promptGovLawyer = declineCount >= 3;
+    // Lawyer declines appointment
+    let updateFields = {};
+    if (isDefendantReq) {
+      updateFields = {
+        pendingDefendantLawyerRequest: null,
+        defendantRepresentation: {
+          type: 'declined',
+          status: 'Lawyer declined representation'
+        }
+      };
+    } else {
+      const declineCount = (caseItem.lawyerDeclinesCount || 0) + 1;
+      updateFields = {
+        lawyerDeclinesCount: declineCount,
+        pendingLawyerRequest: null
+      };
+    }
 
-    const updated = await dbService.updateOne('cases', { caseId }, {
-      lawyerDeclinesCount: declineCount,
-      pendingLawyerRequest: null
-    });
+    const updated = await dbService.updateOne('cases', { caseId }, updateFields);
 
     await dbService.insert('audit_logs', {
       id: 'AUD-' + Date.now(),
@@ -296,38 +420,76 @@ async function respondLawyerAppointment(req, res) {
       user: 'Advocate ' + lawyerId,
       role: 'lawyer',
       caseId,
-      timestamp: new Date().toISOString(),
-      details: 'Total declines for case: ' + declineCount
+      timestamp: new Date().toISOString()
     });
 
     return res.json({
       success: true,
       status: 'declined',
-      declineCount,
-      promptGovLawyer,
       message: 'Lawyer declined appointment. Client may search another lawyer or request government counsel.'
     });
   }
 }
 
 async function removeLawyer(req, res) {
-  const { caseId, clientName } = req.body;
-  const updated = await dbService.updateOne('cases', { caseId }, {
-    lawyerAppointed: null,
-    clientAccessMode: 'full_control'
-  });
+  const { caseId, clientName, side } = req.body;
+  const caseItem = await dbService.findOne('cases', { caseId });
+  if (!caseItem) return res.status(404).json({ error: 'Case not found' });
+
+  const isDef = (side === 'defendant' || side === 'respondent' || (clientName && clientName.toLowerCase().includes('dagim')));
+
+  let updateFields = {};
+  let prevLawyer = null;
+
+  if (isDef) {
+    prevLawyer = caseItem.defendantRepresentation;
+    updateFields = {
+      defendantRepresentation: {
+        type: 'self',
+        lawyerName: null,
+        licenseNumber: null,
+        chosenAt: new Date().toISOString()
+      },
+      defendantLawyerName: null,
+      defendantLawyerId: null,
+      defendantLawyerLic: null,
+      pendingDefendantLawyerRequest: null
+    };
+  } else {
+    prevLawyer = caseItem.lawyerAppointed;
+    updateFields = {
+      lawyerAppointed: null,
+      pendingLawyerRequest: null,
+      lawyerName: null,
+      plaintiffLawyerName: null,
+      plaintiffLawyerId: null,
+      clientAccessMode: 'full_control'
+    };
+  }
+
+  const updated = await dbService.updateOne('cases', { caseId }, updateFields);
+
+  // Send SMS notice to prev lawyer if phone exists
+  if (prevLawyer && (prevLawyer.lawyerId || prevLawyer.licenseNumber)) {
+    const lawyers = await dbService.readJSON('lawyers');
+    const lawyerObj = lawyers.find(l => l.id === prevLawyer.lawyerId || l.licenseNumber === prevLawyer.licenseNumber);
+    if (lawyerObj && lawyerObj.phone) {
+      const msg = 'FSC Notice: Legal representation mandate for case ' + caseId + ' has been revoked. Docket returned to self-representation.';
+      await smsService.sendRawSMS(lawyerObj.phone, msg, 'Lawyer Mandate Revoked');
+    }
+  }
 
   await dbService.insert('audit_logs', {
     id: 'AUD-' + Date.now(),
     action: 'LAWYER_REMOVED_BY_CLIENT',
-    user: clientName || 'Client',
-    role: 'plaintiff',
+    user: clientName || (isDef ? 'Dagim' : 'Adnan'),
+    role: isDef ? 'defendant' : 'plaintiff',
     caseId,
     timestamp: new Date().toISOString(),
-    details: 'Client revoked lawyer and resumed self-representation.'
+    details: (isDef ? 'Defendant' : 'Plaintiff') + ' revoked lawyer and resumed direct self-representation.'
   });
 
-  res.json({ success: true, message: 'Lawyer removed. Full control returned to client.', case: updated });
+  return res.json({ success: true, message: 'Legal representation mandate successfully revoked. Direct self-representation active.', case: updated });
 }
 
 // 8. Defendant Representation Choice (Section 4 & Section 12.2)
@@ -342,19 +504,21 @@ async function defendantChooseRepresentation(req, res) {
       defendantRepresentation: {
         type: 'self',
         lawyerName: null,
+        licenseNumber: null,
         chosenAt: new Date().toISOString()
-      }
+      },
+      defendantLawyerName: null,
+      defendantLawyerId: null,
+      pendingDefendantLawyerRequest: null
     });
-    return res.json({ success: true, representation: 'self', case: updated });
+    return res.json({ success: true, representation: 'self', case: updated, message: 'Self-representation confirmed.' });
   }
 
   if (choiceType === 'government_lawyer') {
-    // Section 12.2: Find government lawyer with lightest caseload
     const allLawyers = await dbService.readJSON('lawyers');
-    const govLawyers = allLawyers.filter(l => l.isGovernmentLawyer === true || l.specialization?.includes('Public'));
+    const govLawyers = allLawyers.filter(l => l.isGovernmentLawyer === true || (l.specialization && l.specialization.includes('Public')));
 
     if (govLawyers.length === 0) {
-      // Pool empty: Flag Representation Pending
       const updated = await dbService.updateOne('cases', { caseId }, {
         defendantActivated: true,
         defendantRepresentation: {
@@ -365,7 +529,6 @@ async function defendantChooseRepresentation(req, res) {
       return res.json({ success: true, representation: 'representation_pending', message: 'Representation pending sourcing.' });
     }
 
-    // Sort by caseload (lightest first)
     govLawyers.sort((a, b) => (a.currentCaseload || 0) - (b.currentCaseload || 0));
     const assignedGovLawyer = govLawyers[0];
 
@@ -377,10 +540,14 @@ async function defendantChooseRepresentation(req, res) {
         lawyerName: assignedGovLawyer.fullName,
         licenseNumber: assignedGovLawyer.licenseNumber,
         chosenAt: new Date().toISOString()
-      }
+      },
+      defendantLawyerName: assignedGovLawyer.fullName,
+      defendantLawyerId: assignedGovLawyer.id,
+      defendantLawyerLic: assignedGovLawyer.licenseNumber,
+      pendingDefendantLawyerRequest: null
     });
 
-    return res.json({ success: true, representation: 'government_lawyer', assignedLawyer: assignedGovLawyer, case: updated });
+    return res.json({ success: true, representation: 'government_lawyer', assignedLawyer: assignedGovLawyer, case: updated, message: 'State Public Defender assigned: ' + assignedGovLawyer.fullName });
   }
 
   if (choiceType === 'appoint_lawyer') {
@@ -481,22 +648,49 @@ async function classifyEvidence(req, res) {
 
 // 11. Clerk Session Summary & Attendance Log (Section 7)
 async function logHearingSession(req, res) {
-  const { caseId, plaintiffPresent, defendantPresent, topicsDiscussed, sessionActivities, summaryNotes, clerkName, nextHearingDate } = req.body;
+  const { 
+    caseId, 
+    judgePresence,
+    plaintiffPresence, 
+    defendantPresence, 
+    prosecutorPresence,
+    stage,
+    minutes, 
+    oralSubmissions, 
+    exhibitsAdmitted,
+    courtOrder,
+    nextHearingDate,
+    nextHearingTime,
+    courtroom,
+    nextHearingAgenda,
+    clerkName,
+    clerkId
+  } = req.body;
+
   const caseItem = await dbService.findOne('cases', { caseId });
   if (!caseItem) return res.status(404).json({ error: 'Case not found' });
 
   const sessionEntry = {
     id: 'SESS-' + Date.now(),
     date: new Date().toISOString(),
-    clerkName: clerkName || 'Kalkidan Mengistu',
+    sessionDate: new Date().toISOString().split('T')[0],
+    clerkName: clerkName || 'Court Clerk Kalkidan Mengistu',
+    clerkId: clerkId || 'CLERK-001',
     attendance: {
-      plaintiffPresent: plaintiffPresent !== false,
-      defendantPresent: defendantPresent !== false
+      judge: judgePresence || 'Present',
+      plaintiff: plaintiffPresence || 'Present',
+      defendant: defendantPresence || 'Present',
+      prosecutor: prosecutorPresence || 'N/A'
     },
-    topicsDiscussed: topicsDiscussed || 'Oral submissions on contract default',
-    sessionActivities: sessionActivities || 'Evidence dossier marked and admitted',
-    summaryNotes: summaryNotes || 'Court adjourned for judicial review.',
-    nextHearingDate: nextHearingDate || null
+    stage: stage || 'Oral Arguments',
+    minutes: minutes || 'Oral arguments and evidence inspection completed.',
+    oralSubmissions: oralSubmissions || 'Pleadings affirmed by respective counsel.',
+    exhibitsAdmitted: exhibitsAdmitted || 'None',
+    courtOrder: courtOrder || 'Court adjourned to next scheduled session.',
+    nextHearingDate: nextHearingDate || null,
+    nextHearingTime: nextHearingTime || null,
+    courtroom: courtroom || null,
+    nextHearingAgenda: nextHearingAgenda || null
   };
 
   const sessionSummaries = caseItem.sessionSummaries || [];
@@ -504,19 +698,74 @@ async function logHearingSession(req, res) {
 
   const updated = await dbService.updateOne('cases', { caseId }, {
     sessionSummaries,
-    ...(nextHearingDate && { hearingDate: nextHearingDate })
+    ...(nextHearingDate && { hearingDate: nextHearingDate }),
+    ...(nextHearingTime && { hearingTime: nextHearingTime }),
+    ...(courtroom && { courtroom }),
+    ...(nextHearingAgenda && { hearingType: nextHearingAgenda })
   });
 
   await dbService.insert('audit_logs', {
     id: 'AUD-' + Date.now(),
-    action: 'HEARING_SESSION_LOGGED',
+    action: 'COURT_SESSION_MINUTES_LOGGED',
     user: clerkName || 'Court Clerk',
     role: 'clerk',
     caseId,
+    details: 'Attendance and procedural minutes recorded for ' + stage,
     timestamp: new Date().toISOString()
   });
 
   res.json({ success: true, session: sessionEntry, case: updated });
+}
+
+// 11.2 Clerk Register Incoming Filing
+async function registerFiling(req, res) {
+  const { caseId, formalDocketNumber, assignedJudge, branchName, caseCategory, clerkName, clerkId } = req.body;
+  const caseItem = await dbService.findOne('cases', { caseId });
+  
+  const targetId = formalDocketNumber || caseId;
+
+  if (caseItem) {
+    const updated = await dbService.updateOne('cases', { caseId }, {
+      caseId: targetId,
+      status: 'Active',
+      assignedJudge: assignedJudge || caseItem.assignedJudge || 'Hon. Judge Solomon Desta',
+      branchName: branchName || caseItem.branchName || 'Federal Supreme Court (የፌዴራል ጠቅላይ ፍርድ ቤት)',
+      caseCategory: caseCategory || caseItem.caseCategory || 'Civil & Commercial',
+      caseType: caseCategory || caseItem.caseType || 'Civil & Commercial',
+      clerkName: clerkName || 'Kalkidan Mengistu',
+      clerkId: clerkId || 'CLERK-001',
+      registeredBy: clerkName || 'Kalkidan Mengistu',
+      dateFiled: new Date().toISOString().split('T')[0]
+    });
+
+    await dbService.insert('audit_logs', {
+      id: 'AUD-' + Date.now(),
+      action: 'FILING_REGISTERED_DOCKET_ISSUED',
+      user: clerkName || 'Court Clerk',
+      role: 'clerk',
+      caseId: targetId,
+      timestamp: new Date().toISOString()
+    });
+
+    return res.json({ success: true, case: updated });
+  } else {
+    const newCase = {
+      caseId: targetId,
+      caseTitle: 'New Registered Docket ' + targetId,
+      status: 'Active',
+      assignedJudge: assignedJudge || 'Hon. Judge Solomon Desta',
+      branchName: branchName || 'Federal Supreme Court (የፌዴራል ጠቅላይ ፍርድ ቤት)',
+      caseCategory: caseCategory || 'Civil & Commercial',
+      caseType: caseCategory || 'Civil & Commercial',
+      clerkName: clerkName || 'Kalkidan Mengistu',
+      clerkId: clerkId || 'CLERK-001',
+      registeredBy: clerkName || 'Kalkidan Mengistu',
+      dateFiled: new Date().toISOString().split('T')[0],
+      documents: []
+    };
+    await dbService.insert('cases', newCase);
+    return res.status(201).json({ success: true, case: newCase });
+  }
 }
 
 // 12. Final Verdict, Closing Statement & Lawyer Ratings (Section 8 & Section 10)
@@ -686,7 +935,388 @@ async function checkAvailability(req, res) {
   }
 }
 
+
+
+// ── PROSECUTOR WORKSPACE HANDLERS ──
+
+async function getWitnesses(req, res) {
+  try {
+    const witnesses = await dbService.find('witnesses');
+    res.json(witnesses);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function createWitness(req, res) {
+  try {
+    const { caseId, witnessName, protectionLevel, assignedOfficer, details } = req.body;
+    const newWitness = {
+      id: 'WIT-' + Math.floor(1000 + Math.random() * 9000),
+      caseId: caseId || 'CASE-178721589765',
+      witnessName: witnessName || 'Concealed Witness ' + Math.floor(100 + Math.random() * 900),
+      protectionLevel: protectionLevel || 'High Security Safehouse Relocation',
+      assignedOfficer: assignedOfficer || 'Cmdr. Teklu Assefa (Fed Police)',
+      details: details || 'In-Camera testimony order granted under FSC Rule 44.',
+      createdAt: new Date().toISOString()
+    };
+    await dbService.insert('witnesses', newWitness);
+    res.status(201).json({ success: true, witness: newWitness });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function getDocumentDemands(req, res) {
+  try {
+    const demands = await dbService.find('document_demands');
+    res.json(demands);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function createDocumentDemandOrder(req, res) {
+  try {
+    const { caseId, respondent, demandTitle, description, deadline } = req.body;
+    const newDemand = {
+      id: 'DEM-' + Math.floor(1000 + Math.random() * 9000),
+      caseId: caseId || 'CASE-178721589765',
+      respondent: respondent || 'National Bank of Ethiopia',
+      demandTitle: demandTitle || 'Subpoena Duces Tecum for Account Records',
+      description: description || 'Certified wire records and transaction journals.',
+      deadline: deadline || '7 Days',
+      status: 'Awaiting Response',
+      daysOpen: 1,
+      issuedAt: new Date().toISOString()
+    };
+    await dbService.insert('document_demands', newDemand);
+    res.status(201).json({ success: true, demand: newDemand });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function updateDocumentDemandStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const { status, responseNotes } = req.body;
+    const updated = await dbService.updateOne('document_demands', { id }, {
+      status: status || 'Received',
+      responseNotes: responseNotes || 'Records received from entity.',
+      respondedAt: new Date().toISOString()
+    });
+    res.json({ success: true, demand: updated });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function fileProsecutorIndictment(req, res) {
+  try {
+    const body = req.body;
+    const files = req.files || [];
+    const caseId = 'CASE-' + Date.now();
+    const trackingCode = 'ET-FSC-' + Math.floor(100000 + Math.random() * 900000);
+
+    const docs = files.map(f => ({
+      id: 'DOC-' + Date.now() + '-' + Math.round(Math.random() * 1000),
+      name: f.originalname,
+      path: f.path,
+      url: '/uploads/' + f.filename,
+      size: (f.size / (1024 * 1024)).toFixed(2) + ' MB',
+      uploadedBy: 'Senior Public Prosecutor Bereket Girma',
+      uploadedAt: new Date().toISOString(),
+      confidentialityFlag: 'standard',
+      classificationStatus: 'shared'
+    }));
+
+    // If no files uploaded, link default certified pleading
+    if (docs.length === 0) {
+      docs.push({
+        id: 'DOC-' + Date.now(),
+        name: 'Formal_State_Indictment_Charge_Sheet.pdf',
+        url: '/uploads/82da9408-eb57-4183-b3c1-b0db036573c0-supporting_documents_and_evidence.pdf',
+        size: '2.40 MB',
+        uploadedBy: 'Senior Public Prosecutor Bereket Girma',
+        uploadedAt: new Date().toISOString(),
+        classificationStatus: 'shared'
+      });
+    }
+
+    const newCase = {
+      caseId,
+      trackingCode,
+      caseTitle: 'The State vs. ' + (body.defendantName || 'Accused Defendant'),
+      petitioner: 'Federal Democratic Republic of Ethiopia (State Prosecution)',
+      respondent: body.defendantName || 'Named Defendant',
+      filerPhone: '+251 11 552 8899',
+      respondentPhone: body.defendantPhone || '+251 911 000 111',
+      jurisdiction: body.courtDivision || 'Federal Supreme Court (Sidist Kilo)',
+      courtDivision: body.courtDivision || 'Federal Supreme Court',
+      caseType: 'Criminal Felony Prosecution',
+      caseCategory: 'Criminal',
+      charges: body.charges || 'Commercial Fraud & Forgery',
+      penalCode: body.penalCode || 'Art. 689',
+      prosecutorId: 'PROS-2001',
+      prosecutorName: 'Senior Public Prosecutor Bereket Girma',
+      assignedJudge: 'Hon. Judge Solomon Desta',
+      courtroom: 'Courtroom 4',
+      filingDate: new Date().toISOString().split('T')[0],
+      status: 'Assigned',
+      screeningStatus: 'approved',
+      hearingDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      hearingTime: '09:30 AM',
+      nextHearing: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + ' 09:30 AM',
+      documents: docs,
+      docketHistory: [
+        {
+          date: new Date().toISOString().split('T')[0],
+          action: 'Formal Indictment Filed by State Prosecution',
+          by: 'Senior Public Prosecutor Bereket Girma'
+        }
+      ]
+    };
+
+    await dbService.insert('cases', newCase);
+    res.status(201).json({ success: true, case: newCase });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function uploadExhibit(req, res) {
+  try {
+    const { caseId, exhibitCategory } = req.body;
+    const files = req.files || [];
+    const caseItem = await dbService.findOne('cases', { caseId });
+    if (!caseItem) return res.status(404).json({ error: 'Case not found' });
+
+    const currentDocs = caseItem.documents || [];
+    const newDocs = files.map(f => ({
+      id: 'DOC-' + Date.now() + '-' + Math.round(Math.random() * 1000),
+      name: f.originalname,
+      url: '/uploads/' + f.filename,
+      path: f.path,
+      size: (f.size / (1024 * 1024)).toFixed(2) + ' MB',
+      type: exhibitCategory || 'Forensic Exhibit',
+      uploadedBy: 'Senior Public Prosecutor Bereket Girma',
+      uploadedAt: new Date().toISOString(),
+      classificationStatus: 'shared'
+    }));
+
+    if (newDocs.length === 0) {
+      newDocs.push({
+        id: 'DOC-' + Date.now(),
+        name: (exhibitCategory || 'Admissible_Forensic_Evidence') + '.pdf',
+        url: '/uploads/82da9408-eb57-4183-b3c1-b0db036573c0-supporting_documents_and_evidence.pdf',
+        size: '1.85 MB',
+        type: exhibitCategory || 'Forensic Exhibit',
+        uploadedBy: 'Senior Public Prosecutor Bereket Girma',
+        uploadedAt: new Date().toISOString(),
+        classificationStatus: 'shared'
+      });
+    }
+
+    const updatedDocs = currentDocs.concat(newDocs);
+    const updated = await dbService.updateOne('cases', { caseId }, { documents: updatedDocs });
+    res.json({ success: true, case: updated, addedCount: newDocs.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function scheduleProsecutorHearing(req, res) {
+  try {
+    const { caseId, hearingDate, hearingTime, courtroom, judgeName } = req.body;
+    const caseItem = await dbService.findOne('cases', { caseId });
+    if (!caseItem) return res.status(404).json({ error: 'Case not found' });
+
+    const nextHearingStr = (hearingDate || '2026-05-28') + ' ' + (hearingTime || '09:30 AM');
+    const updated = await dbService.updateOne('cases', { caseId }, {
+      hearingDate: hearingDate || '2026-05-28',
+      hearingTime: hearingTime || '09:30 AM',
+      courtroom: courtroom || 'Courtroom 4',
+      assignedJudge: judgeName || caseItem.assignedJudge || 'Hon. Judge Solomon Desta',
+      nextHearing: nextHearingStr,
+      status: 'Hearing'
+    });
+
+    res.json({ success: true, case: updated });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function transmitBenchMemo(req, res) {
+  try {
+    const { caseId, judgeName, memorandum } = req.body;
+    const caseItem = await dbService.findOne('cases', { caseId });
+    if (!caseItem) return res.status(404).json({ error: 'Case not found' });
+
+    const notes = caseItem.caseNotes || [];
+    const newNote = {
+      id: 'MEMO-' + Date.now(),
+      note: 'BENCH MEMORANDUM to ' + (judgeName || 'Hon. Judge Solomon Desta') + ': ' + memorandum,
+      author: 'Senior Public Prosecutor Bereket Girma',
+      role: 'prosecutor',
+      timestamp: new Date().toISOString()
+    };
+    notes.unshift(newNote);
+
+    const updated = await dbService.updateOne('cases', { caseId }, { caseNotes: notes });
+    res.json({ success: true, note: newNote, case: updated });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+
+
+// ── PROSECUTOR COMPREHENSIVE CONTROLLERS ──
+const getProsecutorCases = async (req, res) => {
+  try {
+    const prosId = req.query.prosecutorId || 'PROS-2001';
+    const prosName = req.query.prosecutorName || 'Bereket';
+    const cases = await dbService.readJSON('cases');
+    const myCases = cases.filter(c => 
+      c.prosecutorId === prosId || 
+      (c.prosecutorName && c.prosecutorName.toLowerCase().includes(prosName.toLowerCase())) ||
+      (c.leadProsecutor && c.leadProsecutor.toLowerCase().includes(prosName.toLowerCase()))
+    );
+    res.json(myCases);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load prosecutor cases: ' + err.message });
+  }
+};
+
+const getProsecutorMessages = (req, res) => {
+  try {
+    const p = path.join(__dirname, '../data/messages.json');
+    if (!fs.existsSync(p)) return res.json([]);
+    const msgs = JSON.parse(fs.readFileSync(p, 'utf8'));
+    res.json(msgs);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load messages' });
+  }
+};
+
+const sendProsecutorMessage = (req, res) => {
+  try {
+    const { recipient, subject, content, caseId, priority } = req.body;
+    const p = path.join(__dirname, '../data/messages.json');
+    let msgs = fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : [];
+    const newMsg = {
+      id: 'MSG-PROS-' + Date.now().toString().slice(-4),
+      sender: 'Senior Public Prosecutor Bereket Girma',
+      senderRole: 'Public Prosecutor (PROS-2001)',
+      recipient: recipient || 'Chief Registrar',
+      subject: subject || 'Official Prosecution Notice',
+      content: content || '',
+      timestamp: new Date().toISOString(),
+      isRead: false,
+      priority: priority || 'NORMAL',
+      caseId: caseId || 'CASE-178721589765'
+    };
+    msgs.unshift(newMsg);
+    fs.writeFileSync(p, JSON.stringify(msgs, null, 2), 'utf8');
+    res.status(201).json({ success: true, message: newMsg });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to send message: ' + err.message });
+  }
+};
+
+const getProsecutorAppeals = (req, res) => {
+  try {
+    const p = path.join(__dirname, '../data/appeals.json');
+    if (!fs.existsSync(p)) return res.json([]);
+    const apps = JSON.parse(fs.readFileSync(p, 'utf8'));
+    res.json(apps);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load appeals' });
+  }
+};
+
+const createProsecutorAppeal = (req, res) => {
+  try {
+    const { caseId, defendantName, originalCourt, appealCourt, grounds } = req.body;
+    const p = path.join(__dirname, '../data/appeals.json');
+    let apps = fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : [];
+    const newApp = {
+      id: 'APP-2026-' + (apps.length + 1).toString().padStart(3, '0'),
+      caseId: caseId || 'CASE-178721599881',
+      defendantName: defendantName || 'Defendant',
+      originalCourt: originalCourt || 'Federal High Court',
+      appealCourt: appealCourt || 'Federal Supreme Court — Appellate Division',
+      grounds: grounds || 'Error of law in lower court adjudication.',
+      filingDate: new Date().toISOString().split('T')[0],
+      status: 'Brief Filed',
+      hearingDate: '2026-06-15 09:30 AM',
+      leadProsecutor: 'Bereket Girma'
+    };
+    apps.unshift(newApp);
+    fs.writeFileSync(p, JSON.stringify(apps, null, 2), 'utf8');
+    res.status(201).json({ success: true, appeal: newApp });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to file appeal: ' + err.message });
+  }
+};
+
+const getProsecutorVerdicts = (req, res) => {
+  try {
+    const p = path.join(__dirname, '../data/verdicts.json');
+    if (!fs.existsSync(p)) return res.json([]);
+    const vrds = JSON.parse(fs.readFileSync(p, 'utf8'));
+    res.json(vrds);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load verdicts' });
+  }
+};
+
+const getProsecutorAssignments = (req, res) => {
+  try {
+    const p = path.join(__dirname, '../data/assignments.json');
+    if (!fs.existsSync(p)) return res.json([]);
+    const asns = JSON.parse(fs.readFileSync(p, 'utf8'));
+    res.json(asns);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load assignments' });
+  }
+};
+
+const createProsecutorAssignment = (req, res) => {
+  try {
+    const { caseId, caseTitle, coProsecutor, chiefInvestigator, priority } = req.body;
+    const p = path.join(__dirname, '../data/assignments.json');
+    let asns = fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : [];
+    const newAsn = {
+      id: 'ASN-2026-' + (asns.length + 1).toString().padStart(3, '0'),
+      caseId: caseId || 'CASE-178721589765',
+      caseTitle: caseTitle || 'The State vs. Accused',
+      leadProsecutor: 'Bereket Girma (PROS-2001)',
+      coProsecutor: coProsecutor || 'Tigist Haile (PROS-2004)',
+      chiefInvestigator: chiefInvestigator || 'Cmdr. Teklu Assefa',
+      priority: priority || 'HIGH',
+      status: 'Assigned',
+      assignmentDate: new Date().toISOString().split('T')[0]
+    };
+    asns.unshift(newAsn);
+    fs.writeFileSync(p, JSON.stringify(asns, null, 2), 'utf8');
+    res.status(201).json({ success: true, assignment: newAsn });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to assign prosecutor: ' + err.message });
+  }
+};
+
 module.exports = {
+  getProsecutorCases,
+  getProsecutorMessages,
+  sendProsecutorMessage,
+  getProsecutorAppeals,
+  createProsecutorAppeal,
+  getProsecutorVerdicts,
+  getProsecutorAssignments,
+  createProsecutorAssignment,
   checkAvailability,
   markCaseAsViewed,
   getAllCases,
@@ -702,8 +1332,18 @@ module.exports = {
   requestPostponement,
   classifyEvidence,
   logHearingSession,
+  registerFiling,
   issueFinalVerdict,
   addCaseNote,
   demandDocuments,
-  getLegalLibrary
+  getLegalLibrary,
+  getWitnesses,
+  createWitness,
+  getDocumentDemands,
+  createDocumentDemandOrder,
+  updateDocumentDemandStatus,
+  fileProsecutorIndictment,
+  uploadExhibit,
+  scheduleProsecutorHearing,
+  transmitBenchMemo
 };

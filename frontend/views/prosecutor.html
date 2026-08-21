@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prosecutor Workspace — Federal Supreme Court of Ethiopia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --fsc-navy-dark: #081426;
+      --fsc-navy-main: #0b1a30;
+      --fsc-navy-light: #152844;
+      --fsc-gold-main: #dfb15b;
+      --fsc-gold-dark: #c99738;
+      --fsc-gold-light: #fdf3dc;
+      --fsc-bg: #f4f6fa;
+      --fsc-card-bg: #ffffff;
+      --fsc-border: #e2e8f0;
+      --fsc-text-main: #0f172a;
+      --fsc-text-muted: #64748b;
+      --fsc-text-light: #94a3b8;
+      --fsc-blue-primary: #2563eb;
+      --fsc-blue-hover: #1d4ed8;
+      --fsc-shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --fsc-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body {
+      background-color: var(--fsc-bg);
+      color: var(--fsc-text-main);
+      overflow-x: hidden;
+    }
+
+    /* ── TOP HEADER BAR ── */
+    .pros-header {
+      background: var(--fsc-navy-dark);
+      color: #ffffff;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      border-bottom: 2px solid var(--fsc-gold-dark);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--fsc-shadow-sm);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+    }
+
+    .fsc-seal-badge {
+      width: 40px;
+      height: 40px;
+      background: var(--fsc-navy-main);
+      border: 2px solid var(--fsc-gold-main);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fsc-gold-main);
+      flex-shrink: 0;
+    }
+
+    .header-title-block {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .court-name-en {
+      font-family: 'Cinzel', serif;
+      font-size: 0.925rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .court-name-am {
+      font-size: 0.72rem;
+      color: var(--fsc-gold-main);
+      margin-top: 1px;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .portal-tagline-main {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--fsc-gold-main);
+    }
+
+    .portal-tagline-sub {
+      font-size: 0.7rem;
+      color: var(--fsc-text-light);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .header-datetime {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffffff;
+      font-size: 0.8rem;
+    }
+
+    .datetime-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .header-icon-btn {
+      position: relative;
+      background: transparent;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+
+    .header-icon-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+    }
+
+    .icon-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #ef4444;
+      color: white;
+      font-size: 0.62rem;
+      font-weight: 800;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-profile-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: background 0.15s;
+    }
+
+    .user-profile-header:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    .user-avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--fsc-blue-primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      border: 1.5px solid rgba(255,255,255,0.25);
+    }
+
+    .user-meta-header {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name-header {
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .user-role-header {
+      font-size: 0.68rem;
+      color: var(--fsc-gold-main);
+    }
+
+    /* ── MAIN CONTAINER ── */
+    .pros-container {
+      display: flex;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ── LEFT SIDEBAR ── */
+    .pros-sidebar {
+      width: 250px;
+      background: var(--fsc-navy-main);
+      color: #cbd5e1;
+      padding: 1rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .sidebar-section-title {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #94a3b8;
+      padding: 0.5rem 0.85rem;
+      margin-top: 0.4rem;
+    }
+
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0.85rem;
+      border-radius: 6px;
+      color: #cbd5e1;
+      font-size: 0.825rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 2px;
+      transition: all 0.15s ease;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .sidebar-nav-item:hover {
+      background: var(--fsc-navy-light);
+      color: #ffffff;
+    }
+
+    .sidebar-nav-item.active {
+      background: var(--fsc-navy-light);
+      color: #ffffff;
+      font-weight: 600;
+      border-left: 3px solid var(--fsc-gold-main);
+    }
+
+    .sidebar-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-badge {
+      background: #ef4444;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+
+    .sidebar-footer-box {
+      background: var(--fsc-navy-light);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.75rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .office-icon {
+      color: var(--fsc-gold-main);
+      display: flex;
+      align-items: center;
+    }
+
+    .office-text-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .office-text-sub {
+      font-size: 0.68rem;
+      color: #94a3b8;
+      line-height: 1.35;
+    }
+
+    /* ── MAIN WORKSPACE ── */
+    .pros-workspace {
+      flex: 1;
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      max-width: 1440px;
+    }
+
+    .greeting-row {
+      margin-bottom: 1.25rem;
+    }
+
+    .greeting-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--fsc-navy-main);
+    }
+
+    .greeting-sub {
+      font-size: 0.85rem;
+      color: var(--fsc-text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── 6 KPI METRICS GRID ── */
+    .kpi-row-6 {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .kpi-card {
+      background: var(--fsc-card-bg);
+      border: 1px solid var(--fsc-border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--fsc-shadow-sm);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--fsc-shadow-md);
+    }
+
+    .kpi-card-top {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .kpi-icon-square {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .kpi-title-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--fsc-text-muted);
+    }
+
+    .kpi-big-number {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--fsc-text-main);
+      line-height: 1.1;
+    }
+
+    .kpi-card-link {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--fsc-blue-primary);
+      text-decoration: none;
+      cursor: pointer;
+      margin-top: 0.4rem;
+      display: inline-block;
+    }
+
+    .kpi-card-subtext {
+      font-size: 0.7rem;
+      color: var(--fsc-text-muted);
+      margin-top: 0.4rem;
+    }
+
+    /* ── 2 COLUMN MIDDLE GRID ── */
+    .grid-2col-main {
+      display: grid;
+      grid-template-columns: 66% 32.5%;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .pros-card {
+      background: var(--fsc-card-bg);
+      border: 1px solid var(--fsc-border);
+      border-radius: 8px;
+      padding: 1.15rem 1.25rem;
+      box-shadow: var(--fsc-shadow-sm);
+    }
+
+    .card-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+    }
+
+    .card-header-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--fsc-navy-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-header-link {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--fsc-blue-primary);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* ── PROSECUTION TABLE ── */
+    .pros-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.785rem;
+    }
+
+    .pros-table th {
+      text-align: left;
+      padding: 0.5rem 0.6rem;
+      color: var(--fsc-text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--fsc-border);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .pros-table td {
+      padding: 0.65rem 0.6rem;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--fsc-text-main);
+      vertical-align: middle;
+    }
+
+    .case-id-blue {
+      color: var(--fsc-blue-primary);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-hearing { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+    .badge-assigned { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-pending { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-screening { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+    .badge-evidence { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+    .badge-filed { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-submitted { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+    .badge-uploaded { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
+    .btn-view-case {
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--fsc-navy-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-view-case:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: var(--fsc-blue-primary);
+    }
+
+    .btn-primary-blue {
+      background: var(--fsc-blue-primary);
+      color: #ffffff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-primary-blue:hover {
+      background: var(--fsc-blue-hover);
+    }
+
+    .table-footer-center {
+      text-align: center;
+      padding-top: 0.75rem;
+    }
+
+    /* ── TODAY'S HEARINGS LIST ── */
+    .hearing-slot-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .hearing-slot-time {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--fsc-navy-main);
+      min-width: 65px;
+    }
+
+    .hearing-slot-body {
+      flex: 1;
+    }
+
+    .hearing-slot-caseid {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--fsc-blue-primary);
+      cursor: pointer;
+    }
+
+    .hearing-slot-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--fsc-text-main);
+      margin: 1px 0;
+    }
+
+    .hearing-slot-charges {
+      font-size: 0.72rem;
+      color: var(--fsc-text-muted);
+    }
+
+    .hearing-slot-courtroom {
+      font-size: 0.72rem;
+      color: #16a34a;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    /* ── 3 COLUMN THIRD ROW ── */
+    .grid-3col-row {
+      display: grid;
+      grid-template-columns: 32.5% 32.5% 32.5%;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .filing-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .filing-left-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .filing-icon {
+      color: var(--fsc-blue-primary);
+      display: flex;
+      align-items: center;
+    }
+
+    .filing-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--fsc-navy-main);
+    }
+
+    .filing-meta {
+      font-size: 0.7rem;
+      color: var(--fsc-text-muted);
+    }
+
+    /* Donut Chart */
+    .donut-chart-container {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 0.5rem 0;
+    }
+
+    .donut-chart-svg {
+      width: 130px;
+      height: 130px;
+      flex-shrink: 0;
+    }
+
+    .donut-legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem 0.75rem;
+      font-size: 0.72rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--fsc-text-muted);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .pending-action-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.8rem;
+      color: var(--fsc-text-main);
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .pending-action-item:hover {
+      color: var(--fsc-blue-primary);
+    }
+
+    /* ── ROW 4: NOTIFICATIONS & QUICK ACTIONS ── */
+    .grid-2col-bottom {
+      display: grid;
+      grid-template-columns: 48% 50%;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .notif-row-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+    }
+
+    .notif-row-item:hover {
+      background: #f8fafc;
+    }
+
+    .notif-icon-round {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notif-text-wrap {
+      flex: 1;
+    }
+
+    .notif-main-text {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--fsc-text-main);
+    }
+
+    .notif-time-text {
+      font-size: 0.7rem;
+      color: var(--fsc-text-muted);
+    }
+
+    /* Quick Actions 4x2 Grid */
+    .quick-actions-8grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.65rem;
+    }
+
+    .qa-btn {
+      background: #ffffff;
+      border: 1px solid var(--fsc-border);
+      border-radius: 8px;
+      padding: 0.85rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .qa-btn:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      box-shadow: var(--fsc-shadow-sm);
+    }
+
+    .qa-icon {
+      color: var(--fsc-navy-main);
+      display: flex;
+      align-items: center;
+    }
+
+    .qa-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--fsc-text-main);
+    }
+
+    /* ── FOOTER ── */
+    .pros-footer {
+      background: var(--fsc-navy-dark);
+      color: #94a3b8;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      font-size: 0.75rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(8,20,38,0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.show { display: flex; }
+
+    .modal-card {
+      background: #ffffff;
+      width: 90%;
+      max-width: 860px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--fsc-border);
+    }
+
+    .modal-header {
+      background: var(--fsc-navy-dark);
+      color: #ffffff;
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--fsc-gold-dark);
+    }
+
+    .modal-body {
+      padding: 1.25rem;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Institutional Header -->
+  <header class="pros-header">
+    <div class="header-left" onclick="switchProsecutorView('dashboard')">
+      <div class="fsc-seal-badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+      </div>
+      <div class="header-title-block">
+        <div>
+          <div class="court-name-en">FEDERAL SUPREME COURT OF ETHIOPIA</div>
+          <div class="court-name-am">የኢትዮጵያ ፌዴራል ጠቅላይ ፍርድ ቤት</div>
+        </div>
+        <div class="header-divider"></div>
+        <div>
+          <div class="portal-tagline-main">Prosecutor Workspace</div>
+          <div class="portal-tagline-sub">State Prosecution Portal</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="header-datetime">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+        <div class="datetime-text">
+          <span style="font-weight:700">May 24, 2026</span>
+          <span style="font-size:0.7rem;color:var(--fsc-text-light)">Wednesday, 10:43 AM</span>
+        </div>
+      </div>
+
+      <!-- Notifications Bell Button (Fully Functional) -->
+      <button class="header-icon-btn" onclick="switchProsecutorView('notifications')" title="Notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="icon-badge">6</span>
+      </button>
+
+      <!-- Messages Mail Button (Fully Functional) -->
+      <button class="header-icon-btn" onclick="openMessagesModal()" title="Court Communications &amp; Messages">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        <span class="icon-badge">3</span>
+      </button>
+
+      <!-- Profile Header (Fully Functional) -->
+      <div class="user-profile-header" onclick="openProfileModal()" title="Prosecutor Profile">
+        <div class="user-avatar-circle" id="top-user-avatar">BG</div>
+        <div class="user-meta-header">
+          <span class="user-name-header" id="top-user-name">Bereket Girma</span>
+          <span class="user-role-header">Senior Public Prosecutor</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="pros-container">
+    
+    <!-- Left Dark Sidebar -->
+    <aside class="pros-sidebar">
+      <div>
+        <div class="sidebar-section-title">MAIN MENU</div>
+        <button class="sidebar-nav-item active" onclick="switchProsecutorView('dashboard')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Dashboard</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('my_cases')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            <span>My Cases</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('indictments')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+            <span>Indictments &amp; Filings</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('case_assignments')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Case Assignments</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('hearings')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            <span>Hearings &amp; Calendar</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('evidence')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+            <span>Evidence Management</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('witnesses')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Victim &amp; Witness</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('demands')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="8" x2="16" y1="10" y2="10"/><line x1="8" x2="12" y1="14" y2="14"/></svg>
+            <span>Document Demands</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('verdicts')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m14 13-7.5 7.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L11 10"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/><path d="m9 7 8 8"/><path d="m21 11-8-8"/></svg>
+            <span>Decisions &amp; Verdicts</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('appeals')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>
+            <span>Appeals</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('reports')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
+            <span>Reports &amp; Statistics</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="switchProsecutorView('notifications')">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span>Notifications</span>
+          </div>
+          <span class="sidebar-badge">4</span>
+        </button>
+
+        <div class="sidebar-section-title">TOOLS &amp; SERVICES</div>
+        <button class="sidebar-nav-item" onclick="openTemplateModal()">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+            <span>Legal Templates</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="openChargesModal()">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span>Charges Library</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="openDivisionsModal()">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M4 10v11"/><path d="M20 10v11"/><path d="M8 14v4"/><path d="M12 14v4"/><path d="M16 14v4"/></svg>
+            <span>Court Divisions</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="openContactsModal()">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"/><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Contacts Directory</span>
+          </div>
+        </button>
+
+        <div class="sidebar-section-title">ACCOUNT</div>
+        <button class="sidebar-nav-item" onclick="openProfileModal()">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Profile &amp; Settings</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="openHelpModal()">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            <span>Help &amp; Support</span>
+          </div>
+        </button>
+        <button class="sidebar-nav-item" onclick="logout()" style="color:#ef4444">
+          <div class="sidebar-nav-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            <span>Logout</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="sidebar-footer-box">
+        <div class="office-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M4 10v11"/><path d="M20 10v11"/></svg>
+        </div>
+        <div>
+          <div class="office-text-title">Prosecutor Office</div>
+          <div class="office-text-sub">Federal Supreme Court<br>Prosecution Division<br>Addis Ababa, Ethiopia</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace (Pre-rendered Complete Content) -->
+    <main class="pros-workspace" id="dynamic-prosecutor-view">
+      <div class="greeting-row">
+        <h1 class="greeting-title">Good morning, Bereket Girma</h1>
+        <div class="greeting-sub">Here's what's happening in your prosecution workspace.</div>
+      </div>
+
+      <!-- 6 KPI ROW -->
+      <div class="kpi-row-6">
+        <div class="kpi-card" onclick="switchProsecutorView('my_cases')">
+          <div>
+            <div class="kpi-card-top">
+              <div class="kpi-icon-square" style="background:#e0f2fe;color:#0284c7">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              </div>
+              <div class="kpi-title-label">Active Cases</div>
+            </div>
+            <div class="kpi-big-number">24</div>
+          </div>
+          <a class="kpi-card-link">View all cases &rarr;</a>
+        </div>
+
+        <div class="kpi-card" onclick="switchProsecutorView('indictments')">
+          <div>
+            <div class="kpi-card-top">
+              <div class="kpi-icon-square" style="background:#dcfce7;color:#16a34a">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
+              </div>
+              <div class="kpi-title-label">Indictments Filed</div>
+            </div>
+            <div class="kpi-big-number">18</div>
+          </div>
+          <div class="kpi-card-subtext">This month</div>
+        </div>
+
+        <div class="kpi-card" onclick="switchProsecutorView('hearings')">
+          <div>
+            <div class="kpi-card-top">
+              <div class="kpi-icon-square" style="background:#ffedd5;color:#ea580c">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m14 13-7.5 7.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L11 10"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/></svg>
+              </div>
+              <div class="kpi-title-label">Hearings Today</div>
+            </div>
+            <div class="kpi-big-number">3</div>
+          </div>
+          <a class="kpi-card-link">View calendar &rarr;</a>
+        </div>
+
+        <div class="kpi-card" onclick="switchProsecutorView('demands')">
+          <div>
+            <div class="kpi-card-top">
+              <div class="kpi-icon-square" style="background:#f3e8ff;color:#9333ea">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+              </div>
+              <div class="kpi-title-label">Pending Actions</div>
+            </div>
+            <div class="kpi-big-number">7</div>
+          </div>
+          <div class="kpi-card-subtext">Requires attention</div>
+        </div>
+
+        <div class="kpi-card" onclick="switchProsecutorView('witnesses')">
+          <div>
+            <div class="kpi-card-top">
+              <div class="kpi-icon-square" style="background:#e0f2fe;color:#0284c7">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div class="kpi-title-label">Victim/Witness</div>
+            </div>
+            <div class="kpi-big-number">32</div>
+          </div>
+          <div class="kpi-card-subtext">Under protection</div>
+        </div>
+
+        <div class="kpi-card" onclick="switchProsecutorView('appeals')">
+          <div>
+            <div class="kpi-card-top">
+              <div class="kpi-icon-square" style="background:#dcfce7;color:#16a34a">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>
+              </div>
+              <div class="kpi-title-label">Appeals</div>
+            </div>
+            <div class="kpi-big-number">5</div>
+          </div>
+          <div class="kpi-card-subtext">Filed</div>
+        </div>
+      </div>
+
+      <!-- 2 COLUMN MIDDLE GRID -->
+      <div class="grid-2col-main">
+        <div class="pros-card">
+          <div class="card-header-flex">
+            <div class="card-header-title">My Active Cases</div>
+            <a class="card-header-link" onclick="switchProsecutorView('my_cases')">View all cases &rarr;</a>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="pros-table">
+              <thead>
+                <tr>
+                  <th>Case ID</th>
+                  <th>Case Title</th>
+                  <th>Charges</th>
+                  <th>Court Division</th>
+                  <th>Next Hearing</th>
+                  <th>Status</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="case-id-blue" onclick="openCaseDossierModal('CASE-178721589765')">CASE-178721589765</span></td>
+                  <td>The State vs. Yimer Getachew</td>
+                  <td>Fraud, Forgery</td>
+                  <td>Federal Supreme Court</td>
+                  <td>May 27, 2026 09:30 AM</td>
+                  <td><span class="status-badge badge-hearing">HEARING</span></td>
+                  <td><button class="btn-view-case" onclick="openCaseDossierModal('CASE-178721589765')">View Case</button></td>
+                  <td style="text-align:right;color:#94a3b8;cursor:pointer" onclick="openCaseDossierModal('CASE-178721589765')">&vellip;</td>
+                </tr>
+                <tr>
+                  <td><span class="case-id-blue" onclick="openCaseDossierModal('CASE-178721612233')">CASE-178721612233</span></td>
+                  <td>The State vs. Abebe Kebede</td>
+                  <td>Theft, Property Damage</td>
+                  <td>Lideta Division</td>
+                  <td>May 28, 2026 11:00 AM</td>
+                  <td><span class="status-badge badge-assigned">ASSIGNED</span></td>
+                  <td><button class="btn-view-case" onclick="openCaseDossierModal('CASE-178721612233')">View Case</button></td>
+                  <td style="text-align:right;color:#94a3b8;cursor:pointer" onclick="openCaseDossierModal('CASE-178721612233')">&vellip;</td>
+                </tr>
+                <tr>
+                  <td><span class="case-id-blue" onclick="openCaseDossierModal('CASE-178721555922')">CASE-178721555922</span></td>
+                  <td>The State vs. Mulualem Desta</td>
+                  <td>Cyber Crime</td>
+                  <td>Federal Supreme Court</td>
+                  <td>Jun 02, 2026 10:00 AM</td>
+                  <td><span class="status-badge badge-pending">PENDING</span></td>
+                  <td><button class="btn-view-case" onclick="openCaseDossierModal('CASE-178721555922')">View Case</button></td>
+                  <td style="text-align:right;color:#94a3b8;cursor:pointer" onclick="openCaseDossierModal('CASE-178721555922')">&vellip;</td>
+                </tr>
+                <tr>
+                  <td><span class="case-id-blue" onclick="openCaseDossierModal('CASE-178721560884')">CASE-178721560884</span></td>
+                  <td>The State vs. Worku Alemu</td>
+                  <td>Assault, Bodily Harm</td>
+                  <td>Arada Division</td>
+                  <td>Jun 03, 2026 02:00 PM</td>
+                  <td><span class="status-badge badge-screening">SCREENING</span></td>
+                  <td><button class="btn-view-case" onclick="openCaseDossierModal('CASE-178721560884')">View Case</button></td>
+                  <td style="text-align:right;color:#94a3b8;cursor:pointer" onclick="openCaseDossierModal('CASE-178721560884')">&vellip;</td>
+                </tr>
+                <tr>
+                  <td><span class="case-id-blue" onclick="openCaseDossierModal('CASE-178721632211')">CASE-178721632211</span></td>
+                  <td>The State vs. Dawit Tadesse</td>
+                  <td>Tax Evasion</td>
+                  <td>Federal Supreme Court</td>
+                  <td>Jun 05, 2026 09:30 AM</td>
+                  <td><span class="status-badge badge-evidence">EVIDENCE</span></td>
+                  <td><button class="btn-view-case" onclick="openCaseDossierModal('CASE-178721632211')">View Case</button></td>
+                  <td style="text-align:right;color:#94a3b8;cursor:pointer" onclick="openCaseDossierModal('CASE-178721632211')">&vellip;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer-center">
+            <a class="card-header-link" onclick="switchProsecutorView('my_cases')">View all active cases &rarr;</a>
+          </div>
+        </div>
+
+        <div class="pros-card">
+          <div class="card-header-flex">
+            <div class="card-header-title">Today's Hearings</div>
+            <a class="card-header-link" onclick="switchProsecutorView('hearings')">View calendar &rarr;</a>
+          </div>
+          <div>
+            <div class="hearing-slot-item">
+              <div class="hearing-slot-time">09:30 AM</div>
+              <div class="hearing-slot-body">
+                <div class="hearing-slot-caseid" onclick="openCaseDossierModal('CASE-178721589765')">CASE-178721589765</div>
+                <div class="hearing-slot-title">The State vs. Yimer Getachew</div>
+                <div class="hearing-slot-charges">Fraud &amp; Forgery</div>
+              </div>
+              <div class="hearing-slot-courtroom">&bull; Courtroom 4</div>
+            </div>
+
+            <div class="hearing-slot-item">
+              <div class="hearing-slot-time">11:00 AM</div>
+              <div class="hearing-slot-body">
+                <div class="hearing-slot-caseid" onclick="openCaseDossierModal('CASE-178721612233')">CASE-178721612233</div>
+                <div class="hearing-slot-title">The State vs. Abebe Kebede</div>
+                <div class="hearing-slot-charges">Theft &amp; Property Damage</div>
+              </div>
+              <div class="hearing-slot-courtroom">&bull; Courtroom 2</div>
+            </div>
+
+            <div class="hearing-slot-item">
+              <div class="hearing-slot-time">02:00 PM</div>
+              <div class="hearing-slot-body">
+                <div class="hearing-slot-caseid" onclick="openCaseDossierModal('CASE-178721555922')">CASE-178721555922</div>
+                <div class="hearing-slot-title">The State vs. Mulualem Desta</div>
+                <div class="hearing-slot-charges">Cyber Crime</div>
+              </div>
+              <div class="hearing-slot-courtroom">&bull; Courtroom 3</div>
+            </div>
+          </div>
+          <div class="table-footer-center">
+            <a class="card-header-link" onclick="switchProsecutorView('hearings')">View full calendar &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 COLUMN THIRD ROW -->
+      <div class="grid-3col-row">
+        <div class="pros-card">
+          <div class="card-header-flex">
+            <div class="card-header-title">Recent Filings &amp; Indictments</div>
+            <a class="card-header-link" onclick="switchProsecutorView('indictments')">View all filings &rarr;</a>
+          </div>
+          <div>
+            <div class="filing-item-row">
+              <div class="filing-left-wrap">
+                <div class="filing-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                </div>
+                <div>
+                  <div class="filing-title">Indictment - Yimer Getachew</div>
+                  <div class="filing-meta"><span class="case-id-blue">CASE-178721589765</span> &bull; May 24, 2026 09:15 AM</div>
+                </div>
+              </div>
+              <span class="status-badge badge-filed">FILED</span>
+            </div>
+
+            <div class="filing-item-row">
+              <div class="filing-left-wrap">
+                <div class="filing-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                </div>
+                <div>
+                  <div class="filing-title">Bill of Particulars - Abebe Kebede</div>
+                  <div class="filing-meta"><span class="case-id-blue">CASE-178721612233</span> &bull; May 24, 2026 08:45 AM</div>
+                </div>
+              </div>
+              <span class="status-badge badge-filed">FILED</span>
+            </div>
+
+            <div class="filing-item-row">
+              <div class="filing-left-wrap">
+                <div class="filing-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                </div>
+                <div>
+                  <div class="filing-title">Motion for Protective Order</div>
+                  <div class="filing-meta"><span class="case-id-blue">CASE-178721560884</span> &bull; May 23, 2026 04:30 PM</div>
+                </div>
+              </div>
+              <span class="status-badge badge-submitted">SUBMITTED</span>
+            </div>
+
+            <div class="filing-item-row">
+              <div class="filing-left-wrap">
+                <div class="filing-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                </div>
+                <div>
+                  <div class="filing-title">Witness List - Dawit Tadesse</div>
+                  <div class="filing-meta"><span class="case-id-blue">CASE-178721632211</span> &bull; May 23, 2026 03:20 PM</div>
+                </div>
+              </div>
+              <span class="status-badge badge-uploaded">UPLOADED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pros-card">
+          <div class="card-header-flex">
+            <div class="card-header-title">Case Status Overview</div>
+            <a class="card-header-link" onclick="switchProsecutorView('reports')">View full report &rarr;</a>
+          </div>
+          <div class="donut-chart-container">
+            <svg class="donut-chart-svg" viewBox="0 0 42 42">
+              <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#fff"></circle>
+              <circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#e2e8f0" stroke-width="6"></circle>
+              <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#3b82f6" stroke-width="6" stroke-dasharray="25 75" stroke-dashoffset="25"></circle>
+              <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#10b981" stroke-width="6" stroke-dasharray="21 79" stroke-dashoffset="0"></circle>
+              <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#06b6d4" stroke-width="6" stroke-dasharray="17 83" stroke-dashoffset="79"></circle>
+              <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#f97316" stroke-width="6" stroke-dasharray="13 87" stroke-dashoffset="62"></circle>
+              <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#eab308" stroke-width="6" stroke-dasharray="17 83" stroke-dashoffset="49"></circle>
+              <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#94a3b8" stroke-width="6" stroke-dasharray="8 92" stroke-dashoffset="32"></circle>
+              <g class="chart-text">
+                <text x="50%" y="46%" text-anchor="middle" font-size="0.45rem" font-weight="800" fill="#0f172a">24</text>
+                <text x="50%" y="58%" text-anchor="middle" font-size="0.22rem" font-weight="600" fill="#64748b">Total Cases</text>
+              </g>
+            </svg>
+
+            <div class="donut-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div><span>Hearing <strong>6 (25%)</strong></span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div><span>Assigned <strong>5 (21%)</strong></span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div><span>Evidence Stage <strong>4 (17%)</strong></span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div><span>Screening <strong>3 (13%)</strong></span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#eab308"></div><span>Pending <strong>4 (17%)</strong></span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div><span>Decided <strong>2 (8%)</strong></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pros-card">
+          <div class="card-header-flex">
+            <div class="card-header-title">Pending Actions</div>
+            <a class="card-header-link" onclick="switchProsecutorView('demands')">View all &rarr;</a>
+          </div>
+          <div>
+            <div class="pending-action-item" onclick="switchProsecutorView('demands')">
+              <span style="color:#0284c7">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+              </span>
+              <span><strong>2</strong> Document demands awaiting response</span>
+            </div>
+            <div class="pending-action-item" onclick="switchProsecutorView('indictments')">
+              <span style="color:#d97706">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+              </span>
+              <span><strong>3</strong> Cases awaiting charging decision</span>
+            </div>
+            <div class="pending-action-item" onclick="switchProsecutorView('witnesses')">
+              <span style="color:#9333ea">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </span>
+              <span><strong>1</strong> Witness protection request pending</span>
+            </div>
+            <div class="pending-action-item" onclick="switchProsecutorView('appeals')">
+              <span style="color:#16a34a">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>
+              </span>
+              <span><strong>1</strong> Appeal response due</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 4: NOTIFICATIONS & QUICK ACTIONS -->
+      <div class="grid-2col-bottom">
+        <div class="pros-card">
+          <div class="card-header-flex">
+            <div class="card-header-title">Notifications</div>
+            <a class="card-header-link" onclick="switchProsecutorView('notifications')">View all &rarr;</a>
+          </div>
+          <div>
+            <div class="notif-row-item" onclick="openCaseDossierModal('CASE-178721589765')">
+              <div class="notif-icon-round" style="background:#e0f2fe;color:#0284c7">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              </div>
+              <div class="notif-text-wrap">
+                <div class="notif-main-text">Document demand response received in CASE-178721589765</div>
+                <div class="notif-time-text">10 minutes ago &bull; Transmitted by National Bank of Ethiopia</div>
+              </div>
+            </div>
+
+            <div class="notif-row-item" onclick="openCaseDossierModal('CASE-178721612233')">
+              <div class="notif-icon-round" style="background:#e0f2fe;color:#0284c7">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+              </div>
+              <div class="notif-text-wrap">
+                <div class="notif-main-text">CASE-178721612233 scheduled for hearing on May 28, 2026</div>
+                <div class="notif-time-text">25 minutes ago &bull; Courtroom 2 before Hon. Judge Solomon Desta</div>
+              </div>
+            </div>
+
+            <div class="notif-row-item" onclick="openCaseDossierModal('CASE-178721555922')">
+              <div class="notif-icon-round" style="background:#fce7f3;color:#db2777">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+              </div>
+              <div class="notif-text-wrap">
+                <div class="notif-main-text">New witness added in CASE-178721555922</div>
+                <div class="notif-time-text">1 hour ago &bull; Federal Police Crime Forensics</div>
+              </div>
+            </div>
+
+            <div class="notif-row-item" onclick="openCaseDossierModal('CASE-178721540800')">
+              <div class="notif-icon-round" style="background:#dcfce7;color:#16a34a">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>
+              </div>
+              <div class="notif-text-wrap">
+                <div class="notif-main-text">Verdict delivered in CASE-178721540800</div>
+                <div class="notif-time-text">2 hours ago &bull; Full conviction decree entered</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pros-card">
+          <div class="card-header-flex">
+            <div class="card-header-title">Quick Actions</div>
+          </div>
+          <div class="quick-actions-8grid">
+            <div class="qa-btn" onclick="openFileIndictmentModal()">
+              <div class="qa-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
+              <div class="qa-label">File New Indictment</div>
+            </div>
+            <div class="qa-btn" onclick="openUploadDocModal()">
+              <div class="qa-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg></div>
+              <div class="qa-label">Upload Document</div>
+            </div>
+            <div class="qa-btn" onclick="openRequestDocModal()">
+              <div class="qa-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><circle cx="11.5" cy="14.5" r="2.5"/><path d="m13.5 16.5 2 2"/></svg></div>
+              <div class="qa-label">Request Document</div>
+            </div>
+            <div class="qa-btn" onclick="openScheduleHearingModal()">
+              <div class="qa-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></div>
+              <div class="qa-label">Schedule Hearing</div>
+            </div>
+            <div class="qa-btn" onclick="openWitnessProtectionModal()">
+              <div class="qa-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <div class="qa-label">Witness Protection</div>
+            </div>
+            <div class="qa-btn" onclick="openSendToJudgeModal()">
+              <div class="qa-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m14 13-7.5 7.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L11 10"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/></svg></div>
+              <div class="qa-label">Send to Judge</div>
+            </div>
+            <div class="qa-btn" onclick="openCreateNoticeModal()">
+              <div class="qa-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+              <div class="qa-label">Create Notice</div>
+            </div>
+            <div class="qa-btn" onclick="openGenerateReportModal()">
+              <div class="qa-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg></div>
+              <div class="qa-label">Generate Report</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Footer Bar -->
+  <footer class="pros-footer">
+    <div style="display:flex;align-items:center;gap:0.4rem">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span>Secure. Transparent. Accessible Justice.</span>
+    </div>
+    <div>&copy; 2026 Federal Supreme Court of Ethiopia. All rights reserved.</div>
+    <div>Version 1.0.0</div>
+  </footer>
+
+  <!-- Universal Modal Dialog -->
+  <div class="modal-overlay" id="universal-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title" style="font-family:'Cinzel',serif;font-size:1.05rem;color:white;margin:0">Prosecution Action</h3>
+        <button onclick="closeModal()" style="background:none;border:none;color:white;font-size:1.25rem;cursor:pointer">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="/js/prosecutor.js"></script>
+</body>
+</html>

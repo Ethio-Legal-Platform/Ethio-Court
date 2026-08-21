@@ -1,0 +1,62 @@
+[
+  {
+    "id": "TEMP-ADNAN",
+    "username": "0944430222",
+    "phone": "0944430222",
+    "pin": "487115",
+    "fullName": "Adnan",
+    "role": "client",
+    "side": "plaintiff",
+    "accountType": "Plaintiff / Case Filer",
+    "caseId": "CASE-1787286146761",
+    "trackingCode": "ET-FSC-837221",
+    "email": "qalalewtere@gmail.com",
+    "appointedLawyer": {
+      "id": "LAWYER-002",
+      "fullName": "Advocate Tigist Assefa",
+      "licenseNumber": "LAW-1002",
+      "chamber": "Federal Supreme Court Bar",
+      "status": "active"
+    }
+  },
+  {
+    "id": "TEMP-DAGIM",
+    "username": "0955282973",
+    "phone": "0955282973",
+    "pin": "487115",
+    "fullName": "Dagim",
+    "role": "defendant",
+    "side": "defendant",
+    "accountType": "Defendant / Accused Party",
+    "caseId": "CASE-1787286146761",
+    "trackingCode": "ET-FSC-837221",
+    "email": "kalalewtere@gmail.com",
+    "appointedLawyer": {
+      "id": "LAWYER-003",
+      "fullName": "Public Defender Dawit Kebede (State Appointed)",
+      "licenseNumber": "LAW-2001",
+      "chamber": "Federal Supreme Court Public Defense Office",
+      "status": "active"
+    }
+  },
+  {
+    "id": "TEMP-ABEBE",
+    "username": "0911123456",
+    "phone": "0911123456",
+    "pin": "8821",
+    "fullName": "Abebe Kebede",
+    "role": "client",
+    "side": "plaintiff",
+    "accountType": "Plaintiff / Temporary Account",
+    "caseId": "CASE-2026-0001",
+    "trackingCode": "ET-FSC-100201",
+    "email": "abebe.kebede@email.com",
+    "appointedLawyer": {
+      "id": "LAWYER-000",
+      "fullName": "Kebede Haile Mariam",
+      "licenseNumber": "LAW-1001",
+      "chamber": "Supreme Court Commercial Bar",
+      "status": "active"
+    }
+  }
+]

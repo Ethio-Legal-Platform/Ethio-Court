@@ -1,920 +1,733 @@
-'use strict';
+// ──────────────────────────────────────────────────────────
+// Federal Supreme Court of Ethiopia — Litigant Portal System
+// Dedicated Multi-Account Workspace for Plaintiffs & Defendants
+// ──────────────────────────────────────────────────────────
 
 const API = '/api';
-let currentLitigant = {
-  id: "TEMP-USR-101",
-  username: "abebe.kebede",
-  fullName: "Abebe Kebede",
-  role: "client",
-  accountType: "Temporary (Plaintiff)",
-  phone: "+251 911 123 456",
-  email: "abebe.kebede@email.com",
-  pin: "8821",
-  expiresAt: new Date(Date.now() + 29 * 24 * 3600 * 1000 + 14 * 3600 * 1000 + 23 * 60 * 1000)
-};
+let currentLitigant = null;
+let myCases = [];
+let allLawyers = [];
+let activeView = 'dashboard';
 
-let currentLitigantView = 'dashboard';
-let pinVisible = false;
-let allCases = [];
+// Clean phone helper
+function cleanPhone(p) {
+  if (!p) return '';
+  return p.toString().replace(/[^0-9]/g, '').slice(-9);
+}
 
-const ICONS = {
-  checkCircle: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-  calendar: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg>',
-  scales: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>',
-  info: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>',
-  fileText: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>',
-  user: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-  upload: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>',
-  folder: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>',
-  clock: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  creditCard: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>',
-  shield: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'
-};
-
-window.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const stored = sessionStorage.getItem('court_user');
-    if (stored) {
-      const u = JSON.parse(stored);
-      if (u.role === 'client' || u.role === 'litigant' || u.role === 'temporary') {
-        currentLitigant = Object.assign(currentLitigant, u);
-      }
-    }
-  } catch (e) {}
-
-  updateLitigantHeaderUI();
-  startCountdownTicker();
-  await loadLitigantData();
-});
-
-function startCountdownTicker() {
-  function tick() {
-    const now = new Date().getTime();
-    const expiry = new Date(currentLitigant.expiresAt || (Date.now() + 29 * 24 * 3600 * 1000)).getTime();
-    const diff = Math.max(0, expiry - now);
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-    const countdownEl = document.getElementById('sidebar-countdown');
-    if (countdownEl) {
-      countdownEl.textContent = days + 'd : ' + hours + 'h : ' + minutes + 'm';
+// ── INITIALIZATION ──
+document.addEventListener('DOMContentLoaded', async () => {
+  const sessionUser = sessionStorage.getItem('court_user');
+  if (sessionUser) {
+    try {
+      currentLitigant = JSON.parse(sessionUser);
+    } catch (e) {
+      console.error('Failed to parse session user:', e);
     }
   }
-  tick();
-  setInterval(tick, 1000);
-}
 
+  // Fallback if not logged in
+  if (!currentLitigant) {
+    currentLitigant = {
+      id: 'TEMP-ADNAN',
+      username: '0944430222',
+      phone: '0944430222',
+      fullName: 'Adnan',
+      role: 'client',
+      side: 'plaintiff',
+      accountType: 'Plaintiff / Case Filer',
+      caseId: 'CASE-1787286146761',
+      trackingCode: 'ET-FSC-837221',
+      email: 'qalalewtere@gmail.com',
+      appointedLawyer: {
+        id: 'LAWYER-002',
+        fullName: 'Advocate Tigist Assefa',
+        licenseNumber: 'LAW-1002',
+        chamber: 'Federal Supreme Court Bar',
+        status: 'active'
+      }
+    };
+  }
+
+  updateLitigantHeaderUI();
+  await loadLitigantData();
+  startAccessCountdown();
+});
+
+// ── HEADER & PROFILE UI ──
 function updateLitigantHeaderUI() {
-  const name = currentLitigant.fullName || "Abebe Kebede";
-  const initials = name.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase() || "AK";
-  
-  const initialsEl = document.getElementById('litigant-avatar-initials');
-  if (initialsEl) initialsEl.textContent = initials;
+  if (!currentLitigant) return;
 
-  const dropInitialsEl = document.getElementById('litigant-dropdown-avatar');
-  if (dropInitialsEl) dropInitialsEl.textContent = initials;
+  const topName = document.getElementById('top-litigant-name');
+  const topRole = document.getElementById('top-litigant-role');
+  const avatar = document.getElementById('litigant-avatar-initials');
+  const dropAvatar = document.getElementById('litigant-dropdown-avatar');
+  const dropName = document.getElementById('litigant-dropdown-fullname');
+  const dropSub = document.getElementById('litigant-dropdown-sub');
 
-  const dropNameEl = document.getElementById('litigant-dropdown-fullname');
-  if (dropNameEl) dropNameEl.textContent = name;
+  const fullName = currentLitigant.fullName || (currentLitigant.role === 'defendant' ? 'Dagim' : 'Adnan');
+  const accountType = currentLitigant.accountType || (currentLitigant.role === 'defendant' ? 'Defendant / Accused Party' : 'Plaintiff / Case Filer');
 
-  const topNameEl = document.getElementById('top-litigant-name');
-  if (topNameEl) topNameEl.textContent = name;
+  // Compute initials
+  const initials = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'LT';
+
+  if (topName) topName.textContent = fullName;
+  if (topRole) topRole.textContent = accountType;
+  if (avatar) avatar.textContent = initials;
+  if (dropAvatar) dropAvatar.textContent = initials;
+  if (dropName) dropName.textContent = fullName;
+  if (dropSub) dropSub.textContent = accountType + ' · ' + (currentLitigant.phone || 'Verified');
 }
 
+// ── DATA LOADING ──
+async function loadLitigantData() {
+  try {
+    const [casesRes, lawyersRes] = await Promise.all([
+      fetch(API + '/cases'),
+      fetch(API + '/lawyers')
+    ]);
+
+    if (casesRes.ok) {
+      const allCases = await casesRes.json();
+      const userPhone = cleanPhone(currentLitigant.phone || currentLitigant.username);
+      const userCaseId = currentLitigant.caseId;
+
+      // Filter cases belonging to this specific litigant
+      myCases = allCases.filter(c => {
+        if (userCaseId && c.caseId === userCaseId) return true;
+        const filerP = cleanPhone(c.filerPhone || c.phone || (c.filer && c.filer.phone));
+        const defP = cleanPhone(c.defendantPhone || (c.defendant && c.defendant.phone));
+        return (userPhone && (filerP === userPhone || defP === userPhone));
+      });
+
+      if (myCases.length === 0 && allCases.length > 0) {
+        myCases = [allCases[0]];
+      }
+    }
+
+    if (lawyersRes.ok) {
+      allLawyers = await lawyersRes.json();
+    }
+  } catch (err) {
+    console.error('Error fetching litigant data:', err);
+  }
+
+  renderCurrentView();
+}
+
+function getMyCase() {
+  if (myCases && myCases.length > 0) return myCases[0];
+  return {
+    caseId: currentLitigant.caseId || 'CASE-1787286146761',
+    trackingCode: currentLitigant.trackingCode || 'ET-FSC-837221',
+    caseTitle: 'Criminal Proceedings',
+    courtLevel: 'Federal Supreme Court (Sidist Kilo)',
+    status: 'scheduled',
+    incidentDate: '2026-08-21',
+    petitioner: 'Adnan',
+    respondent: 'Dagim',
+    defendantName: 'Dagim',
+    judgeName: 'Hon. Judge Solomon Desta',
+    courtroom: 'Courtroom 4 (Main Trial Room)',
+    hearingDate: '2026-08-21',
+    hearingTime: '09:30 AM',
+    documents: [],
+    timeline: []
+  };
+}
+
+// ── NAVIGATION & VIEW SWITCHING ──
+function switchLitigantView(viewName) {
+  activeView = (viewName === 'my_cases' || viewName === 'my_case') ? 'my_case' : viewName;
+  document.querySelectorAll('.litigant-nav-btn').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.querySelector('[data-view="' + activeView + '"]') || document.querySelector('button[onclick*="' + viewName + '"]');
+  if (activeBtn) activeBtn.classList.add('active');
+  renderCurrentView();
+}
+window.switchLitigantView = switchLitigantView;
+
+function getWorkspaceContainer() {
+  return document.getElementById('dynamic-litigant-workspace') || document.getElementById('litigant-workspace-view');
+}
+
+function renderCurrentView() {
+  const container = getWorkspaceContainer();
+  if (!container) return;
+
+  if (activeView === 'dashboard') {
+    renderLitigantDashboard();
+  } else if (activeView === 'my_case') {
+    renderCaseDetailsView();
+  } else if (activeView === 'hearings') {
+    renderHearingsScheduleView();
+  } else if (activeView === 'documents') {
+    renderDocumentsView();
+  } else if (activeView === 'summons') {
+    renderSummonsNoticeView();
+  } else if (activeView === 'messages') {
+    renderMessagesView();
+  } else {
+    renderLitigantDashboard();
+  }
+}
+
+// ── DASHBOARD VIEW ──
+function renderLitigantDashboard() {
+  const container = getWorkspaceContainer();
+  if (!container) return;
+
+  const myCase = getMyCase();
+  const isDef = currentLitigant.role === 'defendant' || currentLitigant.side === 'defendant';
+  const lawyer = currentLitigant.appointedLawyer;
+
+  let repCardHtml = '';
+  if (lawyer) {
+    repCardHtml = 
+      '<div class="rep-glance-body" style="padding:0.75rem 0">' +
+        '<div style="font-size:1.05rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:0.25rem">' + lawyer.fullName + '</div>' +
+        '<div style="font-size:0.8rem;color:#475569;margin-bottom:0.65rem">' +
+          'Advocate License: <strong style="color:var(--fsc-navy-main)">' + (lawyer.licenseNumber || 'Verified') + '</strong>' +
+        '</div>' +
+        '<span class="status-pill pill-green">ACTIVE REPRESENTATION</span>' +
+      '</div>';
+  } else {
+    repCardHtml = 
+      '<div class="rep-glance-body" style="padding:0.75rem 0">' +
+        '<div style="font-size:0.95rem;font-weight:800;color:#64748b;margin-bottom:0.25rem">Self-Represented</div>' +
+        '<div style="font-size:0.785rem;color:#94a3b8;margin-bottom:0.65rem">No advocate appointed for this case</div>' +
+        '<span class="status-pill pill-slate">IN PERSON</span>' +
+      '</div>';
+  }
+
+  container.innerHTML = 
+    '<div class="litigant-greeting-row" style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem">' +
+      '<div>' +
+        '<h1 class="litigant-greeting-title" style="font-size:1.45rem;font-weight:800;color:var(--fsc-navy-main)">Welcome, ' + (currentLitigant.fullName || 'Litigant') + '</h1>' +
+        '<p class="litigant-greeting-sub" style="font-size:0.85rem;color:#64748b;margin-top:0.25rem">Real-time ' + (isDef ? 'defense docket access, court summons, charges,' : 'case tracking, court summons,') + ' and legal representation portal.</p>' +
+      '</div>' +
+      '<div style="display:flex;gap:0.75rem">' +
+        '<button class="btn btn-outline" style="border:1.5px solid var(--fsc-navy-main);color:var(--fsc-navy-main);font-weight:700;padding:0.6rem 1.15rem;border-radius:6px;cursor:pointer" onclick="openAdvocateProfileModal()">' +
+          (lawyer ? '⚖️ Representation Details' : '⚖️ Appoint Advocate') +
+        '</button>' +
+        '<button class="btn btn-primary" style="background:var(--fsc-navy-main);color:#ffffff;font-weight:700;padding:0.6rem 1.15rem;border:none;border-radius:6px;cursor:pointer" onclick="switchLitigantView(\'documents\')">' +
+          '📄 Upload Document' +
+        '</button>' +
+      '</div>' +
+    '</div>' +
+
+    '<!-- 3 Metric Glance Cards -->' +
+    '<div class="litigant-metrics-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-bottom:1.5rem">' +
+      '<!-- Card 1: Case Status -->' +
+      '<div class="case-progress-card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.05);display:flex;flex-direction:column;justify-content:space-between">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">' +
+          '<span style="font-size:0.725rem;font-weight:800;color:#64748b;letter-spacing:0.06em">CASE DOCKET STATUS</span>' +
+          '<div style="width:34px;height:34px;border-radius:50%;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:1.15rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:0.75rem">' + (myCase.caseId || 'CASE-1787286146761') + '</div>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f1f5f9;padding-top:0.65rem">' +
+          '<span class="status-pill pill-blue" style="font-size:0.7rem;font-weight:800;text-transform:uppercase;background:#eff6ff;color:#2563eb;padding:0.2rem 0.6rem;border-radius:12px">' + (myCase.status || 'SCHEDULED') + '</span>' +
+          '<span style="font-size:0.75rem;color:#64748b;">' + (myCase.courtLevel || 'Federal Supreme Court') + '</span>' +
+        '</div>' +
+      '</div>' +
+
+      '<!-- Card 2: Legal Representation -->' +
+      '<div class="case-progress-card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.05);display:flex;flex-direction:column;justify-content:space-between">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">' +
+          '<span style="font-size:0.725rem;font-weight:800;color:#64748b;letter-spacing:0.06em">LEGAL REPRESENTATION</span>' +
+          '<div style="width:34px;height:34px;border-radius:50%;background:#f0fdf4;color:#16a34a;display:flex;align-items:center;justify-content:center">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>' +
+          '</div>' +
+        '</div>' +
+        repCardHtml +
+        '<div style="margin-top:auto;padding-top:0.65rem;border-top:1px solid #f1f5f9">' +
+          '<a href="javascript:void(0)" onclick="openAdvocateProfileModal()" style="font-size:0.785rem;font-weight:700;color:#2563eb;text-decoration:none;">' +
+            (lawyer ? 'Manage Representation &rarr;' : 'Appoint Defense Counsel &rarr;') +
+          '</a>' +
+        '</div>' +
+      '</div>' +
+
+      '<!-- Card 3: Next Court Hearing -->' +
+      '<div class="case-progress-card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.05);display:flex;flex-direction:column;justify-content:space-between">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">' +
+          '<span style="font-size:0.725rem;font-weight:800;color:#64748b;letter-spacing:0.06em">NEXT COURT HEARING</span>' +
+          '<div style="width:34px;height:34px;border-radius:50%;background:#fff7ed;color:#ea580c;display:flex;align-items:center;justify-content:center">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg>' +
+          '</div>' +
+        '</div>' +
+        '<div style="color:#ea580c;font-size:1.15rem;font-weight:800;margin-bottom:0.75rem">' + (myCase.hearingDate ? myCase.hearingDate + ' (' + (myCase.hearingTime || '09:30 AM') + ')' : 'Scheduled for Hearing') + '</div>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f1f5f9;padding-top:0.65rem">' +
+          '<span style="font-size:0.785rem;color:#475569;font-weight:600;">' + (myCase.courtroom || 'Courtroom 4') + '</span>' +
+          '<span style="font-size:0.75rem;color:#64748b;">' + (myCase.judgeName || 'Hon. Judge Solomon Desta') + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<!-- 2 Column Section: Case Details & Quick Actions -->' +
+    '<div style="display:grid;grid-template-columns:2fr 1fr;gap:1.25rem">' +
+      '<div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.05)">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">' +
+          '<h3 style="font-size:1rem;font-weight:800;color:var(--fsc-navy-main)">Case Information &amp; Parties</h3>' +
+          '<span style="background:#f1f5f9;color:var(--fsc-navy-main);font-size:0.75rem;font-weight:800;padding:0.25rem 0.65rem;border-radius:6px">' + (myCase.trackingCode || 'ET-FSC-837221') + '</span>' +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:0.6rem">' +
+          '<div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid #f1f5f9;font-size:0.825rem"><span style="color:#64748b">Case Title:</span><span style="font-weight:700;color:var(--fsc-navy-main)">' + (myCase.caseTitle || 'Criminal Proceedings') + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid #f1f5f9;font-size:0.825rem"><span style="color:#64748b">Complainant / Petitioner:</span><span style="font-weight:600">' + (myCase.petitioner || 'Adnan') + (isDef ? '' : ' (You)') + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid #f1f5f9;font-size:0.825rem"><span style="color:#64748b">Accused / Defendant:</span><span style="font-weight:600">' + (myCase.respondent || myCase.defendantName || 'Dagim') + (isDef ? ' (You)' : '') + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid #f1f5f9;font-size:0.825rem"><span style="color:#64748b">Filing Date:</span><span>' + (myCase.filingDate ? new Date(myCase.filingDate).toLocaleDateString() : '2026-08-21') + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;padding:0.4rem 0;font-size:0.825rem"><span style="color:#64748b">Presiding Judge:</span><span>' + (myCase.judgeName || 'Hon. Judge Solomon Desta') + '</span></div>' +
+        '</div>' +
+        '<div style="margin-top:1.25rem;padding:0.85rem 1rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;font-size:0.825rem;color:#334155;line-height:1.5">' +
+          '<strong style="color:var(--fsc-navy-main)">Case Allegation &amp; Statement:</strong> ' + (myCase.description || 'On 15 August 2026, the complainant reported that the accused allegedly broke into his residence during the night and stole several valuable items...') +
+        '</div>' +
+      '</div>' +
+
+      '<div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.05)">' +
+        '<h3 style="font-size:1rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:1rem">Quick Actions</h3>' +
+        '<div style="display:flex;flex-direction:column;gap:0.4rem">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 0.5rem;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:0.825rem;font-weight:600;color:var(--fsc-navy-main)" onclick="openAdvocateProfileModal()">' +
+            '<span>⚖️ ' + (lawyer ? 'View Representation' : 'Appoint Legal Advocate') + '</span>' +
+            '<span>&rarr;</span>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 0.5rem;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:0.825rem;font-weight:600;color:var(--fsc-navy-main)" onclick="switchLitigantView(\'documents\')">' +
+            '<span>📄 Submit Exhibits</span>' +
+            '<span>&rarr;</span>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 0.5rem;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:0.825rem;font-weight:600;color:var(--fsc-navy-main)" onclick="switchLitigantView(\'summons\')">' +
+            '<span>📜 Court Summons</span>' +
+            '<span>&rarr;</span>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 0.5rem;cursor:pointer;font-size:0.825rem;font-weight:600;color:var(--fsc-navy-main)" onclick="switchLitigantView(\'messages\')">' +
+            '<span>💬 Registrar Messaging</span>' +
+            '<span>&rarr;</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+// ── REPRESENTATION MODAL ──
+function openAdvocateProfileModal() {
+  const myCase = getMyCase();
+  const caseId = myCase ? myCase.caseId : '';
+  const isDef = currentLitigant.role === 'defendant' || currentLitigant.side === 'defendant';
+  const lawyer = currentLitigant.appointedLawyer;
+
+  const modalTitle = document.getElementById('litigant-modal-title');
+  const modalBody = document.getElementById('litigant-modal-body');
+  if (!modalTitle || !modalBody) return;
+
+  modalTitle.textContent = isDef ? 'Defendant Legal Representation & Defense Counsel' : 'Legal Representation & Advocate Appointment';
+
+  if (lawyer) {
+    modalBody.innerHTML = 
+      '<div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:1.25rem;margin-bottom:1.25rem">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">' +
+          '<span style="font-weight:800;color:#16a34a;font-size:0.95rem">⚖️ Appointed Legal Advocate</span>' +
+          '<span class="status-pill" style="background:#dcfce7;color:#16a34a;font-size:0.75rem;font-weight:800">ACTIVE MANDATE</span>' +
+        '</div>' +
+        '<div style="font-size:1.2rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:0.25rem">' + lawyer.fullName + '</div>' +
+        '<div style="font-size:0.85rem;color:#334155;margin-bottom:0.25rem">Advocate License Number: <strong>' + (lawyer.licenseNumber || 'LAW-1002') + '</strong></div>' +
+        '<div style="font-size:0.775rem;color:#64748b">Chamber: ' + (lawyer.chamber || 'Federal Supreme Court Bar') + '</div>' +
+        '<div style="margin-top:0.75rem;padding:0.65rem 0.85rem;background:#ffffff;border:1px solid #dcfce7;border-radius:6px;font-size:0.785rem;color:#166534;line-height:1.45">' +
+          '✓ Authorized to submit legal briefs, examine exhibits, and represent you for case <strong>' + caseId + '</strong> before the Federal Supreme Court.' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:1.15rem;margin-bottom:1.25rem">' +
+        '<div style="font-weight:800;color:#991b1b;font-size:0.9rem;margin-bottom:0.35rem">Revoke Representation &amp; Regain Direct Control</div>' +
+        '<div style="font-size:0.785rem;color:#7f1d1d;line-height:1.45;margin-bottom:1rem">' +
+          'You may revoke this appointment at any time. Full direct control over docket management and self-representation will return to your account.' +
+        '</div>' +
+        '<button type="button" class="btn btn-outline" style="background:#dc2626;color:#ffffff;border:none;padding:0.75rem 1.25rem;border-radius:6px;font-weight:700;font-size:0.85rem;width:100%;cursor:pointer" onclick="handleRevokeAppointment()">' +
+          '🗑️ Revoke Advocate Appointment' +
+        '</button>' +
+      '</div>' +
+
+      '<div style="display:flex;justify-content:flex-end">' +
+        '<button type="button" class="btn btn-outline" style="padding:0.6rem 1.2rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeLitigantModal()">Close</button>' +
+      '</div>';
+  } else {
+    // Selection form
+    const lawyerOptions = (allLawyers && allLawyers.length) ? allLawyers.map(l => 
+      '<option value="' + l.licenseNumber + '">' + l.fullName + ' (' + l.licenseNumber + ') — ' + (l.isGovernmentLawyer ? 'Public Defender' : 'Private Bar') + '</option>'
+    ).join('') : '<option value="LAW-1002">Advocate Tigist Assefa (LAW-1002)</option><option value="LAW-1001">Kebede Haile Mariam (LAW-1001)</option><option value="LAW-2001">Public Defender Dawit Kebede (LAW-2001)</option>';
+
+    modalBody.innerHTML = 
+      '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:1.25rem">' +
+        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.95rem;margin-bottom:0.25rem">' +
+          '⚖️ Appoint Legal Representation' +
+        '</div>' +
+        '<div style="font-size:0.785rem;color:#64748b;margin-bottom:1rem">' +
+          'Select or enter a licensed advocate to represent you for Case <strong>' + caseId + '</strong>.' +
+        '</div>' +
+
+        '<form onsubmit="handleAppointLawyerSubmit(event)">' +
+          '<div style="margin-bottom:0.85rem">' +
+            '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.825rem">Advocate License Number</label>' +
+            '<div style="display:flex;gap:0.5rem">' +
+              '<input type="text" id="rep-advocate-license" class="top-search-input" style="flex:1;text-transform:uppercase;font-weight:700" placeholder="e.g. LAW-1001, LAW-1002, LAW-2001" oninput="handleAdvocateLicenseInput(this.value)" required/>' +
+              '<button type="button" class="btn btn-outline" style="padding:0.5rem 0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-weight:600;font-size:0.8rem;cursor:pointer" onclick="verifyAdvocateLicenseManual()">Verify</button>' +
+            '</div>' +
+            '<div id="advocate-license-feedback" style="margin-top:0.45rem;font-size:0.75rem"></div>' +
+          '</div>' +
+
+          '<div style="margin-bottom:0.85rem">' +
+            '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.825rem">Or Select from Verified Directory</label>' +
+            '<select class="top-search-input" style="width:100%" onchange="document.getElementById(\'rep-advocate-license\').value = this.value; handleAdvocateLicenseInput(this.value);">' +
+              '<option value="" selected>-- Pick from FSC Directory --</option>' +
+              lawyerOptions +
+            '</select>' +
+          '</div>' +
+
+          '<div style="display:flex;gap:0.5rem;margin-top:1.15rem">' +
+            '<button type="submit" id="appoint-lawyer-btn" class="btn btn-primary" style="flex:1;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;font-size:0.85rem;cursor:pointer">Confirm Appointment</button>' +
+            '<button type="button" class="btn btn-outline" style="padding:0.75rem 1rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeLitigantModal()">Cancel</button>' +
+          '</div>' +
+        '</form>' +
+      '</div>';
+  }
+
+  openLitigantModal();
+}
+window.openAdvocateProfileModal = openAdvocateProfileModal;
+
+async function handleAdvocateLicenseInput(val) {
+  const feedback = document.getElementById('advocate-license-feedback');
+  if (!feedback) return;
+  const cleanLic = (val || '').trim().toUpperCase();
+  if (!cleanLic) {
+    feedback.innerHTML = '';
+    return;
+  }
+
+  const local = allLawyers.find(l => (l.licenseNumber && l.licenseNumber.toUpperCase() === cleanLic) || l.id === cleanLic);
+  if (local) {
+    feedback.innerHTML = 
+      '<div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:0.45rem 0.65rem;border-radius:6px;margin-top:0.25rem">' +
+        '<strong style="color:#16a34a">✓ Verified Advocate:</strong> ' + local.fullName + ' (' + local.licenseNumber + ')<br/>' +
+        '<span style="color:#334155;font-size:0.725rem">Chamber: ' + (local.chamberAddress || 'Federal Supreme Court Bar') + '</span>' +
+      '</div>';
+  } else {
+    feedback.innerHTML = '<span style="color:#92400e">ℹ Enter full valid MoJ License Number (e.g. LAW-1001, LAW-1002, LAW-2001).</span>';
+  }
+}
+window.handleAdvocateLicenseInput = handleAdvocateLicenseInput;
+
+function verifyAdvocateLicenseManual() {
+  const input = document.getElementById('rep-advocate-license');
+  if (input) handleAdvocateLicenseInput(input.value);
+}
+window.verifyAdvocateLicenseManual = verifyAdvocateLicenseManual;
+
+async function handleAppointLawyerSubmit(e) {
+  e.preventDefault();
+  const input = document.getElementById('rep-advocate-license');
+  const lic = input ? input.value.trim().toUpperCase() : '';
+  if (!lic) return;
+
+  const lawyerObj = allLawyers.find(l => (l.licenseNumber && l.licenseNumber.toUpperCase() === lic) || l.id === lic) || {
+    id: 'LAWYER-' + Date.now(),
+    fullName: 'Advocate ' + lic,
+    licenseNumber: lic,
+    chamber: 'Federal Supreme Court Bar'
+  };
+
+  currentLitigant.appointedLawyer = {
+    id: lawyerObj.id,
+    fullName: lawyerObj.fullName,
+    licenseNumber: lawyerObj.licenseNumber,
+    chamber: lawyerObj.chamberAddress || 'Federal Supreme Court Bar',
+    status: 'active'
+  };
+
+  sessionStorage.setItem('court_user', JSON.stringify(currentLitigant));
+  alert('✓ Appointed Advocate ' + lawyerObj.fullName + ' (' + lawyerObj.licenseNumber + ') for your case.');
+  closeLitigantModal();
+  renderCurrentView();
+}
+window.handleAppointLawyerSubmit = handleAppointLawyerSubmit;
+
+function handleRevokeAppointment() {
+  if (!confirm('Are you sure you want to revoke advocate appointment and resume direct self-representation?')) return;
+  currentLitigant.appointedLawyer = null;
+  sessionStorage.setItem('court_user', JSON.stringify(currentLitigant));
+  alert('✓ Advocate appointment revoked. Full direct control returned.');
+  closeLitigantModal();
+  renderCurrentView();
+}
+window.handleRevokeAppointment = handleRevokeAppointment;
+
+// ── MODAL SYSTEM ──
+function openLitigantModal() {
+  const modal = document.getElementById('universal-litigant-modal') || document.getElementById('litigant-modal-backdrop');
+  if (modal) modal.style.display = 'flex';
+}
+window.openLitigantModal = openLitigantModal;
+
+function closeLitigantModal() {
+  const modal = document.getElementById('universal-litigant-modal') || document.getElementById('litigant-modal-backdrop');
+  if (modal) modal.style.display = 'none';
+}
+window.closeLitigantModal = closeLitigantModal;
+
+// ── OTHER MODALS (Appeal, Payment, Case Details, Edit Profile, Change Pin, Help) ──
+function openCaseDetailsModal() {
+  switchLitigantView('my_case');
+}
+window.openCaseDetailsModal = openCaseDetailsModal;
+
+function openAppealModal() {
+  const modalTitle = document.getElementById('litigant-modal-title');
+  const modalBody = document.getElementById('litigant-modal-body');
+  if (!modalTitle || !modalBody) return;
+
+  modalTitle.textContent = 'Appellate Review & Notice of Appeal';
+  modalBody.innerHTML = 
+    '<div style="padding:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:1rem">' +
+      '<div style="font-weight:700;color:var(--fsc-navy-main);margin-bottom:0.35rem">File an Appeal / Cassation Petition</div>' +
+      '<div style="font-size:0.8rem;color:#64748b;margin-bottom:0.75rem">Under Cassation Division rules, appeals may be submitted within 30 days of judgment.</div>' +
+      '<textarea class="top-search-input" style="width:100%;height:80px;margin-bottom:0.75rem" placeholder="State fundamental error of law or grounds for appellate review..."></textarea>' +
+      '<button class="btn btn-primary" style="background:var(--fsc-navy-main);color:#fff;border:none;padding:0.6rem 1.2rem;border-radius:6px;font-weight:700;cursor:pointer" onclick="alert(\'Appeal petition submitted to the Appellate Registry for screening.\');closeLitigantModal();">Submit Appeal Notice</button>' +
+    '</div>';
+  openLitigantModal();
+}
+window.openAppealModal = openAppealModal;
+
+function openPaymentModal() {
+  const modalTitle = document.getElementById('litigant-modal-title');
+  const modalBody = document.getElementById('litigant-modal-body');
+  if (!modalTitle || !modalBody) return;
+
+  modalTitle.textContent = 'Court Fees & Registry Payments';
+  modalBody.innerHTML = 
+    '<div style="padding:1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;margin-bottom:1rem">' +
+      '<div style="font-weight:700;color:#16a34a;margin-bottom:0.35rem">Payment Status: Up to Date</div>' +
+      '<div style="font-size:0.825rem;color:#334155">Filing fee for case <strong>' + (getMyCase().caseId || 'CASE-1787286146761') + '</strong> has been fully settled.</div>' +
+      '<div style="font-size:0.75rem;color:#64748b;margin-top:0.35rem">Telebirr Reference: ET-PAY-8839219 &bull; Amount: 250 ETB</div>' +
+    '</div>';
+  openLitigantModal();
+}
+window.openPaymentModal = openPaymentModal;
+
+function openLitigantEditProfileModal() {
+  const modalTitle = document.getElementById('litigant-modal-title');
+  const modalBody = document.getElementById('litigant-modal-body');
+  if (!modalTitle || !modalBody) return;
+
+  modalTitle.textContent = 'Litigant Account Information';
+  modalBody.innerHTML = 
+    '<div style="padding:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">' +
+      '<div style="margin-bottom:0.75rem"><label style="font-size:0.785rem;font-weight:700;color:#64748b;display:block">Full Name</label><input type="text" class="top-search-input" value="' + (currentLitigant.fullName || '') + '" disabled/></div>' +
+      '<div style="margin-bottom:0.75rem"><label style="font-size:0.785rem;font-weight:700;color:#64748b;display:block">Registered Phone</label><input type="text" class="top-search-input" value="' + (currentLitigant.phone || '') + '" disabled/></div>' +
+      '<div style="margin-bottom:0.75rem"><label style="font-size:0.785rem;font-weight:700;color:#64748b;display:block">Email</label><input type="text" class="top-search-input" value="' + (currentLitigant.email || '') + '" disabled/></div>' +
+    '</div>';
+  openLitigantModal();
+}
+window.openLitigantEditProfileModal = openLitigantEditProfileModal;
+
+function openChangePinModal() {
+  const modalTitle = document.getElementById('litigant-modal-title');
+  const modalBody = document.getElementById('litigant-modal-body');
+  if (!modalTitle || !modalBody) return;
+
+  modalTitle.textContent = 'Change Access PIN';
+  modalBody.innerHTML = 
+    '<div style="padding:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">' +
+      '<div style="margin-bottom:0.75rem"><label style="font-size:0.785rem;font-weight:700;display:block">Current PIN</label><input type="password" class="top-search-input" placeholder="Enter current PIN" required/></div>' +
+      '<div style="margin-bottom:0.75rem"><label style="font-size:0.785rem;font-weight:700;display:block">New 6-Digit PIN</label><input type="password" class="top-search-input" placeholder="Enter new 6-digit PIN" required/></div>' +
+      '<button class="btn btn-primary" style="background:var(--fsc-navy-main);color:#fff;border:none;padding:0.6rem 1.2rem;border-radius:6px;font-weight:700;cursor:pointer" onclick="alert(\'PIN successfully updated!\');closeLitigantModal();">Update PIN</button>' +
+    '</div>';
+  openLitigantModal();
+}
+window.openChangePinModal = openChangePinModal;
+
+function openLitigantHelpModal() {
+  const modalTitle = document.getElementById('litigant-modal-title');
+  const modalBody = document.getElementById('litigant-modal-body');
+  if (!modalTitle || !modalBody) return;
+
+  modalTitle.textContent = 'Federal Supreme Court Help & Assistance';
+  modalBody.innerHTML = 
+    '<div style="padding:1rem;line-height:1.6;font-size:0.85rem;color:#334155">' +
+      '<p style="margin-bottom:0.75rem">For technical assistance, hearing inquiries, or physical filing guidance, please contact the Registrar Registry Office:</p>' +
+      '<div><strong>Helpline:</strong> +251 11 551 7700</div>' +
+      '<div><strong>Email:</strong> info@fsc.gov.et</div>' +
+      '<div><strong>Address:</strong> Churchill Avenue, Sidist Kilo, Addis Ababa</div>' +
+    '</div>';
+  openLitigantModal();
+}
+window.openLitigantHelpModal = openLitigantHelpModal;
+
+// ── OTHER VIEWS (Case Details, Hearings, Documents, Summons, Messages) ──
+function renderCaseDetailsView() {
+  const container = getWorkspaceContainer();
+  if (!container) return;
+  const myCase = getMyCase();
+  const isDef = currentLitigant.role === 'defendant' || currentLitigant.side === 'defendant';
+
+  container.innerHTML = 
+    '<div class="litigant-greeting-row" style="margin-bottom:1.5rem">' +
+      '<h1 class="litigant-greeting-title" style="font-size:1.45rem;font-weight:800;color:var(--fsc-navy-main)">Docket Information &amp; Charges</h1>' +
+      '<p class="litigant-greeting-sub" style="font-size:0.85rem;color:#64748b;margin-top:0.25rem">Case Number: ' + (myCase.caseId || 'CASE-1787286146761') + ' · ' + (myCase.trackingCode || 'ET-FSC-837221') + '</p>' +
+    '</div>' +
+    '<div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.05)">' +
+      '<div style="font-size:1rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:0.75rem">Case Statement &amp; Allegations</div>' +
+      '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;font-size:0.85rem;line-height:1.6;color:#334155;margin-bottom:1.25rem">' +
+        (myCase.description || 'Full statement of the case on file with the Federal Supreme Court.') +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:0.6rem">' +
+        '<div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid #f1f5f9;font-size:0.825rem"><span style="color:#64748b">Applicable Law / Article:</span><span style="font-weight:700;color:#0369a1">' + (myCase.relevantLawArticle || 'Criminal Code Art. 675 - Fraud & Deception') + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid #f1f5f9;font-size:0.825rem"><span style="color:#64748b">Court Level:</span><span>' + (myCase.courtLevel || 'Federal Supreme Court') + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid #f1f5f9;font-size:0.825rem"><span style="color:#64748b">Presiding Judge:</span><span>' + (myCase.judgeName || 'Hon. Judge Solomon Desta') + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;padding:0.4rem 0;font-size:0.825rem"><span style="color:#64748b">Assigned Courtroom:</span><span>' + (myCase.courtroom || 'Courtroom 4 (Main Trial Room)') + '</span></div>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderHearingsScheduleView() {
+  const container = getWorkspaceContainer();
+  if (!container) return;
+  const myCase = getMyCase();
+
+  container.innerHTML = 
+    '<div class="litigant-greeting-row" style="margin-bottom:1.5rem">' +
+      '<h1 class="litigant-greeting-title" style="font-size:1.45rem;font-weight:800;color:var(--fsc-navy-main)">Hearings Schedule &amp; Court Summons</h1>' +
+      '<p class="litigant-greeting-sub" style="font-size:0.85rem;color:#64748b;margin-top:0.25rem">Mandatory appearance schedule before the Federal Supreme Court.</p>' +
+    '</div>' +
+    '<div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.05)">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;margin-bottom:1rem">' +
+        '<div>' +
+          '<div style="font-weight:800;color:#9a3412;font-size:1.05rem">Scheduled Trial Hearing</div>' +
+          '<div style="font-size:0.85rem;color:#78350f;margin-top:0.25rem">Date: <strong>' + (myCase.hearingDate || '2026-08-21') + '</strong> at <strong>' + (myCase.hearingTime || '09:30 AM') + '</strong></div>' +
+          '<div style="font-size:0.775rem;color:#9a3412;margin-top:0.25rem">Location: ' + (myCase.courtroom || 'Courtroom 4 (Main Trial Room)') + ' · ' + (myCase.courtLevel || 'Federal Supreme Court (Sidist Kilo)') + '</div>' +
+        '</div>' +
+        '<span style="background:#ea580c;color:#fff;font-size:0.75rem;font-weight:800;padding:0.25rem 0.65rem;border-radius:12px">SCHEDULED</span>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderDocumentsView() {
+  const container = getWorkspaceContainer();
+  if (!container) return;
+  const myCase = getMyCase();
+  const docs = myCase.documents || [];
+
+  const docRows = docs.length ? docs.map(d => 
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;border-bottom:1px solid #f1f5f9">' +
+      '<div style="display:flex;align-items:center;gap:0.75rem">' +
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+        '<div>' +
+          '<div style="font-size:0.85rem;font-weight:700;color:var(--fsc-navy-main)">' + d.name + '</div>' +
+          '<div style="font-size:0.725rem;color:#64748b">Uploaded by: ' + (d.uploadedBy || 'Litigant') + ' · ' + (d.size || '0.02 MB') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<button class="btn btn-outline" style="padding:0.35rem 0.75rem;font-size:0.75rem;border-radius:4px;border:1px solid #cbd5e1;cursor:pointer" onclick="alert(\'Downloading ' + d.name + '\')">Download</button>' +
+    '</div>'
+  ).join('') : '<div style="padding:1.5rem;color:#64748b;font-size:0.85rem;text-align:center">No exhibits submitted yet.</div>';
+
+  container.innerHTML = 
+    '<div class="litigant-greeting-row" style="margin-bottom:1.5rem">' +
+      '<h1 class="litigant-greeting-title" style="font-size:1.45rem;font-weight:800;color:var(--fsc-navy-main)">Evidence &amp; Submitted Documents</h1>' +
+      '<p class="litigant-greeting-sub" style="font-size:0.85rem;color:#64748b;margin-top:0.25rem">Manage and submit trial exhibits, written pleadings, and witness declarations.</p>' +
+    '</div>' +
+    '<div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.05)">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">' +
+        '<h3 style="font-size:1rem;font-weight:800;color:var(--fsc-navy-main)">Case File Repository</h3>' +
+        '<button class="btn btn-primary" style="background:var(--fsc-navy-main);color:#fff;border:none;padding:0.5rem 1rem;border-radius:6px;font-size:0.8rem;font-weight:700;cursor:pointer" onclick="document.getElementById(\'doc-file-input\').click()">+ Upload Exhibit</button>' +
+      '</div>' +
+      '<input type="file" id="doc-file-input" style="display:none" onchange="handleLitigantDocUpload(this)"/>' +
+      '<div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">' + docRows + '</div>' +
+    '</div>';
+}
+
+function handleLitigantDocUpload(input) {
+  if (input.files && input.files[0]) {
+    alert('✓ Exhibit "' + input.files[0].name + '" submitted to court registrar for review.');
+  }
+}
+window.handleLitigantDocUpload = handleLitigantDocUpload;
+
+function renderSummonsNoticeView() {
+  const container = getWorkspaceContainer();
+  if (!container) return;
+  const myCase = getMyCase();
+
+  container.innerHTML = 
+    '<div class="litigant-greeting-row" style="margin-bottom:1.5rem">' +
+      '<h1 class="litigant-greeting-title" style="font-size:1.45rem;font-weight:800;color:var(--fsc-navy-main)">Official Court Summons &amp; Notice</h1>' +
+      '<p class="litigant-greeting-sub" style="font-size:0.85rem;color:#64748b;margin-top:0.25rem">Sealed judicial notice issued by the Federal Supreme Court.</p>' +
+    '</div>' +
+    '<div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:2rem;box-shadow:0 1px 3px rgba(0,0,0,0.05);border-top:4px solid var(--fsc-gold-main)">' +
+      '<div style="text-align:center;padding:1rem 0 1.5rem;border-bottom:1px solid #e2e8f0">' +
+        '<div style="font-size:1.15rem;font-weight:800;color:var(--fsc-navy-main);text-transform:uppercase">FEDERAL SUPREME COURT OF ETHIOPIA</div>' +
+        '<div style="font-size:0.85rem;color:var(--fsc-gold-main);font-weight:700">CRIMINAL BENCH · SUMMONS TO APPEAR</div>' +
+        '<div style="font-size:0.775rem;color:#64748b;margin-top:0.25rem">Case ID: <strong>' + (myCase.caseId || 'CASE-1787286146761') + '</strong> · Tracking: <strong>' + (myCase.trackingCode || 'ET-FSC-837221') + '</strong></div>' +
+      '</div>' +
+      '<div style="padding:1.5rem 0;line-height:1.7;font-size:0.875rem;color:#334155">' +
+        'This is to officially notify the parties that oral hearing and examination of evidence for case <strong>' + (myCase.caseId || 'CASE-1787286146761') + '</strong> has been scheduled on <strong>' + (myCase.hearingDate || '2026-08-21') + ' at ' + (myCase.hearingTime || '09:30 AM') + '</strong> in <strong>' + (myCase.courtroom || 'Courtroom 4 (Main Trial Room)') + '</strong>.' +
+      '</div>' +
+      '<div style="display:flex;justify-content:flex-end">' +
+        '<button class="btn btn-outline" style="border:1.5px solid var(--fsc-navy-main);color:var(--fsc-navy-main);font-weight:700;padding:0.6rem 1.25rem;border-radius:6px;cursor:pointer" onclick="window.print()">🖨️ Print Summons</button>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderMessagesView() {
+  const container = getWorkspaceContainer();
+  if (!container) return;
+
+  container.innerHTML = 
+    '<div class="litigant-greeting-row" style="margin-bottom:1.5rem">' +
+      '<h1 class="litigant-greeting-title" style="font-size:1.45rem;font-weight:800;color:var(--fsc-navy-main)">Registrar Communications</h1>' +
+      '<p class="litigant-greeting-sub" style="font-size:0.85rem;color:#64748b;margin-top:0.25rem">Direct messages and inquiry submissions with the court registrar.</p>' +
+    '</div>' +
+    '<div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.05)">' +
+      '<div style="padding:1.25rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:1rem">' +
+        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.9rem;margin-bottom:0.35rem">Send Inquiry to Registrar Kalkidan Mengistu</div>' +
+        '<textarea id="msg-to-registrar" class="top-search-input" style="width:100%;height:80px;margin-bottom:0.75rem;padding:0.5rem" placeholder="Type your inquiry or motion regarding case hearings or evidence filings..."></textarea>' +
+        '<button class="btn btn-primary" style="background:var(--fsc-navy-main);color:#fff;border:none;padding:0.6rem 1.2rem;border-radius:6px;font-weight:700;font-size:0.825rem;cursor:pointer" onclick="alert(\'Inquiry dispatched to court registrar.\')">Send Message</button>' +
+      '</div>' +
+    '</div>';
+}
+
+// ── PROFILE DROPDOWN & LOGOUT ──
 function toggleLitigantProfileDropdown(e) {
-  if (e) e.stopPropagation();
+  e.stopPropagation();
   const menu = document.getElementById('litigant-profile-dropdown-menu');
   if (menu) menu.classList.toggle('show');
 }
+window.toggleLitigantProfileDropdown = toggleLitigantProfileDropdown;
 
 function handleLitigantGlobalClick(e) {
-  const menu = document.getElementById('litigant-profile-dropdown-menu');
   const trigger = document.getElementById('litigant-profile-pill-trigger');
-  if (menu && menu.classList.contains('show')) {
-    if (!menu.contains(e.target) && !trigger.contains(e.target)) {
-      menu.classList.remove('show');
-    }
+  const menu = document.getElementById('litigant-profile-dropdown-menu');
+  if (menu && !menu.contains(e.target) && trigger && !trigger.contains(e.target)) {
+    menu.classList.remove('show');
   }
 }
-
-function openLitigantEditProfileModal() {
-  const menu = document.getElementById('litigant-profile-dropdown-menu');
-  if (menu) menu.classList.remove('show');
-
-  document.getElementById('litigant-modal-title').textContent = 'Litigant Account Information';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<form onsubmit="handleLitigantEditProfileSubmit(event)">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Full Legal Name</label>' +
-        '<input type="text" id="edit-lit-fullname" class="top-search-input" style="border-radius:6px;width:100%" value="' + (currentLitigant.fullName || 'Abebe Kebede') + '" required/>' +
-      '</div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Verified Mobile Phone</label>' +
-          '<input type="text" id="edit-lit-phone" class="top-search-input" style="border-radius:6px;width:100%" value="' + (currentLitigant.phone || '+251 911 123 456') + '" required/>' +
-        '</div>' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Email Address</label>' +
-          '<input type="email" id="edit-lit-email" class="top-search-input" style="border-radius:6px;width:100%" value="' + (currentLitigant.email || 'abebe.kebede@email.com') + '" required/>' +
-        '</div>' +
-      '</div>' +
-      '<div style="display:flex;gap:0.5rem;margin-top:1rem">' +
-        '<button type="submit" class="btn btn-primary" style="flex:1;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Save Contact Info</button>' +
-        '<button type="button" class="btn btn-outline" style="padding:0.75rem 1rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeLitigantModal()">Cancel</button>' +
-      '</div>' +
-    '</form>';
-  openLitigantModal();
-}
-
-function handleLitigantEditProfileSubmit(e) {
-  e.preventDefault();
-  const fullName = document.getElementById('edit-lit-fullname').value.trim();
-  const phone = document.getElementById('edit-lit-phone').value.trim();
-  const email = document.getElementById('edit-lit-email').value.trim();
-
-  currentLitigant.fullName = fullName;
-  currentLitigant.phone = phone;
-  currentLitigant.email = email;
-
-  sessionStorage.setItem('court_user', JSON.stringify(currentLitigant));
-  updateLitigantHeaderUI();
-  alert('Account profile updated.');
-  closeLitigantModal();
-  renderLitigantCurrentView();
-}
-
-function openChangePinModal() {
-  const menu = document.getElementById('litigant-profile-dropdown-menu');
-  if (menu) menu.classList.remove('show');
-
-  document.getElementById('litigant-modal-title').textContent = 'Change Temporary Access PIN';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<form onsubmit="handleChangePinSubmit(event)">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Current Access PIN</label>' +
-        '<input type="password" id="curr-pin" class="top-search-input" style="border-radius:6px;width:100%" placeholder="••••" maxlength="4" required/>' +
-      '</div>' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">New 4-Digit PIN</label>' +
-        '<input type="password" id="new-pin" class="top-search-input" style="border-radius:6px;width:100%" placeholder="••••" maxlength="4" required/>' +
-      '</div>' +
-      '<button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Update Access PIN</button>' +
-    '</form>';
-  openLitigantModal();
-}
-
-function handleChangePinSubmit(e) {
-  e.preventDefault();
-  const newPin = document.getElementById('new-pin').value.trim();
-  currentLitigant.pin = newPin;
-  sessionStorage.setItem('court_user', JSON.stringify(currentLitigant));
-  alert('Access PIN updated successfully.');
-  closeLitigantModal();
-  renderLitigantCurrentView();
-}
-
-function togglePinVisibility() {
-  pinVisible = !pinVisible;
-  const pinEl = document.getElementById('account-pin-val');
-  if (pinEl) {
-    pinEl.textContent = pinVisible ? (currentLitigant.pin || '8821') : '••••';
-  }
-}
-
-function copyCaseId(id) {
-  navigator.clipboard.writeText(id).then(() => {
-    alert('Case ID ' + id + ' copied to clipboard!');
-  }).catch(() => {
-    alert('Case ID: ' + id);
-  });
-}
+window.handleLitigantGlobalClick = handleLitigantGlobalClick;
 
 function logoutLitigant() {
-  const menu = document.getElementById('litigant-profile-dropdown-menu');
-  if (menu) menu.classList.remove('show');
   sessionStorage.removeItem('court_user');
+  sessionStorage.removeItem('court_token');
   window.location.href = '/';
 }
-
-async function loadLitigantData() {
-  try {
-    const res = await fetch(API + '/cases').catch(() => null);
-    if (res && res.ok) allCases = await res.json();
-  } catch (err) {}
-
-  renderLitigantCurrentView();
-}
-
-function switchLitigantView(viewName) {
-  currentLitigantView = viewName;
-  document.querySelectorAll('.header-nav-tab').forEach(tab => tab.classList.remove('active'));
-  const activeTab = Array.from(document.querySelectorAll('.header-nav-tab')).find(t => 
-    t.textContent.toLowerCase().includes(viewName.replace('_', ' '))
-  );
-  if (activeTab) activeTab.classList.add('active');
-
-  document.querySelectorAll('.litigant-nav-btn').forEach(btn => btn.classList.remove('active'));
-  const activeBtn = Array.from(document.querySelectorAll('.litigant-nav-btn')).find(b => 
-    b.textContent.toLowerCase().includes(viewName.replace('_', ' '))
-  );
-  if (activeBtn) activeBtn.classList.add('active');
-
-  renderLitigantCurrentView();
-}
-
-function renderLitigantCurrentView() {
-  const container = document.getElementById('dynamic-litigant-workspace');
-  if (!container) return;
-
-  if (currentLitigantView === 'dashboard') {
-    renderLitigantDashboard(container);
-  } else if (currentLitigantView === 'my_cases') {
-    renderMyCasesView(container);
-  } else if (currentLitigantView === 'documents') {
-    renderDocumentsView(container);
-  } else if (currentLitigantView === 'hearings') {
-    renderHearingsView(container);
-  } else if (currentLitigantView === 'messages') {
-    renderMessagesView(container);
-  } else if (currentLitigantView === 'notifications') {
-    renderNotificationsView(container);
-  } else {
-    renderLitigantDashboard(container);
-  }
-}
-
-function renderLitigantDashboard(container) {
-  container.innerHTML = 
-    '<div class="litigant-greeting-row">' +
-      '<h1 class="litigant-greeting-title">Welcome, ' + (currentLitigant.fullName || 'Abebe Kebede') + '</h1>' +
-      '<div class="litigant-greeting-sub">Here\'s an overview of your case and important updates.</div>' +
-    '</div>' +
-
-    '<div class="case-progress-card">' +
-      '<div class="case-progress-top-row">' +
-        '<div>' +
-          '<div class="case-id-header-label">Case ID</div>' +
-          '<div class="case-id-title-val">' +
-            '<span>CASE-178721596417</span>' +
-            '<button style="background:transparent;border:none;cursor:pointer;color:#64748b" title="Copy Case ID" onclick="copyCaseId(\'CASE-178721596417\')">' +
-              '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>' +
-            '</button>' +
-            '<span class="status-pill" style="background:#e0f2fe;color:#0284c7;font-size:0.65rem;margin-left:0.35rem">ACTIVE</span>' +
-          '</div>' +
-          '<div class="case-id-header-label" style="margin-top:0.4rem">Case Title</div>' +
-          '<div class="case-title-line">Awash International Bank vs. Blue Nile Holdings</div>' +
-        '</div>' +
-
-        '<div>' +
-          '<div class="case-id-header-label">Case Progress</div>' +
-          '<div class="case-stepper-6">' +
-            '<div class="step-item-wrap">' +
-              '<div class="step-circle-icon completed">' + ICONS.checkCircle + '</div>' +
-              '<div class="step-label-title">Filed</div>' +
-              '<div class="step-label-sub">May 17, 2026</div>' +
-            '</div>' +
-
-            '<div class="step-item-wrap">' +
-              '<div class="step-circle-icon completed">' + ICONS.checkCircle + '</div>' +
-              '<div class="step-label-title">Screening</div>' +
-              '<div class="step-label-sub">May 18, 2026</div>' +
-            '</div>' +
-
-            '<div class="step-item-wrap">' +
-              '<div class="step-circle-icon completed">' + ICONS.checkCircle + '</div>' +
-              '<div class="step-label-title">Assigned</div>' +
-              '<div class="step-label-sub">May 19, 2026</div>' +
-            '</div>' +
-
-            '<div class="step-item-wrap">' +
-              '<div class="step-circle-icon active">4</div>' +
-              '<div class="step-label-title" style="color:#2563eb">Evidence</div>' +
-              '<div class="step-label-sub" style="color:#2563eb;font-weight:700">Current Stage</div>' +
-            '</div>' +
-
-            '<div class="step-item-wrap">' +
-              '<div class="step-circle-icon">5</div>' +
-              '<div class="step-label-title">Hearing</div>' +
-              '<div class="step-label-sub">Upcoming</div>' +
-            '</div>' +
-
-            '<div class="step-item-wrap">' +
-              '<div class="step-circle-icon">6</div>' +
-              '<div class="step-label-title">Verdict</div>' +
-              '<div class="step-label-sub">Pending</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="case-meta-bottom-row">' +
-        '<div class="meta-col-item">' +
-          '<span class="meta-col-label">Case Type</span>' +
-          '<span class="meta-col-val">Civil / Corporate</span>' +
-        '</div>' +
-        '<div class="meta-col-item">' +
-          '<span class="meta-col-label">Jurisdiction</span>' +
-          '<span class="meta-col-val">Federal Supreme Court</span>' +
-        '</div>' +
-        '<div class="meta-col-item">' +
-          '<span class="meta-col-label">Assigned Judge</span>' +
-          '<span class="meta-col-val">Hon. Judge Bekele Seyoum</span>' +
-        '</div>' +
-        '<div class="meta-col-item">' +
-          '<span class="meta-col-label">Courtroom</span>' +
-          '<span class="meta-col-val">Courtroom 4</span>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-
-    '<div class="litigant-2col-layout">' +
-
-      '<div>' +
-
-        '<div class="litigant-panel-card">' +
-          '<div class="litigant-panel-header">' +
-            '<div class="litigant-panel-title">Case At a Glance</div>' +
-          '</div>' +
-
-          '<div class="glance-2x2-grid">' +
-            '<div class="glance-box-item">' +
-              '<div>' +
-                '<div class="glance-box-label">' + ICONS.calendar + ' Next Hearing</div>' +
-                '<div class="glance-highlight-title">May 27, 2026 (Tuesday)</div>' +
-                '<div style="font-weight:700;color:var(--fsc-navy-main);font-size:0.8rem">09:30 AM</div>' +
-                '<div class="glance-subtext">&bull; Preliminary Hearing<br/>Courtroom 4, Federal Supreme Court</div>' +
-              '</div>' +
-              '<button class="btn-glance-action" onclick="openHearingDetailsModal()">View Hearing Details</button>' +
-            '</div>' +
-
-            '<div class="glance-box-item">' +
-              '<div>' +
-                '<div class="glance-box-label">' + ICONS.scales + ' Your Advocate</div>' +
-                '<div style="display:flex;align-items:center;justify-content:space-between">' +
-                  '<span class="glance-highlight-title">Kebede Haile Mariam</span>' +
-                  '<span class="status-pill" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">ACTIVE</span>' +
-                '</div>' +
-                '<div style="font-size:0.75rem;color:#64748b;margin:0.2rem 0">License No: LAW-1001</div>' +
-                '<div class="glance-subtext">Criminal Law / Federal Supreme Court</div>' +
-              '</div>' +
-              '<button class="btn-glance-action" onclick="openAdvocateProfileModal()">View Advocate Profile</button>' +
-            '</div>' +
-
-            '<div class="glance-box-item">' +
-              '<div>' +
-                '<div class="glance-box-label">' + ICONS.info + ' Case Status</div>' +
-                '<div class="glance-subtext" style="font-size:0.785rem;color:var(--fsc-navy-main);margin-top:0.2rem">' +
-                  'Your case is at the Evidence stage. Both parties are exchanging evidence and preparing for hearing.' +
-                '</div>' +
-              '</div>' +
-              '<a class="litigant-panel-link" style="font-size:0.75rem;margin-top:0.4rem" onclick="openCaseTimelineModal()">View Case Timeline &rarr;</a>' +
-            '</div>' +
-
-            '<div class="glance-box-item">' +
-              '<div>' +
-                '<div class="glance-box-label">' + ICONS.fileText + ' Recent Update</div>' +
-                '<div style="font-size:0.785rem;font-weight:700;color:var(--fsc-navy-main);margin-top:0.2rem">' +
-                  'Evidence_02.pdf uploaded by your advocate.' +
-                '</div>' +
-                '<div style="font-size:0.72rem;color:#64748b;margin-top:0.2rem">May 24, 2026 - 10:32 AM</div>' +
-              '</div>' +
-              '<a class="litigant-panel-link" style="font-size:0.75rem;margin-top:0.4rem" onclick="switchLitigantView(\'documents\')">View All Updates &rarr;</a>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="split-2col-subcards">' +
-
-          '<div class="litigant-panel-card" style="margin-bottom:0">' +
-            '<div class="litigant-panel-header">' +
-              '<div class="litigant-panel-title">Evidence Overview</div>' +
-              '<a class="litigant-panel-link" onclick="switchLitigantView(\'documents\')">View all documents &rarr;</a>' +
-            '</div>' +
-
-            '<div>' +
-              '<div class="evidence-stage-box">' +
-                '<div class="stage-box-header">' +
-                  '<span class="stage-title-text"><span style="color:#16a34a">&#10003;</span> Stage 1: Initial Filing (You)</span>' +
-                '</div>' +
-                '<div class="doc-row-item"><span class="doc-row-left" onclick="alert(\'Opening Complaint.pdf\')">Complaint.pdf</span><span class="doc-row-meta">May 17, 2026 &bull; 2.4 MB</span></div>' +
-                '<div class="doc-row-item"><span class="doc-row-left" onclick="alert(\'Opening Contract.pdf\')">Contract.pdf</span><span class="doc-row-meta">May 17, 2026 &bull; 5.1 MB</span></div>' +
-                '<div class="doc-row-item"><span class="doc-row-left" onclick="alert(\'Opening Witness_Statement.pdf\')">Witness_Statement.pdf</span><span class="doc-row-meta">May 17, 2026 &bull; 1.2 MB</span></div>' +
-                '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.35rem;font-size:0.7rem">' +
-                  '<span style="color:#64748b">3 Documents</span>' +
-                  '<span class="status-pill" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">COMPLETE</span>' +
-                '</div>' +
-              '</div>' +
-
-              '<div class="evidence-stage-box">' +
-                '<div class="stage-box-header">' +
-                  '<span class="stage-title-text"><span style="color:#2563eb">&#9679;</span> Stage 2: Trial Exchange</span>' +
-                '</div>' +
-                '<div class="doc-row-item"><span class="doc-row-left" onclick="alert(\'Opening Defense_Response.pdf\')">Defense_Response.pdf</span><span class="doc-row-meta">May 21, 2026 &bull; 3.2 MB</span></div>' +
-                '<div class="doc-row-item"><span class="doc-row-left" onclick="alert(\'Opening Expert_Report.pdf\')">Expert_Report.pdf</span><span class="doc-row-meta">May 22, 2026 &bull; 4.8 MB</span></div>' +
-                '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.35rem;font-size:0.7rem">' +
-                  '<span style="color:#64748b">2 Documents</span>' +
-                  '<span class="status-pill" style="background:#e0f2fe;color:#0284c7;font-size:0.65rem">IN PROGRESS</span>' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="litigant-panel-card" style="margin-bottom:0">' +
-            '<div class="litigant-panel-header">' +
-              '<div class="litigant-panel-title">Messages</div>' +
-              '<a class="litigant-panel-link" onclick="switchLitigantView(\'messages\')">View all messages &rarr;</a>' +
-            '</div>' +
-
-            '<div>' +
-              '<div class="msg-feed-item">' +
-                '<div class="msg-feed-avatar">CC</div>' +
-                '<div style="flex:1">' +
-                  '<div class="msg-feed-title"><span>Court Clerk</span><span class="msg-feed-time">May 24, 10:32 AM</span></div>' +
-                  '<div class="msg-feed-text">Please note that new evidence has been submitted by the defendant...</div>' +
-                '</div>' +
-                '<span class="badge-blue-pill" style="margin-left:0.35rem">2</span>' +
-              '</div>' +
-
-              '<div class="msg-feed-item">' +
-                '<div class="msg-feed-avatar">YA</div>' +
-                '<div style="flex:1">' +
-                  '<div class="msg-feed-title"><span>Your Advocate</span><span class="msg-feed-time">May 23, 04:15 PM</span></div>' +
-                  '<div class="msg-feed-text">I have reviewed the new documents. We will prepare our response...</div>' +
-                '</div>' +
-              '</div>' +
-
-              '<div class="msg-feed-item">' +
-                '<div class="msg-feed-avatar">CN</div>' +
-                '<div style="flex:1">' +
-                  '<div class="msg-feed-title"><span>Court Notification</span><span class="msg-feed-time">May 19, 11:20 AM</span></div>' +
-                  '<div class="msg-feed-text">Your case has been assigned to Hon. Judge Bekele Seyoum.</div>' +
-                '</div>' +
-              '</div>' +
-
-              '<button class="btn-compose-full" onclick="openComposeMessageModal()">Compose Message</button>' +
-            '</div>' +
-          '</div>' +
-
-        '</div>' +
-
-      '</div>' +
-
-      '<div>' +
-
-        '<div class="litigant-panel-card">' +
-          '<div class="litigant-panel-header">' +
-            '<div class="litigant-panel-title">' + ICONS.user + ' My Account</div>' +
-          '</div>' +
-
-          '<div>' +
-            '<div class="account-meta-row">' +
-              '<span class="account-meta-label">Account Type</span>' +
-              '<span class="account-meta-val" style="color:#2563eb">Temporary (Plaintiff)</span>' +
-            '</div>' +
-
-            '<div class="account-meta-row">' +
-              '<span class="account-meta-label">Phone Number</span>' +
-              '<div class="account-meta-val">' +
-                '<span>+251 911 123 456</span>' +
-                '<span class="status-pill" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">Verified</span>' +
-              '</div>' +
-            '</div>' +
-
-            '<div class="account-meta-row">' +
-              '<span class="account-meta-label">Email</span>' +
-              '<div class="account-meta-val">' +
-                '<span style="font-size:0.75rem">abebe.kebede@email.com</span>' +
-                '<span class="status-pill" style="background:#dcfce7;color:#16a34a;font-size:0.65rem">Verified</span>' +
-              '</div>' +
-            '</div>' +
-
-            '<div class="account-meta-row">' +
-              '<span class="account-meta-label">Access PIN</span>' +
-              '<div class="account-meta-val">' +
-                '<span id="account-pin-val">••••</span>' +
-                '<button style="background:transparent;border:none;cursor:pointer;color:#64748b;display:flex;align-items:center" title="Toggle PIN" onclick="togglePinVisibility()">' +
-                  '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>' +
-                '</button>' +
-              '</div>' +
-            '</div>' +
-
-            '<div class="account-meta-row">' +
-              '<span class="account-meta-label">Account Expires</span>' +
-              '<span class="account-meta-val" style="color:#ea580c;font-size:0.75rem">Jun 24, 2026 (29 days left)</span>' +
-            '</div>' +
-
-            '<button class="btn-extend-access" onclick="openExtendAccessModal()">Extend Access</button>' +
-
-            '<div style="text-align:center;margin-top:0.65rem">' +
-              '<a class="litigant-panel-link" onclick="openLitigantEditProfileModal()">Account Settings &rarr;</a>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="litigant-panel-card">' +
-          '<div class="litigant-panel-header">' +
-            '<div class="litigant-panel-title">Important Notifications</div>' +
-            '<a class="litigant-panel-link" onclick="switchLitigantView(\'notifications\')">View all</a>' +
-          '</div>' +
-
-          '<div>' +
-            '<div class="notif-item-wrap">' +
-              '<div class="notif-icon-circle" style="background:#dcfce7;color:#16a34a">' + ICONS.fileText + '</div>' +
-              '<div>' +
-                '<div class="notif-text-title">New document uploaded in your case</div>' +
-                '<div class="notif-text-sub">Evidence_02.pdf was uploaded.</div>' +
-                '<div class="notif-text-time">2 hours ago</div>' +
-              '</div>' +
-            '</div>' +
-
-            '<div class="notif-item-wrap">' +
-              '<div class="notif-icon-circle" style="background:#e0f2fe;color:#0284c7">' + ICONS.calendar + '</div>' +
-              '<div>' +
-                '<div class="notif-text-title">Hearing scheduled</div>' +
-                '<div class="notif-text-sub">May 27, 2026 at 09:30 AM in Courtroom 4.</div>' +
-                '<div class="notif-text-time">1 day ago</div>' +
-              '</div>' +
-            '</div>' +
-
-            '<div class="notif-item-wrap">' +
-              '<div class="notif-icon-circle" style="background:#ffedd5;color:#ea580c">' + ICONS.user + '</div>' +
-              '<div>' +
-                '<div class="notif-text-title">Reminder</div>' +
-                '<div class="notif-text-sub">Ensure all evidence is submitted before hearing.</div>' +
-                '<div class="notif-text-time">2 days ago</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="litigant-panel-card">' +
-          '<div class="litigant-panel-header">' +
-            '<div class="litigant-panel-title">Quick Actions</div>' +
-          '</div>' +
-
-          '<div class="quick-actions-3x2">' +
-            '<div class="action-tile-btn" onclick="openUploadEvidenceModal()">' +
-              '<div style="color:#475569">' + ICONS.upload + '</div>' +
-              '<span>Upload Document</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openCaseDetailsModal()">' +
-              '<div style="color:#475569">' + ICONS.folder + '</div>' +
-              '<span>View Case Details</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openPostponementModal()">' +
-              '<div style="color:#475569">' + ICONS.clock + '</div>' +
-              '<span>Request Postponement</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openPaymentModal()">' +
-              '<div style="color:#475569">' + ICONS.creditCard + '</div>' +
-              '<span>Make Payment</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openAdvocateProfileModal()">' +
-              '<div style="color:#475569">' + ICONS.user + '</div>' +
-              '<span>Contact Advocate</span>' +
-            '</div>' +
-
-            '<div class="action-tile-btn" onclick="openAppealModal()">' +
-              '<div style="color:#475569">' + ICONS.scales + '</div>' +
-              '<span>File an Appeal</span>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="security-notice-card">' +
-          '<div style="color:#2563eb">' + ICONS.shield + '</div>' +
-          '<div>' +
-            '<div style="font-size:0.785rem;font-weight:700;color:var(--fsc-navy-main)">Security Notice</div>' +
-            '<div style="font-size:0.725rem;color:#475569;margin-top:2px;line-height:1.35">' +
-              'Do not share your PIN with anyone. The court will never ask for your PIN via phone or email.' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
-      '</div>' +
-
-    '</div>';
-}
-
-/* Subviews */
-function renderMyCasesView(container) {
-  renderLitigantDashboard(container);
-}
-
-function renderDocumentsView(container) {
-  container.innerHTML = 
-    '<div class="litigant-greeting-row">' +
-      '<h1 class="litigant-greeting-title">Documents &amp; Evidentiary Exhibits</h1>' +
-      '<div class="litigant-greeting-sub">Verified legal filings and evidentiary annexes for CASE-178721596417.</div>' +
-    '</div>' +
-    '<div class="litigant-panel-card">' +
-      '<table class="fsc-table">' +
-        '<thead><tr><th>File Name</th><th>Stage</th><th>Submitted On</th><th>File Size</th><th>Action</th></tr></thead>' +
-        '<tbody>' +
-          '<tr><td><strong>Complaint.pdf</strong></td><td><span class="status-pill" style="background:#dcfce7;color:#16a34a">Initial Filing</span></td><td>May 17, 2026</td><td>2.4 MB</td><td><button class="btn-glance-action" onclick="alert(\'Viewing Complaint.pdf\')">Download</button></td></tr>' +
-          '<tr><td><strong>Contract.pdf</strong></td><td><span class="status-pill" style="background:#dcfce7;color:#16a34a">Initial Filing</span></td><td>May 17, 2026</td><td>5.1 MB</td><td><button class="btn-glance-action" onclick="alert(\'Viewing Contract.pdf\')">Download</button></td></tr>' +
-          '<tr><td><strong>Witness_Statement.pdf</strong></td><td><span class="status-pill" style="background:#dcfce7;color:#16a34a">Initial Filing</span></td><td>May 17, 2026</td><td>1.2 MB</td><td><button class="btn-glance-action" onclick="alert(\'Viewing Witness_Statement.pdf\')">Download</button></td></tr>' +
-          '<tr><td><strong>Defense_Response.pdf</strong></td><td><span class="status-pill" style="background:#e0f2fe;color:#0284c7">Trial Exchange</span></td><td>May 21, 2026</td><td>3.2 MB</td><td><button class="btn-glance-action" onclick="alert(\'Viewing Defense_Response.pdf\')">Download</button></td></tr>' +
-          '<tr><td><strong>Expert_Report.pdf</strong></td><td><span class="status-pill" style="background:#e0f2fe;color:#0284c7">Trial Exchange</span></td><td>May 22, 2026</td><td>4.8 MB</td><td><button class="btn-glance-action" onclick="alert(\'Viewing Expert_Report.pdf\')">Download</button></td></tr>' +
-        '</tbody>' +
-      '</table>' +
-    '</div>';
-}
-
-function renderHearingsView(container) {
-  renderLitigantDashboard(container);
-}
-
-function renderMessagesView(container) {
-  renderLitigantDashboard(container);
-}
-
-function renderNotificationsView(container) {
-  renderLitigantDashboard(container);
-}
-
-/* Modals */
-function openHearingDetailsModal() {
-  document.getElementById('litigant-modal-title').textContent = 'Preliminary Hearing Notice';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<div style="line-height:1.7">' +
-      '<h3 style="font-size:1.05rem;font-weight:700;color:var(--fsc-navy-main);margin-bottom:0.5rem">Court Hearing Session</h3>' +
-      '<div><strong>Date &amp; Time:</strong> May 27, 2026 (Tuesday) at 09:30 AM</div>' +
-      '<div><strong>Bench / Chamber:</strong> Courtroom 4, Federal Supreme Court (Sidist Kilo)</div>' +
-      '<div><strong>Presiding Judge:</strong> Hon. Judge Bekele Seyoum</div>' +
-      '<div><strong>Purpose:</strong> Evidence Examination &amp; Witness Verification</div>' +
-      '<div style="margin-top:1rem">' +
-        '<button class="btn btn-primary" style="width:100%;padding:0.65rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer" onclick="closeLitigantModal()">Close</button>' +
-      '</div>' +
-    '</div>';
-  openLitigantModal();
-}
-
-function openAdvocateProfileModal() {
-  document.getElementById('litigant-modal-title').textContent = 'Your Retained Legal Counsel';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<div style="line-height:1.7">' +
-      '<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">' +
-        '<div style="width:40px;height:40px;border-radius:50%;background:#0b1a30;color:#dfb15b;display:flex;align-items:center;justify-content:center;font-weight:800">KH</div>' +
-        '<div>' +
-          '<h3 style="font-size:1.05rem;font-weight:800;color:var(--fsc-navy-main)">Kebede Haile Mariam</h3>' +
-          '<div style="font-size:0.75rem;color:#64748b">MoJ License: LAW-1001 (Federal Supreme Court)</div>' +
-        '</div>' +
-      '</div>' +
-      '<div><strong>Specialization:</strong> Criminal, Commercial &amp; Corporate Litigation</div>' +
-      '<div><strong>Contact Direct:</strong> +251 91 122 3344</div>' +
-      '<div><strong>Chamber:</strong> Addis Ababa Law Chambers, Churchill Rd</div>' +
-      '<div style="margin-top:1rem;display:flex;gap:0.5rem">' +
-        '<button class="btn btn-primary" style="flex:1;padding:0.65rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer" onclick="openComposeMessageModal()">Send Message to Advocate</button>' +
-        '<button class="btn btn-outline" style="padding:0.65rem 1rem;cursor:pointer" onclick="closeLitigantModal()">Close</button>' +
-      '</div>' +
-    '</div>';
-  openLitigantModal();
-}
-
-function openCaseTimelineModal() {
-  document.getElementById('litigant-modal-title').textContent = 'Case Timeline & Docket History';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<div style="line-height:1.8">' +
-      '<div><strong>May 17, 2026:</strong> Initial Complaint &amp; Statement of Claim filed by Plaintiff.</div>' +
-      '<div><strong>May 18, 2026:</strong> Filing screened and accepted by Screening Officer Tesfaye.</div>' +
-      '<div><strong>May 19, 2026:</strong> Assigned to Hon. Judge Bekele Seyoum (Courtroom 4).</div>' +
-      '<div><strong>May 21, 2026:</strong> Statement of Defense submitted by Defendant.</div>' +
-      '<div><strong>May 24, 2026:</strong> Additional Evidence Exhibit 02 uploaded by Advocate.</div>' +
-      '<div><strong>May 27, 2026:</strong> Scheduled Preliminary Evidence Hearing.</div>' +
-      '<button class="btn btn-outline" style="width:100%;margin-top:1rem;padding:0.6rem;cursor:pointer" onclick="closeLitigantModal()">Close Timeline</button>' +
-    '</div>';
-  openLitigantModal();
-}
-
-function openComposeMessageModal() {
-  document.getElementById('litigant-modal-title').textContent = 'Send Secure Message';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<form onsubmit="handleSendMessageSubmit(event)">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Recipient</label>' +
-        '<select class="top-search-input" style="border-radius:6px;width:100%">' +
-          '<option>Advocate Kebede Haile Mariam</option>' +
-          '<option>Court Registry Clerk</option>' +
-        '</select>' +
-      '</div>' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Message</label>' +
-        '<textarea class="top-search-input" style="border-radius:6px;width:100%;height:80px;padding:0.5rem" required placeholder="Type your message regarding CASE-178721596417..."></textarea>' +
-      '</div>' +
-      '<button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Send Message</button>' +
-    '</form>';
-  openLitigantModal();
-}
-
-function handleSendMessageSubmit(e) {
-  e.preventDefault();
-  alert('Secure message dispatched.');
-  closeLitigantModal();
-}
-
-function openExtendAccessModal() {
-  document.getElementById('litigant-modal-title').textContent = 'Request Access Extension';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<div style="line-height:1.7">' +
-      '<p>Your current access expires on <strong>June 24, 2026</strong>. Request a 30-day extension until the next judicial stage concludes:</p>' +
-      '<button class="btn btn-primary" style="width:100%;margin-top:1rem;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer" onclick="alert(\'Access extended by 30 days.\'); closeLitigantModal();">Grant 30-Day Extension</button>' +
-    '</div>';
-  openLitigantModal();
-}
-
-function openUploadEvidenceModal() {
-  document.getElementById('litigant-modal-title').textContent = 'Upload Evidentiary Document';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<form onsubmit="handleUploadEvidenceSubmit(event)">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Document Description</label>' +
-        '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" placeholder="e.g. Bank Statement receipt.pdf" required/>' +
-      '</div>' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Attach File (PDF, max 10MB)</label>' +
-        '<input type="file" class="top-search-input" style="border-radius:6px;width:100%;padding:0.35rem" required/>' +
-      '</div>' +
-      '<button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Upload &amp; Submit to Court</button>' +
-    '</form>';
-  openLitigantModal();
-}
-
-function handleUploadEvidenceSubmit(e) {
-  e.preventDefault();
-  alert('Document submitted to registry.');
-  closeLitigantModal();
-}
-
-function openCaseDetailsModal() {
-  openHearingDetailsModal();
-}
-
-function openPostponementModal() {
-  document.getElementById('litigant-modal-title').textContent = 'Petition for Hearing Postponement';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<form onsubmit="handlePostponementSubmit(event)">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Reason for Adjournment Request</label>' +
-        '<textarea class="top-search-input" style="border-radius:6px;width:100%;height:80px;padding:0.5rem" required placeholder="Specify medical emergency, counsel engagement, or settlement discussions..."></textarea>' +
-      '</div>' +
-      '<button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Submit Postponement Petition</button>' +
-    '</form>';
-  openLitigantModal();
-}
-
-function handlePostponementSubmit(e) {
-  e.preventDefault();
-  alert('Postponement petition transmitted to Presiding Judge.');
-  closeLitigantModal();
-}
-
-function openPaymentModal() {
-  document.getElementById('litigant-modal-title').textContent = 'Court Statutory Fee Payment';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<div style="line-height:1.7">' +
-      '<div style="padding:1rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:1rem">' +
-        '<div style="font-size:0.75rem;color:#64748b">Outstanding Statutory Court Fee</div>' +
-        '<div style="font-size:1.35rem;font-weight:800;color:var(--fsc-navy-main)">250.00 ETB</div>' +
-      '</div>' +
-      '<button class="btn btn-primary" style="width:100%;padding:0.75rem;background:#16a34a;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer" onclick="alert(\'Redirecting to Telebirr Payment Gateway...\'); closeLitigantModal();">Pay via Telebirr</button>' +
-    '</div>';
-  openLitigantModal();
-}
-
-function openAppealModal() {
-  document.getElementById('litigant-modal-title').textContent = 'File Cassation / Appellate Petition';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<div style="line-height:1.7">' +
-      '<p>Petitions to the Federal Supreme Court Cassation Division must cite fundamental errors of law under Proclamation 1234/2021.</p>' +
-      '<button class="btn btn-primary" style="width:100%;margin-top:1rem;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer" onclick="alert(\'Opening Cassation filing studio...\'); closeLitigantModal();">Proceed with Appellate Filing</button>' +
-    '</div>';
-  openLitigantModal();
-}
-
-function openLitigantHelpModal() {
-  document.getElementById('litigant-modal-title').textContent = 'Court Assistance &amp; Help Desk';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<div style="line-height:1.7">' +
-      '<div><strong>Supreme Court Helpdesk:</strong> +251 11 551 7700</div>' +
-      '<div><strong>Email Support:</strong> support@fsc.gov.et</div>' +
-      '<div><strong>Working Hours:</strong> Monday – Friday, 8:30 AM – 5:30 PM</div>' +
-      '<button class="btn btn-outline" style="width:100%;margin-top:1rem;padding:0.6rem;cursor:pointer" onclick="closeLitigantModal()">Close</button>' +
-    '</div>';
-  openLitigantModal();
-}
-
-function openLitigantModal() {
-  const modal = document.getElementById('universal-litigant-modal');
-  if (modal) modal.style.display = 'flex';
-}
-
-function closeLitigantModal() {
-  const modal = document.getElementById('universal-litigant-modal');
-  if (modal) modal.style.display = 'none';
-}
-
-
-// ── Defendant Representation Selector & Lawyer Appointment Modal (Section 4 & 3) ──
-function openChooseRepresentationModal(caseId) {
-  document.getElementById('litigant-modal-title').textContent = 'Choose Legal Representation Option';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<div style="margin-bottom:1rem;color:#475569;font-size:0.8rem">Select how you wish to be represented in this court proceeding:</div>' +
-    '<div style="display:grid;gap:0.75rem;margin-bottom:1.25rem">' +
-      '<div style="padding:1rem;border:1.5px solid #0284c7;border-radius:8px;background:#f0f9ff;cursor:pointer" onclick="handleSelectRepType(\'' + caseId + '\', \'self\')">' +
-        '<div style="font-weight:700;color:#0369a1">Option 1: Self-Representation</div>' +
-        '<div style="font-size:0.75rem;color:#0284c7;margin-top:2px">Manage your own defense, submit evidence, and receive direct court summons.</div>' +
-      '</div>' +
-
-      '<div style="padding:1rem;border:1.5px solid #cbd5e1;border-radius:8px;background:#ffffff;cursor:pointer" onclick="openAppointLawyerInputModal(\'' + caseId + '\')">' +
-        '<div style="font-weight:700;color:var(--fsc-navy-main)">Option 2: Appoint a Private Lawyer</div>' +
-        '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">Enter a licensed advocate\'s Ministry of Justice license number (e.g. LAW-1001).</div>' +
-      '</div>' +
-
-      '<div style="padding:1rem;border:1.5px solid #16a34a;border-radius:8px;background:#f0fdf4;cursor:pointer" onclick="handleSelectRepType(\'' + caseId + '\', \'government_lawyer\')">' +
-        '<div style="font-weight:700;color:#15803d">Option 3: Request Government-Appointed Public Defender</div>' +
-        '<div style="font-size:0.75rem;color:#16a34a;margin-top:2px">The court will auto-assign an available public defense counsel with the lightest caseload.</div>' +
-      '</div>' +
-    '</div>' +
-    '<button class="btn btn-outline" style="width:100%;padding:0.6rem" onclick="closeLitigantModal()">Cancel</button>';
-  openLitigantModal();
-}
-
-async function handleSelectRepType(caseId, choiceType) {
-  try {
-    const res = await fetch(API + '/cases/defendant-representation', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ caseId, choiceType, defendantName: currentLitigant.fullName || 'Defendant' })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert('Representation option confirmed: ' + choiceType.replace('_', ' ').toUpperCase());
-      closeLitigantModal();
-      await loadLitigantData();
-    }
-  } catch (e) {
-    alert('Error selecting representation: ' + e.message);
-  }
-}
-
-function openAppointLawyerInputModal(caseId) {
-  document.getElementById('litigant-modal-title').textContent = 'Appoint Licensed Advocate';
-  document.getElementById('litigant-modal-body').innerHTML = 
-    '<form onsubmit="handleSendLawyerRequest(event, \'' + caseId + '\')">' +
-      '<div style="margin-bottom:1rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Advocate License Number (MoJ)</label>' +
-        '<input type="text" id="app-lawyer-license" class="top-search-input" style="width:100%" placeholder="e.g. LAW-1001" required/>' +
-      '</div>' +
-      '<div style="display:flex;gap:0.5rem">' +
-        '<button type="submit" class="btn btn-primary" style="flex:1;background:var(--fsc-navy-main);color:#fff;border:none;padding:0.65rem;border-radius:6px;font-weight:700">Send Appointment Request</button>' +
-        '<button type="button" class="btn btn-outline" style="padding:0.65rem 1rem" onclick="closeLitigantModal()">Cancel</button>' +
-      '</div>' +
-    '</form>';
-  openLitigantModal();
-}
-
-async function handleSendLawyerRequest(e, caseId) {
-  e.preventDefault();
-  const licenseNumber = document.getElementById('app-lawyer-license').value.trim();
-  try {
-    const res = await fetch(API + '/cases/lawyer-request', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ caseId, licenseNumber, clientName: currentLitigant.fullName || 'Client' })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert(data.message || 'Appointment request dispatched to lawyer.');
-      closeLitigantModal();
-      await loadLitigantData();
-    } else {
-      alert(data.error || 'Failed to dispatch request');
-    }
-  } catch (err) {
-    alert('Error: ' + err.message);
-  }
-}
-
-async function handleRemoveLawyer(caseId) {
-  if (!confirm('Are you sure you want to revoke your lawyer\'s appointment? Full control will return to your account.')) return;
-  try {
-    const res = await fetch(API + '/cases/lawyer-remove', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ caseId, clientName: currentLitigant.fullName || 'Client' })
-    });
-    if (res.ok) {
-      alert('Lawyer removed. Full control returned to client.');
-      await loadLitigantData();
-    }
-  } catch (err) {
-    alert('Error: ' + err.message);
-  }
+window.logoutLitigant = logoutLitigant;
+
+// ── ACCESS COUNTDOWN TIMER ──
+function startAccessCountdown() {
+  let seconds = 3 * 3600 + 42 * 60 + 15;
+  const el = document.getElementById('temp-access-countdown');
+  if (!el) return;
+
+  setInterval(() => {
+    if (seconds <= 0) return;
+    seconds--;
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    el.textContent = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }, 1000);
 }

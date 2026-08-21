@@ -1,5 +1,13 @@
 [
   {
+    "id": "NOTIF-1787286635782",
+    "title": "First Hearing Scheduled for CASE-1787286146761",
+    "message": "Your hearing is scheduled for 2026-08-21 at 09:30 AM in Courtroom 4 (Main Trial Room) before Hon. Judge Solomon Desta.",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T04:30:35.782Z",
+    "read": false
+  },
+  {
     "id": "NOTIF-1787247675180",
     "title": "First Hearing Scheduled for CASE-1787215964172",
     "message": "Your hearing is scheduled for 2026-08-20 at 09:30 AM in Courtroom 4 (Main Trial Room) before Hon. Judge Solomon Desta.",

@@ -435,35 +435,12 @@ async function requestOTP() {
     if (res.ok) {
       document.getElementById('otp-request-form').classList.add('hidden');
       document.getElementById('otp-verify-form').classList.remove('hidden');
-      if (data.delivered) {
-        document.getElementById('otp-phone-hint').innerHTML = `
-          <div style="font-size:0.8125rem;color:#16a34a;margin-top:0.5rem;font-weight:600">
-            ✓ Real SMS sent to <strong>${phone}</strong>. Please enter the 6-digit code received on your phone.
-          </div>
-        `;
-        document.getElementById('otp-code').value = '';
-      } else if (data.isNotWhitelisted) {
-        document.getElementById('otp-phone-hint').innerHTML = `
-          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius-md);padding:0.75rem;margin-top:0.75rem">
-            <div style="font-size:0.8125rem;color:#92400e;font-weight:700">
-              ℹ SMSEthiopia Starter Plan Notice
-            </div>
-            <div style="font-size:0.75rem;color:#78350f;margin-top:0.25rem;line-height:1.4">
-              Real SMS gateway rejected delivery because <strong>${phone}</strong> is not whitelisted on your SMSEthiopia free tier campaign (whitelisted number: <strong>0955282973</strong>).<br/>
-              To deliver real SMS to any phone number, upgrade your campaign API key on smsethiopia.com.<br/>
-              <div style="margin-top:0.35rem;font-weight:700">Unwhitelisted test code: <span style="color:var(--gold-600);font-size:0.95rem">${data.testCode}</span></div>
-            </div>
-          </div>
-        `;
-        document.getElementById('otp-code').value = data.testCode || '';
-      } else {
-        document.getElementById('otp-phone-hint').innerHTML = `
-          <div style="font-size:0.8125rem;color:var(--navy-700);margin-top:0.5rem">
-            Verification code sent to <strong>${phone}</strong> via SMS. Please enter the code below.
-          </div>
-        `;
-        document.getElementById('otp-code').value = '';
-      }
+      document.getElementById('otp-phone-hint').innerHTML = `
+        <div style="font-size:0.8125rem;color:#16a34a;margin-top:0.5rem;font-weight:600">
+          ✓ Verification code sent via SMS to <strong>${phone}</strong>. Please enter the 6-digit code received on your phone.
+        </div>
+      `;
+      document.getElementById('otp-code').value = '';
       document.getElementById('otp-code').focus();
     } else {
       showAlert(data.error || 'Failed to send OTP');
@@ -666,8 +643,14 @@ async function handleLogin(e) {
     const data = await res.json();
     if (res.ok) {
       sessionStorage.setItem('court_user', JSON.stringify(data.user));
-      showAuthAlert(`Welcome, ${data.user.fullName}! Entering workspace…`, 'success');
-      setTimeout(() => window.location.href = '/dashboard', 600);
+      let targetUrl = '/dashboard';
+      if (data.user.role === 'judge') targetUrl = '/judge';
+      else if (data.user.role === 'prosecutor') targetUrl = '/prosecutor';
+      else if (data.user.role === 'admin') targetUrl = '/admin';
+      else if (data.user.role === 'clerk') targetUrl = '/clerk';
+      else if (data.user.role === 'officer' || data.user.role === 'screening' || data.user.role === 'official') targetUrl = '/official';
+      else if (data.user.role === 'client' || data.user.role === 'litigant' || data.user.role === 'temporary' || data.user.role === 'defendant') targetUrl = '/temporary';
+      setTimeout(() => window.location.href = targetUrl, 600);
     } else {
       showAuthAlert(data.error || 'Authentication failed');
     }

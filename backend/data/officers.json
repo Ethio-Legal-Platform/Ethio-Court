@@ -34,5 +34,17 @@
     "branchName": "Federal High Court — Lideta Division (የልደታ ምድብ ችሎት)",
     "email": "selam.lideta@courts.gov.et",
     "phone": "0911223302"
+  },
+  {
+    "id": "OFFICER-004",
+    "username": "officer.yonas",
+    "password": "officer123",
+    "fullName": "Branch Official Yonas",
+    "role": "officer",
+    "title": "Registrar Officer",
+    "branchId": "BRANCH-003",
+    "branchName": "Federal First Instance Court — Arada Division (የአራዳ ምድብ ችሎት)",
+    "email": "yonas.arada@courts.gov.et",
+    "phone": "0911223303"
   }
 ]

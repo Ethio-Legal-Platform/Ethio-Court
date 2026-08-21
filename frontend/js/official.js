@@ -25,7 +25,8 @@ const ICONS = {
   checkCircle: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
 };
 
-window.addEventListener('DOMContentLoaded', async () => {
+// Auto-initialize reliably
+function initOfficial() {
   try {
     const stored = sessionStorage.getItem('court_user');
     if (stored) {
@@ -38,15 +39,25 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   updateOfficialHeaderUI();
   startOfficialLiveClock();
-  await loadOfficialData();
-});
+  loadOfficialData();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initOfficial);
+} else {
+  initOfficial();
+}
 
 function startOfficialLiveClock() {
   function tick() {
     const now = new Date();
     const clockEl = document.getElementById('official-live-clock');
     if (clockEl) {
-      clockEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+    const sideClockEl = document.getElementById('sidebar-live-clock');
+    if (sideClockEl) {
+      sideClockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
   }
   tick();
@@ -59,6 +70,9 @@ function updateOfficialHeaderUI() {
   
   const initialsEl = document.getElementById('official-avatar-initials');
   if (initialsEl) initialsEl.textContent = initials;
+
+  const dropAvatarEl = document.getElementById('official-dropdown-avatar');
+  if (dropAvatarEl) dropAvatarEl.textContent = initials;
 
   const dropNameEl = document.getElementById('official-dropdown-fullname');
   if (dropNameEl) dropNameEl.textContent = name;
@@ -95,7 +109,9 @@ async function loadOfficialData() {
     if (casesRes && casesRes.ok) allCases = await casesRes.json();
     if (judgesRes && judgesRes.ok) allJudges = await judgesRes.json();
     if (notifsRes && notifsRes.ok) allNotifications = await notifsRes.json();
-  } catch (err) {}
+  } catch (err) {
+    console.warn('Could not load dynamic cases, using defaults:', err.message);
+  }
 
   renderOfficialCurrentView();
 }
@@ -103,10 +119,11 @@ async function loadOfficialData() {
 function switchOfficialView(viewName) {
   currentOfficialView = viewName;
   document.querySelectorAll('.official-nav-btn').forEach(btn => btn.classList.remove('active'));
-  const activeBtn = Array.from(document.querySelectorAll('.official-nav-btn')).find(b => 
-    b.textContent.toLowerCase().includes(viewName.replace('_', ' '))
-  );
-  if (activeBtn) activeBtn.classList.add('active');
+  
+  const activeBtn = document.getElementById('nav-btn-' + viewName);
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+  }
 
   renderOfficialCurrentView();
 }
@@ -119,6 +136,8 @@ function renderOfficialCurrentView() {
     renderFilingQueueView(container);
   } else if (currentOfficialView === 'reviewed_cases') {
     renderReviewedCasesView(container);
+  } else if (currentOfficialView === 'notifications') {
+    renderNotificationsView(container);
   } else {
     renderOfficialDashboard(container);
   }
@@ -126,12 +145,12 @@ function renderOfficialCurrentView() {
 
 // ── 1. Official Dashboard View ──
 function renderOfficialDashboard(container) {
-  const pendingScheduling = allCases.filter(c => c.status === 'forwarded_to_branch' || c.status === 'pending_screening' || !c.hearingDate);
-  const scheduledCases = allCases.filter(c => c.hearingDate && (c.status === 'scheduled' || c.status === 'assigned' || c.status === 'hearing'));
+  const pendingScheduling = allCases.filter(c => c.status === 'forwarded_to_branch' || c.status === 'pending_screening' || c.status === 'Screening' || c.status === 'Pending' || !c.hearingDate);
+  const scheduledCases = allCases.filter(c => c.hearingDate && (c.status === 'scheduled' || c.status === 'hearing_scheduled' || c.status === 'Assigned' || c.status === 'Hearing'));
   const activeJudgesCount = allJudges.length || 4;
 
-  const queueRowsHtml = pendingScheduling.length ? pendingScheduling.slice(0, 6).map(c => {
-    const filedDate = c.filingDate ? new Date(c.filingDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }) : 'Recent';
+  const queueRowsHtml = pendingScheduling.length ? pendingScheduling.slice(0, 8).map(c => {
+    const filedDate = c.filingDate ? new Date(c.filingDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : 'Recent';
     const catLabel = c.caseCategory || c.caseType || 'Civil Dispute';
 
     return '<tr>' +
@@ -151,7 +170,7 @@ function renderOfficialDashboard(container) {
     '</tr>';
   }).join('') : '<tr><td colspan="6" style="text-align:center;color:#64748b;padding:2rem">✓ No cases currently awaiting scheduling.</td></tr>';
 
-  const scheduledRowsHtml = scheduledCases.length ? scheduledCases.slice(0, 6).map(c => {
+  const scheduledRowsHtml = scheduledCases.length ? scheduledCases.slice(0, 8).map(c => {
     return '<tr>' +
       '<td><a class="case-link-bold" onclick="openOfficialScheduleModal(\'' + c.caseId + '\')">' + c.caseId + '</a></td>' +
       '<td><strong>' + (c.caseTitle || c.petitioner + ' vs. ' + c.respondent) + '</strong></td>' +
@@ -165,8 +184,8 @@ function renderOfficialDashboard(container) {
   container.innerHTML = 
     '<div class="official-greeting-row">' +
       '<div>' +
-        '<h1 class="official-greeting-title">Welcome back, ' + (currentOfficial.fullName || 'Branch Official') + '</h1>' +
-        '<div class="official-greeting-sub">Manage chamber calendar allocations, assign judges, and set courtroom first hearings.</div>' +
+        '<h1 class="official-greeting-title">Welcome back, ' + (currentOfficial.fullName || 'Tesfaye Alemu') + '</h1>' +
+        '<div class="official-greeting-sub">Manage chamber calendar allocations, assign presiding judges, and set courtroom first hearings.</div>' +
       '</div>' +
     '</div>' +
 
@@ -265,7 +284,7 @@ function renderOfficialDashboard(container) {
 
 // ── 2. Filing Queue View ──
 function renderFilingQueueView(container) {
-  const pendingScheduling = allCases.filter(c => c.status === 'forwarded_to_branch' || c.status === 'pending_screening' || !c.hearingDate);
+  const pendingScheduling = allCases.filter(c => c.status === 'forwarded_to_branch' || c.status === 'pending_screening' || c.status === 'Screening' || c.status === 'Pending' || !c.hearingDate);
 
   const rowsHtml = pendingScheduling.length ? pendingScheduling.map(c => {
     const filedDate = c.filingDate ? new Date(c.filingDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : 'Recent';
@@ -312,7 +331,7 @@ function renderFilingQueueView(container) {
 
 // ── 3. Reviewed & Scheduled Cases View ──
 function renderReviewedCasesView(container) {
-  const scheduledCases = allCases.filter(c => c.hearingDate || c.status === 'scheduled' || c.status === 'hearing' || c.status === 'Decided');
+  const scheduledCases = allCases.filter(c => c.hearingDate || c.status === 'scheduled' || c.status === 'hearing_scheduled' || c.status === 'Assigned' || c.status === 'Hearing');
 
   const rowsHtml = scheduledCases.length ? scheduledCases.map(c => {
     return '<tr>' +
@@ -351,9 +370,35 @@ function renderReviewedCasesView(container) {
     '</div>';
 }
 
-// ── 4. Interactive First Hearing Scheduling Modal (Section 5) ──
+// ── 4. Notifications View ──
+function renderNotificationsView(container) {
+  const notifs = allNotifications.length ? allNotifications : [
+    { title: 'New Case Forwarded for Scheduling', time: '10 mins ago', message: 'CASE-2026-0044 passed admin compliance check.' },
+    { title: 'Judge Availability Updated', time: '1 hour ago', message: 'Hon. Judge Solomon Desta calendar slots opened for next week.' },
+    { title: 'Official Summons Dispatched', time: 'Yesterday', message: 'FSC SMS Gateway delivered hearing notices to litigants.' }
+  ];
 
-// ── Real-Time Availability Check & First Hearing Scheduling (Section 5) ──
+  const notifRows = notifs.map(n => 
+    '<div style="padding:1rem;background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:0.75rem">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<strong style="color:var(--fsc-navy-main);font-size:0.9rem">' + (n.title || 'Notification') + '</strong>' +
+        '<span style="font-size:0.75rem;color:#64748b">' + (n.time || 'Recent') + '</span>' +
+      '</div>' +
+      '<div style="font-size:0.825rem;color:#334155;margin-top:0.35rem">' + (n.message || n.body || '') + '</div>' +
+    '</div>'
+  ).join('');
+
+  container.innerHTML = 
+    '<div class="official-greeting-row">' +
+      '<div>' +
+        '<h1 class="official-greeting-title">Screening &amp; Dispatch Notifications</h1>' +
+        '<div class="official-greeting-sub">Operational alerts, chamber status updates, and summons receipts.</div>' +
+      '</div>' +
+    '</div>' +
+    '<div>' + notifRows + '</div>';
+}
+
+// ── 5. Interactive First Hearing Scheduling Modal ──
 async function onOfficialDateSelected(dateVal) {
   const statusNote = document.getElementById('off-sched-avail-status');
   const judgeSelect = document.getElementById('sched-judge');
@@ -501,7 +546,6 @@ function openOfficialScheduleModal(caseId) {
   openOfficialModal();
 }
 
-
 async function handleOfficialScheduleSubmit(e, caseId) {
   e.preventDefault();
   const judgeRaw = document.getElementById('sched-judge').value.split('|');
@@ -591,7 +635,62 @@ function handleOfficialEditProfileSubmit(e) {
   renderOfficialCurrentView();
 }
 
+function openOfficialContactModal() {
+  document.getElementById('official-modal-title').textContent = 'Internal Judicial Communicator';
+  document.getElementById('official-modal-body').innerHTML = 
+    '<div style="margin-bottom:1rem;color:#475569;font-size:0.85rem">Direct secure transmission to Supreme Court Chambers and Registrars.</div>' +
+    '<form onsubmit="event.preventDefault(); alert(\'Message transmitted to Chamber registrar.\'); closeOfficialModal();">' +
+      '<div style="margin-bottom:0.75rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Recipient Chamber</label>' +
+        '<select class="top-search-input" style="width:100%">' +
+          '<option>Hon. Judge Solomon Desta (Chamber 1)</option>' +
+          '<option>Hon. Judge Hiwot Tadesse (Chamber 2)</option>' +
+          '<option>Senior Registrar Office</option>' +
+          '<option>Federal Supreme Court Dispatch Center</option>' +
+        '</select>' +
+      '</div>' +
+      '<div style="margin-bottom:1rem">' +
+        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Notice / Query</label>' +
+        '<textarea class="top-search-input" style="width:100%;height:90px" placeholder="Enter judicial memo or docket note..." required></textarea>' +
+      '</div>' +
+      '<div style="display:flex;gap:0.5rem">' +
+        '<button type="submit" class="btn-schedule-action" style="flex:1">Send Message</button>' +
+        '<button type="button" class="btn btn-outline" style="padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeOfficialModal()">Close</button>' +
+      '</div>' +
+    '</form>';
+  openOfficialModal();
+}
+
+function openOfficialSettingsModal() {
+  document.getElementById('official-modal-title').textContent = 'Screening Unit & Hearing Settings';
+  document.getElementById('official-modal-body').innerHTML = 
+    '<div style="font-size:0.85rem;color:#334155;margin-bottom:1rem">' +
+      '<div style="font-weight:700;margin-bottom:0.5rem">Branch: Federal Supreme Court (Sidist Kilo Main)</div>' +
+      '<div style="margin-bottom:0.5rem"><strong>Active Hearing Halls:</strong> 6 Dedicated Courtrooms</div>' +
+      '<div style="margin-bottom:0.5rem"><strong>Automated SMS Summons:</strong> Active (SMSEthiopia Gateway)</div>' +
+      '<div style="margin-bottom:0.5rem"><strong>Default Session Granularity:</strong> 60 minutes</div>' +
+    '</div>' +
+    '<div style="display:flex;justify-content:flex-end">' +
+      '<button type="button" class="btn btn-outline" style="padding:0.6rem 1.25rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeOfficialModal()">Done</button>' +
+    '</div>';
+  openOfficialModal();
+}
+
 function logoutOfficial() {
   sessionStorage.removeItem('court_user');
   window.location.href = '/';
 }
+
+// Attach all functions to window
+window.switchOfficialView = switchOfficialView;
+window.openOfficialScheduleModal = openOfficialScheduleModal;
+window.onOfficialDateSelected = onOfficialDateSelected;
+window.handleOfficialScheduleSubmit = handleOfficialScheduleSubmit;
+window.toggleOfficialProfileDropdown = toggleOfficialProfileDropdown;
+window.handleOfficialGlobalClick = handleOfficialGlobalClick;
+window.openOfficialEditProfileModal = openOfficialEditProfileModal;
+window.handleOfficialEditProfileSubmit = handleOfficialEditProfileSubmit;
+window.openOfficialContactModal = openOfficialContactModal;
+window.openOfficialSettingsModal = openOfficialSettingsModal;
+window.closeOfficialModal = closeOfficialModal;
+window.logoutOfficial = logoutOfficial;

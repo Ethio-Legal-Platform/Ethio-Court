@@ -1,5 +1,508 @@
 [
   {
+    "id": "AUD-1787292630211",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T06:10:30.211Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787291069725",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T05:44:29.725Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787290873196",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T05:41:13.196Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787290819468",
+    "action": "LAWYER_APPOINTMENT_ACCEPTED",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T05:40:19.468Z"
+  },
+  {
+    "id": "AUD-1787290430154",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T05:33:50.154Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787289983597",
+    "action": "LAWYER_REMOVED_BY_CLIENT",
+    "user": "Adnan",
+    "role": "plaintiff",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T05:26:23.597Z",
+    "details": "Client revoked lawyer and resumed direct self-representation with full control."
+  },
+  {
+    "id": "AUD-1787289983457",
+    "action": "LAWYER_APPOINTMENT_ACCEPTED",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T05:26:23.457Z"
+  },
+  {
+    "id": "AUD-1787289564801",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T05:19:24.801Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787289534345",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T05:18:54.345Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787289515783",
+    "action": "USER_LOGIN",
+    "user": "Bereket Girma",
+    "role": "prosecutor",
+    "timestamp": "2026-08-21T05:18:35.783Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787289503845",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Hassan",
+    "role": "officer",
+    "timestamp": "2026-08-21T05:18:23.845Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787289481559",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T05:18:01.559Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787289470489",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T05:17:50.490Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787289319799",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T05:15:19.799Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787288985913",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T05:09:45.913Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787288775056",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T05:06:15.056Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787287590814",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T04:46:30.814Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787287341606",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T04:42:21.606Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787287154444",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T04:39:14.444Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787286635778",
+    "action": "HEARING_SCHEDULED",
+    "user": "Branch Official Hassan",
+    "role": "official",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T04:30:35.778Z",
+    "details": "Judge: Hon. Judge Solomon Desta, Courtroom: Courtroom 4 (Main Trial Room), Date: 2026-08-21 at 09:30 AM"
+  },
+  {
+    "id": "AUD-1787286318876",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Hassan",
+    "role": "officer",
+    "timestamp": "2026-08-21T04:25:18.876Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787286282139",
+    "action": "ADMIN_APPROVED_AND_FORWARDED",
+    "user": "System Administrator",
+    "role": "admin",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T04:24:42.139Z",
+    "details": "Assigned to Federal Supreme Court (Sidist Kilo). Law Check: Criminal Code Art. 675 - Fraud & Deception"
+  },
+  {
+    "id": "AUD-1787286222706",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T04:23:42.706Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787286189062",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T04:23:09.062Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787286146769",
+    "action": "CASE_FILED",
+    "user": "Adnan",
+    "role": "plaintiff",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T04:22:26.769Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787285099222",
+    "action": "CASE_FILED",
+    "user": "Daniel Hailu",
+    "role": "plaintiff",
+    "caseId": "CASE-1787285099216",
+    "timestamp": "2026-08-21T04:04:59.222Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284902187",
+    "action": "CASE_FILED",
+    "user": "Daniel Hailu",
+    "role": "plaintiff",
+    "caseId": "CASE-1787284902177",
+    "timestamp": "2026-08-21T04:01:42.187Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284723300",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T03:58:43.300Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284718898",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T03:58:38.898Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284647342",
+    "action": "USER_LOGIN",
+    "user": "Bereket Girma",
+    "role": "prosecutor",
+    "timestamp": "2026-08-21T03:57:27.342Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284647326",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T03:57:27.326Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284647310",
+    "action": "USER_LOGIN",
+    "user": "Court Clerk Ibrahim Tesfaye",
+    "role": "clerk",
+    "timestamp": "2026-08-21T03:57:27.310Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284647291",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Yonas",
+    "role": "officer",
+    "timestamp": "2026-08-21T03:57:27.291Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284647275",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Selam",
+    "role": "officer",
+    "timestamp": "2026-08-21T03:57:27.275Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284647261",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Hassan",
+    "role": "officer",
+    "timestamp": "2026-08-21T03:57:27.261Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284647247",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T03:57:27.248Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284647223",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T03:57:27.223Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284610796",
+    "action": "USER_LOGIN",
+    "user": "Kebede Haile Mariam",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T03:56:50.797Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284610749",
+    "action": "USER_LOGIN",
+    "user": "Bereket Girma",
+    "role": "prosecutor",
+    "timestamp": "2026-08-21T03:56:50.749Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284610734",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T03:56:50.734Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284610719",
+    "action": "USER_LOGIN",
+    "user": "Court Clerk Ibrahim Tesfaye",
+    "role": "clerk",
+    "timestamp": "2026-08-21T03:56:50.720Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284610692",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Selam",
+    "role": "officer",
+    "timestamp": "2026-08-21T03:56:50.692Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284610675",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Hassan",
+    "role": "officer",
+    "timestamp": "2026-08-21T03:56:50.675Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284610659",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T03:56:50.659Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284610636",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T03:56:50.636Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284583704",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T03:56:23.704Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284583690",
+    "action": "USER_LOGIN",
+    "user": "Bereket Girma",
+    "role": "prosecutor",
+    "timestamp": "2026-08-21T03:56:23.690Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284435578",
+    "action": "USER_LOGIN",
+    "user": "Bereket Girma",
+    "role": "prosecutor",
+    "timestamp": "2026-08-21T03:53:55.579Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284316640",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T03:51:56.640Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284169941",
+    "action": "USER_LOGIN",
+    "user": "Bereket Girma",
+    "role": "prosecutor",
+    "timestamp": "2026-08-21T03:49:29.941Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284110743",
+    "action": "USER_LOGIN",
+    "user": "Court Clerk Ibrahim Tesfaye",
+    "role": "clerk",
+    "timestamp": "2026-08-21T03:48:30.743Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284093523",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Hassan",
+    "role": "officer",
+    "timestamp": "2026-08-21T03:48:13.523Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284048159",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T03:47:28.159Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787284037581",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T03:47:17.581Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787283149970",
+    "action": "USER_LOGIN",
+    "user": "Bereket Girma",
+    "role": "prosecutor",
+    "timestamp": "2026-08-21T03:32:29.970Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787259364313",
+    "action": "USER_LOGIN",
+    "user": "Senior Public Prosecutor Bereket Hailu",
+    "role": "prosecutor",
+    "timestamp": "2026-08-20T20:56:04.313Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787259148664",
+    "action": "USER_LOGIN",
+    "user": "Senior Public Prosecutor Bereket Hailu",
+    "role": "prosecutor",
+    "timestamp": "2026-08-20T20:52:28.664Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787257441616",
+    "action": "USER_LOGIN",
+    "user": "Senior Public Prosecutor Bereket Hailu",
+    "role": "prosecutor",
+    "timestamp": "2026-08-20T20:24:01.616Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787257374660",
+    "action": "USER_LOGIN",
+    "user": "Senior Public Prosecutor Bereket Hailu",
+    "role": "prosecutor",
+    "timestamp": "2026-08-20T20:22:54.661Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787254069256",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-20T19:27:49.256Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787253116236",
+    "action": "FILING_REGISTERED_DOCKET_ISSUED",
+    "user": "Kalkidan Mengistu",
+    "role": "clerk",
+    "caseId": "CASE-2026-FSC-9001",
+    "timestamp": "2026-08-20T19:11:56.236Z"
+  },
+  {
+    "id": "AUD-1787253116196",
+    "action": "COURT_SESSION_MINUTES_LOGGED",
+    "user": "Kalkidan Mengistu",
+    "role": "clerk",
+    "caseId": "CASE-1787215964172",
+    "details": "Attendance and procedural minutes recorded for Oral Arguments on Injunction",
+    "timestamp": "2026-08-20T19:11:56.196Z"
+  },
+  {
     "id": "AUD-1787248089364",
     "action": "USER_LOGIN",
     "user": "Hon. Judge Solomon Desta",

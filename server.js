@@ -23,6 +23,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve frontend assets
+app.use('/js', express.static(path.join(__dirname, 'frontend', 'js')));
+app.use('/css', express.static(path.join(__dirname, 'frontend', 'assets', 'css')));
 app.use(express.static(path.join(__dirname, 'frontend', 'views')));
 app.use(express.static(path.join(__dirname, 'frontend', 'js')));
 app.use(express.static(path.join(__dirname, 'frontend', 'assets', 'css')));

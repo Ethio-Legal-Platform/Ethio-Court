@@ -7,6 +7,17 @@ const viewsDir = path.join(__dirname, '..', '..', 'frontend', 'views');
 
 router.get('/', (req, res) => res.sendFile(path.join(viewsDir, 'index.html')));
 router.get('/index.html', (req, res) => res.sendFile(path.join(viewsDir, 'index.html')));
+
+// Universal Login, Gate & Logout Routing
+router.get('/login', (req, res) => res.sendFile(path.join(viewsDir, 'index.html')));
+router.get('/login.html', (req, res) => res.sendFile(path.join(viewsDir, 'index.html')));
+router.get('/gate', (req, res) => res.sendFile(path.join(viewsDir, 'index.html')));
+router.get('/gate.html', (req, res) => res.sendFile(path.join(viewsDir, 'index.html')));
+router.get('/auth', (req, res) => res.sendFile(path.join(viewsDir, 'index.html')));
+router.get('/logout', (req, res) => res.sendFile(path.join(viewsDir, 'index.html')));
+
+router.get('/prosecutor', (req, res) => res.sendFile(path.join(viewsDir, 'prosecutor.html')));
+router.get('/prosecutor.html', (req, res) => res.sendFile(path.join(viewsDir, 'prosecutor.html')));
 router.get('/dashboard', (req, res) => res.sendFile(path.join(viewsDir, 'dashboard.html')));
 router.get('/dashboard.html', (req, res) => res.sendFile(path.join(viewsDir, 'dashboard.html')));
 router.get('/judge', (req, res) => res.sendFile(path.join(viewsDir, 'judge.html')));

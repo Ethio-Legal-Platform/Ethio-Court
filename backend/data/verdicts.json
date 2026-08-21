@@ -1,0 +1,30 @@
+[
+  {
+    "id": "VRD-2026-001",
+    "caseId": "CASE-178721540800",
+    "defendantName": "Getachew Bekele",
+    "charges": "Grand Embezzlement & Commercial Document Forgery",
+    "penalCode": "Art. 689 & Anti-Corruption Proc Art. 13",
+    "verdict": "GUILTY (Full Conviction)",
+    "sentence": "7 Years Rigorous Imprisonment",
+    "restitution": "ETB 2,450,000 to Commercial Bank of Ethiopia",
+    "judge": "Hon. Judge Solomon Desta",
+    "division": "Federal Supreme Court — Criminal Bench",
+    "dateDelivered": "2026-05-24",
+    "docketStatus": "Decided & Closed"
+  },
+  {
+    "id": "VRD-2026-002",
+    "caseId": "CASE-178721511200",
+    "defendantName": "Girma Wolde",
+    "charges": "Unauthorized Cyber Intrusion & Financial Interception",
+    "penalCode": "Computer Crime Proc No. 958/2016 Art. 4",
+    "verdict": "GUILTY (Full Conviction)",
+    "sentence": "5 Years Rigorous Imprisonment & ETB 100,000 Fine",
+    "restitution": "ETB 1,200,000 Mandatory Restitution",
+    "judge": "Hon. Justice Yohannes Bekele",
+    "division": "Federal Supreme Court — Cyber Division",
+    "dateDelivered": "2026-05-20",
+    "docketStatus": "Decided & Closed"
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "ASN-2026-006",
+    "caseId": "CASE-178721589765",
+    "caseTitle": "The State vs. Accused",
+    "leadProsecutor": "Bereket Girma (PROS-2001)",
+    "coProsecutor": "Tigist Haile",
+    "chiefInvestigator": "Cmdr. Teklu Assefa",
+    "priority": "HIGH",
+    "status": "Assigned",
+    "assignmentDate": "2026-08-21"
+  },
+  {
+    "id": "ASN-2026-001",
+    "caseId": "CASE-178721589765",
+    "caseTitle": "The State vs. Yimer Getachew",
+    "leadProsecutor": "Bereket Girma (PROS-2001)",
+    "coProsecutor": "Tigist Haile (PROS-2004)",
+    "chiefInvestigator": "Cmdr. Teklu Assefa (Fed Police CIB)",
+    "priority": "CRITICAL",
+    "status": "Trial Phase",
+    "assignmentDate": "2026-04-10"
+  },
+  {
+    "id": "ASN-2026-002",
+    "caseId": "CASE-178721612233",
+    "caseTitle": "The State vs. Abebe Kebede",
+    "leadProsecutor": "Bereket Girma (PROS-2001)",
+    "coProsecutor": "Alazar Mekonnen (PROS-2002)",
+    "chiefInvestigator": "Insp. Daniel Hailu (Lideta Division)",
+    "priority": "HIGH",
+    "status": "Pleading Phase",
+    "assignmentDate": "2026-04-15"
+  },
+  {
+    "id": "ASN-2026-003",
+    "caseId": "CASE-178721555922",
+    "caseTitle": "The State vs. Mulualem Desta",
+    "leadProsecutor": "Bereket Girma (PROS-2001)",
+    "coProsecutor": "Helen Fikru (PROS-2005)",
+    "chiefInvestigator": "Cmdr. Teklu Assefa (Cyber Forensic Lab)",
+    "priority": "HIGH",
+    "status": "Investigation & Witness Detail",
+    "assignmentDate": "2026-05-01"
+  },
+  {
+    "id": "ASN-2026-004",
+    "caseId": "CASE-178721560884",
+    "caseTitle": "The State vs. Worku Alemu",
+    "leadProsecutor": "Bereket Girma (PROS-2001)",
+    "coProsecutor": "Samuel Abebe (PROS-2003)",
+    "chiefInvestigator": "Insp. Yonas Kebede (Arada Division)",
+    "priority": "MEDIUM",
+    "status": "Screening Phase",
+    "assignmentDate": "2026-05-05"
+  },
+  {
+    "id": "ASN-2026-005",
+    "caseId": "CASE-178721632211",
+    "caseTitle": "The State vs. Dawit Tadesse",
+    "leadProsecutor": "Bereket Girma (PROS-2001)",
+    "coProsecutor": "Tigist Haile (PROS-2004)",
+    "chiefInvestigator": "Insp. Daniel Hailu (Ministry of Revenue Team)",
+    "priority": "CRITICAL",
+    "status": "Evidence Audit Stage",
+    "assignmentDate": "2026-05-12"
+  }
+]

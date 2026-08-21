@@ -62,27 +62,41 @@ function updateJudgeHeaderUI() {
   const headerNameEl = document.getElementById('header-judge-name');
   if (headerNameEl) headerNameEl.textContent = name;
 
-  const topNameEl = document.getElementById('top-judge-name');
+  const topNameEl = document.getElementById('top-judge-name') || document.getElementById('top-judge-display-name');
   if (topNameEl) topNameEl.textContent = name;
   
   const initialsEl = document.getElementById('judge-avatar-initials');
   if (initialsEl) initialsEl.textContent = initials;
 
-  const dropNameEl = document.getElementById('judge-dropdown-fullname');
+  const dropInitialsEl = document.getElementById('dropdown-avatar-circle');
+  if (dropInitialsEl) dropInitialsEl.textContent = initials;
+
+  const dropNameEl = document.getElementById('judge-dropdown-fullname') || document.getElementById('dropdown-user-fullname');
   if (dropNameEl) dropNameEl.textContent = name;
 }
 
-function toggleJudgeProfileDropdown(e) {
+function toggleProfileDropdown(e) {
   if (e) e.stopPropagation();
   const menu = document.getElementById('judge-profile-dropdown-menu');
-  if (menu) menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  if (!menu) return;
+  const isVisible = menu.classList.contains('show') || menu.style.display === 'flex' || menu.style.display === 'block';
+  if (isVisible) {
+    menu.classList.remove('show');
+    menu.style.display = 'none';
+  } else {
+    menu.classList.add('show');
+    menu.style.display = 'flex';
+  }
 }
+window.toggleProfileDropdown = toggleProfileDropdown;
+window.toggleJudgeProfileDropdown = toggleProfileDropdown;
 
 function handleJudgeGlobalClick(e) {
   const menu = document.getElementById('judge-profile-dropdown-menu');
   const trigger = document.getElementById('judge-profile-pill-trigger');
-  if (menu && menu.style.display === 'block') {
+  if (menu && (menu.classList.contains('show') || menu.style.display === 'flex' || menu.style.display === 'block')) {
     if (!menu.contains(e.target) && (!trigger || !trigger.contains(e.target))) {
+      menu.classList.remove('show');
       menu.style.display = 'none';
     }
   }
@@ -359,64 +373,163 @@ function renderCourtCalendarView(container) {
     '</div>';
 }
 
-// ── 4. Full Judicial Docket Modal (Sections 3, 7, 10, 11, 12) ──
+// ── 4. Full Judicial Docket Modal (Sections 3, 7, 8, 10, 11, 12) ──
 function openJudgeCaseModal(caseId) {
-  const c = allCourtCases.find(it => it.caseId === caseId) || { caseId, petitioner: 'Plaintiff', respondent: 'Defendant', caseTitle: 'Judicial Docket' };
+  const c = allCourtCases.find(it => it.caseId === caseId) || { caseId, petitioner: 'Adnan', respondent: 'Dagim', caseTitle: 'Criminal Proceedings' };
   const docs = c.documents || [];
+  const demands = c.documentDemands || [];
   const noteContent = c.judgeNotepad || '';
 
+  // 1. Counsel Resolution
+  const plLawyerName = (c.lawyerAppointed && (c.lawyerAppointed.lawyerName || c.lawyerAppointed.fullName || c.lawyerAppointed.name)) || 
+                       c.plaintiffLawyerName || c.lawyerName || 'Advocate Tigist Assefa';
+  const plLawyerLic = (c.lawyerAppointed && c.lawyerAppointed.licenseNumber) ? ' (' + c.lawyerAppointed.licenseNumber + ')' : ' (LAW-1002)';
+
+  const defRep = c.defendantRepresentation;
+  let defLawyerName = 'Self-Representation / In Person';
+  if (defRep) {
+    if (defRep.lawyerName) {
+      defLawyerName = defRep.lawyerName + (defRep.licenseNumber ? ' (' + defRep.licenseNumber + ')' : '') + (defRep.type === 'government_lawyer' ? ' — Public Defender' : '');
+    } else if (defRep.type === 'self') {
+      defLawyerName = 'Self-Representation (In Person)';
+    } else if (defRep.type === 'pending_choice') {
+      defLawyerName = 'Awaiting Choice / In Person';
+    }
+  } else if (c.defendantLawyerName) {
+    defLawyerName = c.defendantLawyerName;
+  }
+
+  // 2. Documents HTML
   const docsHtml = docs.length ? docs.map(d => {
     const isSealed = d.classificationStatus === 'sealed';
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:0.4rem">' +
+    const filePath = d.path ? (d.path.startsWith('http') ? d.path : '/' + d.path.replace(/\\/g, '/').replace(/^.*uploads\//, 'uploads/')) : '#';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:0.6rem;box-shadow:0 1px 2px rgba(0,0,0,0.03)">' +
       '<div>' +
-        '<strong style="font-size:0.8rem;color:var(--fsc-navy-main)">📄 ' + d.name + '</strong>' +
-        '<div style="font-size:0.7rem;color:#64748b">' + (d.size || '1.2 MB') + ' | Status: <span style="font-weight:700;color:' + (isSealed ? '#dc2626' : '#16a34a') + '">' + (d.classificationStatus || 'Shared').toUpperCase() + '</span></div>' +
+        '<div style="display:flex;align-items:center;gap:0.4rem">' +
+          '<strong style="font-size:0.85rem;color:var(--fsc-navy-main)">📄 ' + d.name + '</strong>' +
+          '<span class="status-pill" style="font-size:0.65rem;background:' + (isSealed ? '#fee2e2;color:#dc2626' : '#dcfce7;color:#16a34a') + '">' + (isSealed ? 'SEALED RECORD' : 'SHARED') + '</span>' +
+        '</div>' +
+        '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">' +
+          'Uploaded by: <strong style="color:#334155">' + (d.uploadedBy || c.petitioner || 'Litigant') + '</strong> · Size: ' + (d.size || '0.02 MB') + ' · Date: ' + (d.uploadedAt ? new Date(d.uploadedAt).toLocaleDateString() : '2026-08-21') +
+        '</div>' +
       '</div>' +
-      '<div style="display:flex;gap:0.35rem">' +
-        '<button type="button" class="btn-open-case" style="font-size:0.7rem;padding:0.25rem 0.5rem" onclick="toggleEvidenceClassification(\'' + c.caseId + '\', \'' + d.id + '\', \'' + (isSealed ? 'shared' : 'sealed') + '\')">' +
-          (isSealed ? '🔓 Share with Defense' : '🔒 Seal Document') +
+      '<div style="display:flex;gap:0.5rem;align-items:center">' +
+        '<button type="button" class="btn-open-case" style="font-size:0.75rem;padding:0.35rem 0.75rem;background:#0284c7;color:#fff" onclick="viewEvidenceFile(\'' + (d.name || 'document.pdf') + '\', \'' + filePath + '\')">' +
+          '👁️ View Document' +
+        '</button>' +
+        '<button type="button" class="btn-open-case" style="font-size:0.75rem;padding:0.35rem 0.75rem;background:' + (isSealed ? '#16a34a' : '#475569') + ';color:#fff" onclick="toggleEvidenceClassification(\'' + c.caseId + '\', \'' + d.id + '\', \'' + (isSealed ? 'shared' : 'sealed') + '\')">' +
+          (isSealed ? '🔓 Share with Defense' : '🔒 Seal Record') +
         '</button>' +
       '</div>' +
     '</div>';
-  }).join('') : '<p style="color:#64748b;font-size:0.8rem">No evidentiary documents submitted.</p>';
+  }).join('') : '<div style="padding:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;color:#64748b;font-size:0.8rem;text-align:center">No evidentiary files submitted on this docket yet.</div>';
+
+  // 3. Existing Demands HTML
+  const demandsHtml = demands.length ? demands.map(dm => {
+    return '<div style="padding:0.75rem 1rem;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;margin-bottom:0.5rem">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<strong style="font-size:0.825rem;color:#92400e">🏛️ ' + dm.demandTitle + '</strong>' +
+        '<span class="status-pill pill-amber" style="font-size:0.685rem">DEMAND ACTIVE</span>' +
+      '</div>' +
+      '<div style="font-size:0.75rem;color:#78350f;margin-top:2px">Target Party: <strong>' + (dm.targetParty || 'Plaintiff') + '</strong> · Deadline: <strong>' + (dm.deadline || '7 Days') + '</strong></div>' +
+      (dm.description ? '<div style="font-size:0.725rem;color:#92400e;margin-top:4px;font-style:italic">"' + dm.description + '"</div>' : '') +
+    '</div>';
+  }).join('') : '<div style="font-size:0.775rem;color:#94a3b8;font-style:italic;margin-bottom:0.75rem">No open judicial evidence demands on this docket.</div>';
 
   document.getElementById('judge-modal-title').textContent = 'Chamber Docket — ' + c.caseId;
   document.getElementById('judge-modal-body').innerHTML = 
-    '<!-- Tabs -->' +
-    '<div style="display:flex;gap:0.5rem;border-bottom:1px solid #e2e8f0;padding-bottom:0.5rem;margin-bottom:1rem">' +
-      '<button type="button" id="tab-btn-overview" class="btn-view-all-link" style="background:#0b1a30;color:#fff" onclick="switchModalTab(\'overview\')">Overview &amp; Parties</button>' +
-      '<button type="button" id="tab-btn-evidence" class="btn-view-all-link" onclick="switchModalTab(\'evidence\')">Evidence Gate (' + docs.length + ')</button>' +
-      '<button type="button" id="tab-btn-notepad" class="btn-view-all-link" onclick="switchModalTab(\'notepad\')">Judge Notepad</button>' +
-      '<button type="button" id="tab-btn-verdict" class="btn-view-all-link" onclick="switchModalTab(\'verdict\')">Deliver Verdict &amp; Rating</button>' +
+    '<!-- Tabs Navigation -->' +
+    '<div style="display:flex;gap:0.4rem;border-bottom:1.5px solid #e2e8f0;padding-bottom:0.65rem;margin-bottom:1.15rem;overflow-x:auto">' +
+      '<button type="button" id="tab-btn-overview" style="padding:0.45rem 0.85rem;border-radius:6px;border:1px solid #0b1a30;background:#0b1a30;color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer" onclick="switchModalTab(\'overview\')">📋 Overview &amp; Parties</button>' +
+      '<button type="button" id="tab-btn-evidence" style="padding:0.45rem 0.85rem;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#475569;font-size:0.8rem;font-weight:600;cursor:pointer" onclick="switchModalTab(\'evidence\')">📁 Evidence Gate &amp; Demands (' + docs.length + ')</button>' +
+      '<button type="button" id="tab-btn-notepad" style="padding:0.45rem 0.85rem;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#475569;font-size:0.8rem;font-weight:600;cursor:pointer" onclick="switchModalTab(\'notepad\')">📝 Judicial Notepad</button>' +
+      '<button type="button" id="tab-btn-verdict" style="padding:0.45rem 0.85rem;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#475569;font-size:0.8rem;font-weight:600;cursor:pointer" onclick="switchModalTab(\'verdict\')">⚖️ Deliver Verdict &amp; Decree</button>' +
     '</div>' +
 
     '<!-- Tab 1: Overview -->' +
     '<div id="modal-tab-overview">' +
-      '<div style="background:#f8fafc;padding:0.75rem 1rem;border-radius:6px;margin-bottom:0.75rem;border:1px solid #e2e8f0">' +
-        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:1rem">' + (c.caseTitle || c.petitioner + ' vs. ' + c.respondent) + '</div>' +
-        '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">Case Category: <strong>' + (c.caseCategory || c.caseType || 'Civil Dispute') + '</strong> | Branch: ' + (c.jurisdiction || 'Federal Supreme Court') + '</div>' +
+      '<div style="background:#f8fafc;padding:0.85rem 1.15rem;border-radius:8px;margin-bottom:0.85rem;border:1px solid #e2e8f0">' +
+        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:1.05rem">' + (c.caseTitle || c.petitioner + ' vs. ' + c.respondent) + '</div>' +
+        '<div style="font-size:0.785rem;color:#64748b;margin-top:3px">Case Category: <strong>' + (c.caseCategory || c.caseType || 'Criminal Proceedings') + '</strong> | Branch: ' + (c.jurisdiction || 'Federal Supreme Court (Sidist Kilo)') + '</div>' +
       '</div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
-        '<div style="padding:0.75rem;border:1px solid #e2e8f0;border-radius:6px">' +
-          '<div style="font-weight:700;color:var(--fsc-navy-main);font-size:0.8rem">Plaintiff / Filer</div>' +
-          '<div style="font-size:0.75rem;color:#334155;margin-top:2px">' + (c.petitioner || 'Plaintiff') + '</div>' +
-          '<div style="font-size:0.7rem;color:#64748b">Counsel: ' + (c.lawyerAppointed ? c.lawyerAppointed.fullName : (c.plaintiffLawyerName || 'Self-Represented')) + '</div>' +
+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;margin-bottom:0.85rem">' +
+        '<div style="padding:0.85rem;border:1px solid #e2e8f0;border-radius:8px;background:#ffffff">' +
+          '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.825rem">Plaintiff / Complainant</div>' +
+          '<div style="font-size:0.85rem;color:#0f172a;margin-top:2px;font-weight:700">' + (c.petitioner || 'Adnan') + '</div>' +
+          '<div style="font-size:0.75rem;color:#0284c7;margin-top:4px;font-weight:600">⚖️ Counsel: ' + plLawyerName + plLawyerLic + '</div>' +
         '</div>' +
-        '<div style="padding:0.75rem;border:1px solid #e2e8f0;border-radius:6px">' +
-          '<div style="font-weight:700;color:var(--fsc-navy-main);font-size:0.8rem">Defendant</div>' +
-          '<div style="font-size:0.75rem;color:#334155;margin-top:2px">' + (c.respondent || 'Defendant') + '</div>' +
-          '<div style="font-size:0.7rem;color:#64748b">Counsel: ' + (c.defendantRepresentation ? (c.defendantRepresentation.type + ' (' + (c.defendantRepresentation.lawyerName || 'Assigned') + ')') : 'Awaiting Choice') + '</div>' +
+        '<div style="padding:0.85rem;border:1px solid #e2e8f0;border-radius:8px;background:#ffffff">' +
+          '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.825rem">Accused / Defendant</div>' +
+          '<div style="font-size:0.85rem;color:#0f172a;margin-top:2px;font-weight:700">' + (c.respondent || c.defendantName || 'Dagim') + '</div>' +
+          '<div style="font-size:0.75rem;color:#15803d;margin-top:4px;font-weight:600">🛡️ Defense: ' + defLawyerName + '</div>' +
         '</div>' +
       '</div>' +
-      '<div style="padding:0.75rem;background:#f0f9ff;border-radius:6px;border:1px solid #bae6fd;font-size:0.75rem;color:#0369a1">' +
-        '<strong>Scheduled Hearing:</strong> ' + (c.hearingDate || 'TBD') + ' at ' + (c.hearingTime || '09:30 AM') + ' | ' + (c.courtroom || 'Courtroom 4') + ' | Clerk: ' + (c.clerkName || 'Kalkidan Mengistu') +
+
+      '<div style="padding:0.85rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;font-size:0.8rem;line-height:1.55;color:#334155;margin-bottom:0.85rem">' +
+        '<strong style="color:var(--fsc-navy-main)">Docket Statement &amp; Charges:</strong><br/>' +
+        (c.description || 'Case submitted for judicial hearing and examination of witness exhibits before the Federal Supreme Court.') +
+      '</div>' +
+
+      '<div style="padding:0.75rem 1rem;background:#f0f9ff;border-radius:8px;border:1px solid #bae6fd;font-size:0.775rem;color:#0369a1;display:flex;justify-content:space-between;align-items:center">' +
+        '<div><strong>Scheduled Trial:</strong> ' + (c.hearingDate || '2026-08-21') + ' at ' + (c.hearingTime || '09:30 AM') + ' · ' + (c.courtroom || 'Courtroom 4 (Main Trial Room)') + '</div>' +
+        '<span style="font-weight:700">Clerk: ' + (c.clerkName || 'Kalkidan Mengistu') + '</span>' +
       '</div>' +
     '</div>' +
 
-    '<!-- Tab 2: Evidence -->' +
+    '<!-- Tab 2: Evidence Gate & Demands -->' +
     '<div id="modal-tab-evidence" style="display:none">' +
-      '<div style="margin-bottom:0.75rem;font-size:0.775rem;color:#64748b">Judge 2-Stage Evidentiary Gate (Section 3): Review and seal sensitive evidentiary records.</div>' +
-      docsHtml +
+      '<div style="margin-bottom:0.85rem;font-size:0.8rem;color:#475569;line-height:1.45">' +
+        '<strong>Judicial Evidentiary Gate (Section 3):</strong> Review submitted exhibits, inspect file metadata, seal sensitive records, or issue judicial discovery demands.' +
+      '</div>' +
+
+      '<div style="margin-bottom:1.25rem">' +
+        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.875rem;margin-bottom:0.5rem">Submitted Case Exhibits (' + docs.length + ')</div>' +
+        docsHtml +
+      '</div>' +
+
+      '<div style="border-top:1px solid #e2e8f0;padding-top:1rem;margin-bottom:1rem">' +
+        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.875rem;margin-bottom:0.5rem">Active Judicial Evidence Demands</div>' +
+        demandsHtml +
+      '</div>' +
+
+      '<!-- Judicial Evidence Demand Form -->' +
+      '<div style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:8px;padding:1rem">' +
+        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.875rem;margin-bottom:0.25rem">🏛️ Issue Judicial Evidence Demand Order</div>' +
+        '<div style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem">Issue a binding judicial discovery subpoena to a party or investigating authority.</div>' +
+
+        '<form onsubmit="handleDemandEvidenceSubmit(event, \'' + c.caseId + '\')">' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.6rem">' +
+            '<div>' +
+              '<label style="font-weight:700;display:block;margin-bottom:0.25rem;font-size:0.75rem">Target Party</label>' +
+              '<select id="demand-target-party" class="top-search-input" style="width:100%;font-size:0.785rem">' +
+                '<option value="Plaintiff (' + (c.petitioner || 'Adnan') + ')">Plaintiff — ' + (c.petitioner || 'Adnan') + '</option>' +
+                '<option value="Defendant (' + (c.respondent || c.defendantName || 'Dagim') + ')">Defendant — ' + (c.respondent || c.defendantName || 'Dagim') + '</option>' +
+                '<option value="Federal Police Forensic Department">Federal Police Forensic &amp; Investigation Dept</option>' +
+                '<option value="Third-Party Financial Institution">Commercial Bank / Financial Records</option>' +
+              '</select>' +
+            '</div>' +
+            '<div>' +
+              '<label style="font-weight:700;display:block;margin-bottom:0.25rem;font-size:0.75rem">Compliance Deadline</label>' +
+              '<input type="date" id="demand-deadline" class="top-search-input" style="width:100%;font-size:0.785rem" value="' + (new Date(Date.now() + 7*86400000).toISOString().split('T')[0]) + '" required/>' +
+            '</div>' +
+          '</div>' +
+
+          '<div style="margin-bottom:0.6rem">' +
+            '<label style="font-weight:700;display:block;margin-bottom:0.25rem;font-size:0.75rem">Required Evidence Title</label>' +
+            '<input type="text" id="demand-title" class="top-search-input" style="width:100%;font-size:0.785rem" placeholder="e.g. Original Purchase Invoices, Police Investigation Log, Bank Statements" required/>' +
+          '</div>' +
+
+          '<div style="margin-bottom:0.75rem">' +
+            '<label style="font-weight:700;display:block;margin-bottom:0.25rem;font-size:0.75rem">Judicial Instructions &amp; Legal Authority</label>' +
+            '<textarea id="demand-desc" class="top-search-input" style="width:100%;height:60px;font-size:0.785rem;padding:0.4rem" placeholder="Order issued pursuant to Federal Supreme Court Rules. State specific documents required..."></textarea>' +
+          '</div>' +
+
+          '<button type="submit" id="btn-dispatch-demand" class="btn-schedule-action" style="width:100%;padding:0.6rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;font-size:0.8rem;cursor:pointer">' +
+            '⚖️ Dispatch Judicial Evidence Demand Order' +
+          '</button>' +
+        '</form>' +
+      '</div>' +
     '</div>' +
 
     '<!-- Tab 3: Notepad -->' +
@@ -467,23 +580,39 @@ function openJudgeCaseModal(caseId) {
 
   openJudgeModal();
 }
+window.openJudgeCaseModal = openJudgeCaseModal;
 
 function switchModalTab(tabKey) {
-  ['overview', 'evidence', 'notepad', 'verdict'].forEach(t => {
+  const tabs = ['overview', 'evidence', 'notepad', 'verdict'];
+  tabs.forEach(t => {
     const el = document.getElementById('modal-tab-' + t);
     const btn = document.getElementById('tab-btn-' + t);
-    if (el) el.style.display = t === tabKey ? 'block' : 'none';
+    if (el) el.style.display = (t === tabKey) ? 'block' : 'none';
     if (btn) {
       if (t === tabKey) {
         btn.style.background = '#0b1a30';
         btn.style.color = '#ffffff';
+        btn.style.borderColor = '#0b1a30';
+        btn.style.fontWeight = '700';
       } else {
         btn.style.background = '#f8fafc';
-        btn.style.color = 'var(--fsc-navy-main)';
+        btn.style.color = '#475569';
+        btn.style.borderColor = '#cbd5e1';
+        btn.style.fontWeight = '600';
       }
     }
   });
 }
+window.switchModalTab = switchModalTab;
+
+function viewEvidenceFile(docName, docPath) {
+  if (docPath && docPath !== '#' && !docPath.includes('undefined')) {
+    window.open(docPath, '_blank');
+  } else {
+    alert('Viewing document: ' + docName + '\nFile is securely registered in Supreme Court Evidence Vault.');
+  }
+}
+window.viewEvidenceFile = viewEvidenceFile;
 
 async function toggleEvidenceClassification(caseId, docId, targetStatus) {
   try {
@@ -507,6 +636,59 @@ async function toggleEvidenceClassification(caseId, docId, targetStatus) {
     alert('Error updating evidence: ' + err.message);
   }
 }
+window.toggleEvidenceClassification = toggleEvidenceClassification;
+
+async function handleDemandEvidenceSubmit(e, caseId) {
+  e.preventDefault();
+  const targetParty = document.getElementById('demand-target-party').value;
+  const deadline = document.getElementById('demand-deadline').value;
+  const demandTitle = document.getElementById('demand-title').value.trim();
+  const description = document.getElementById('demand-desc').value.trim();
+  const btn = document.getElementById('btn-dispatch-demand');
+
+  if (!demandTitle) {
+    alert('Please specify the required evidence title');
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Dispatching Judicial Demand Order...';
+  }
+
+  try {
+    const res = await fetch(API + '/cases/demand-documents', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId,
+        demandTitle,
+        description,
+        targetParty,
+        deadline,
+        judgeName: currentJudge.fullName || 'Hon. Judge Solomon Desta'
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert('✓ Judicial Evidence Demand successfully issued and dispatched to ' + targetParty + '!');
+      await loadJudgeData();
+      openJudgeCaseModal(caseId);
+      switchModalTab('evidence');
+    } else {
+      alert(data.error || 'Failed to issue evidence demand');
+    }
+  } catch (err) {
+    alert('Error issuing evidence demand: ' + err.message);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '⚖️ Dispatch Judicial Evidence Demand Order';
+    }
+  }
+}
+window.handleDemandEvidenceSubmit = handleDemandEvidenceSubmit;
 
 async function saveJudgeNotepad(caseId) {
   const content = document.getElementById('judge-notepad-area').value;
@@ -528,6 +710,7 @@ async function saveJudgeNotepad(caseId) {
     alert('Error saving notes: ' + err.message);
   }
 }
+window.saveJudgeNotepad = saveJudgeNotepad;
 
 async function handleDeliverVerdictSubmit(e, caseId) {
   e.preventDefault();
@@ -561,16 +744,19 @@ async function handleDeliverVerdictSubmit(e, caseId) {
     alert('Error delivering verdict: ' + err.message);
   }
 }
+window.handleDeliverVerdictSubmit = handleDeliverVerdictSubmit;
 
 function openJudgeModal() {
   const b = document.getElementById('universal-judge-modal');
   if (b) b.style.display = 'flex';
 }
+window.openJudgeModal = openJudgeModal;
 
 function closeJudgeModal() {
   const b = document.getElementById('universal-judge-modal');
   if (b) b.style.display = 'none';
 }
+window.closeJudgeModal = closeJudgeModal;
 
 function openJudgeEditProfileModal() {
   const menu = document.getElementById('judge-profile-dropdown-menu');
@@ -600,6 +786,7 @@ function openJudgeEditProfileModal() {
     '</form>';
   openJudgeModal();
 }
+window.openJudgeEditProfileModal = openJudgeEditProfileModal;
 
 function handleJudgeEditProfileSubmit(e) {
   e.preventDefault();
@@ -613,8 +800,10 @@ function handleJudgeEditProfileSubmit(e) {
   closeJudgeModal();
   renderJudgeCurrentView();
 }
+window.handleJudgeEditProfileSubmit = handleJudgeEditProfileSubmit;
 
 function logoutJudge() {
   sessionStorage.removeItem('court_user');
   window.location.href = '/';
 }
+window.logoutJudge = logoutJudge;

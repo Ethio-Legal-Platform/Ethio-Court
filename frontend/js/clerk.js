@@ -16,6 +16,7 @@ let currentClerk = {
 let currentClerkView = 'dashboard';
 let allCases = [];
 let allSmsLogs = [];
+let activeDocketTab = 'dossier';
 
 const ICONS = {
   fileText: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>',
@@ -31,6 +32,50 @@ const ICONS = {
   edit: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
   list: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>'
 };
+
+function viewRealDocument(url, title) {
+  if (url && url !== 'undefined') {
+    window.open(url, '_blank');
+  } else {
+    alert('Opening certified judicial record: ' + (title || 'Court Document'));
+  }
+}
+window.viewRealDocument = viewRealDocument;
+
+// ── Strict Clerk Case Appointment Filter ──
+function isCaseAppointedToCurrentClerk(c) {
+  if (!c) return false;
+  const clerkId = (currentClerk.id || 'CLERK-001').toLowerCase();
+  const clerkUser = (currentClerk.username || 'clerk.kalkidan').toLowerCase();
+  const clerkName = (currentClerk.fullName || 'Kalkidan Mengistu').toLowerCase();
+  const clerkTokens = clerkName.split(/\s+/).filter(t => t.length > 2);
+
+  // 1. Direct clerkId match
+  if (c.clerkId && (c.clerkId.toLowerCase() === clerkId || c.clerkId.toLowerCase() === clerkUser)) return true;
+  if (c.assignedClerkId && (c.assignedClerkId.toLowerCase() === clerkId || c.assignedClerkId.toLowerCase() === clerkUser)) return true;
+
+  // 2. clerkName or assignedClerk name match
+  if (c.clerkName) {
+    const cName = String(c.clerkName).toLowerCase();
+    if (cName.includes(clerkId) || clerkTokens.some(tok => cName.includes(tok))) return true;
+  }
+  if (c.assignedClerk) {
+    const aClerk = String(c.assignedClerk).toLowerCase();
+    if (aClerk.includes(clerkId) || clerkTokens.some(tok => aClerk.includes(tok))) return true;
+  }
+
+  // 3. registeredBy match
+  if (c.registeredBy) {
+    const reg = String(c.registeredBy).toLowerCase();
+    if (reg.includes(clerkId) || clerkTokens.some(tok => reg.includes(tok))) return true;
+  }
+
+  return false;
+}
+
+function getAppointedCases() {
+  return allCases.filter(isCaseAppointedToCurrentClerk);
+}
 
 window.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -57,6 +102,10 @@ function startClerkLiveClock() {
       const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
       clockEl.textContent = dayName + ', ' + timeStr;
     }
+    const sideDate = document.getElementById('sidebar-live-date');
+    const sideClock = document.getElementById('sidebar-live-clock');
+    if (sideDate) sideDate.textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    if (sideClock) sideClock.textContent = now.toLocaleTimeString('en-US');
   }
   tick();
   setInterval(tick, 1000);
@@ -95,61 +144,17 @@ function handleClerkGlobalClick(e) {
   }
 }
 
-function openClerkEditProfileModal() {
-  const menu = document.getElementById('clerk-profile-dropdown-menu');
-  if (menu) menu.classList.remove('show');
-
-  document.getElementById('clerk-modal-title').textContent = 'Edit Court Clerk Profile';
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<form onsubmit="handleClerkEditProfileSubmit(event)">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Full Legal Name</label>' +
-        '<input type="text" id="edit-clk-fullname" class="top-search-input" style="border-radius:6px;width:100%" value="' + (currentClerk.fullName || 'Kalkidan Mengistu') + '" required/>' +
-      '</div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Registry Email</label>' +
-          '<input type="email" id="edit-clk-email" class="top-search-input" style="border-radius:6px;width:100%" value="' + (currentClerk.email || 'kalkidan.registry@courts.gov.et') + '" required/>' +
-        '</div>' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Desk Extension</label>' +
-          '<input type="text" id="edit-clk-phone" class="top-search-input" style="border-radius:6px;width:100%" value="' + (currentClerk.phone || '+251 11 551 7700 (Ext 22)') + '" required/>' +
-        '</div>' +
-      '</div>' +
-      '<div style="margin-bottom:1rem;border-top:1px solid #f1f5f9;padding-top:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Update Password (leave blank to keep current)</label>' +
-        '<input type="password" id="edit-clk-password" class="top-search-input" style="border-radius:6px;width:100%" placeholder="••••••••"/>' +
-      '</div>' +
-      '<div style="display:flex;gap:0.5rem">' +
-        '<button type="submit" class="btn btn-primary" style="flex:1;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Save Clerk Profile</button>' +
-        '<button type="button" class="btn btn-outline" style="padding:0.75rem 1rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeClerkModal()">Cancel</button>' +
-      '</div>' +
-    '</form>';
-  openClerkModal();
-}
-
-function handleClerkEditProfileSubmit(e) {
-  e.preventDefault();
-  const fullName = document.getElementById('edit-clk-fullname').value.trim();
-  const email = document.getElementById('edit-clk-email').value.trim();
-  const phone = document.getElementById('edit-clk-phone').value.trim();
-
-  currentClerk.fullName = fullName;
-  currentClerk.email = email;
-  currentClerk.phone = phone;
-
-  sessionStorage.setItem('court_user', JSON.stringify(currentClerk));
-  updateClerkHeaderUI();
-  alert('Clerk profile updated.');
-  closeClerkModal();
-  renderClerkCurrentView();
-}
-
 function logoutClerk() {
-  const menu = document.getElementById('clerk-profile-dropdown-menu');
-  if (menu) menu.classList.remove('show');
-  sessionStorage.removeItem('court_user');
-  window.location.href = '/';
+  if (confirm('Are you sure you want to sign out of the Court Clerk Workspace?')) {
+    sessionStorage.removeItem('court_user');
+    window.location.href = '/?auth=login';
+  }
+}
+}
+
+function closeClerkModal() {
+  const modal = document.getElementById('universal-clerk-modal');
+  if (modal) modal.classList.remove('show');
 }
 
 async function loadClerkData() {
@@ -165,13 +170,26 @@ async function loadClerkData() {
   renderClerkCurrentView();
 }
 
+// ── Sidebar Switcher Fix ──
 function switchClerkView(viewName) {
   currentClerkView = viewName;
+  
   document.querySelectorAll('.clerk-nav-btn').forEach(btn => btn.classList.remove('active'));
-  const activeBtn = Array.from(document.querySelectorAll('.clerk-nav-btn')).find(b => 
-    b.textContent.toLowerCase().includes(viewName.replace('_', ' '))
-  );
-  if (activeBtn) activeBtn.classList.add('active');
+  
+  document.querySelectorAll('.clerk-nav-btn').forEach(btn => {
+    const onclickAttr = btn.getAttribute('onclick') || '';
+    if (onclickAttr.includes("'" + viewName + "'")) {
+      btn.classList.add('active');
+    } else if (viewName === 'registered_cases' || viewName === 'case_records') {
+      if (onclickAttr.includes('registered_cases') || onclickAttr.includes('case_records')) {
+        btn.classList.add('active');
+      }
+    } else if (viewName === 'documents') {
+      if (onclickAttr.includes('documents')) {
+        btn.classList.add('active');
+      }
+    }
+  });
 
   renderClerkCurrentView();
 }
@@ -184,7 +202,7 @@ function renderClerkCurrentView() {
     renderClerkDashboard(container);
   } else if (currentClerkView === 'filing_queue') {
     renderClerkFilingQueueView(container);
-  } else if (currentClerkView === 'case_records') {
+  } else if (currentClerkView === 'registered_cases' || currentClerkView === 'case_records') {
     renderClerkCaseRecordsView(container);
   } else if (currentClerkView === 'documents') {
     renderClerkDocumentsView(container);
@@ -203,98 +221,100 @@ function renderClerkCurrentView() {
   }
 }
 
+// ── Overview Dashboard ──
 function renderClerkDashboard(container) {
-  const pendingFilingsList = [
-    { tempId: 'TEMP-240524-0018', filerName: 'Abebe Kebede', caseType: 'Civil', filedOn: 'May 24, 2026 10:30 AM', docCount: 4, status: 'Pending' },
-    { tempId: 'TEMP-240524-0017', filerName: 'Hana Tesfaye', caseType: 'Labour', filedOn: 'May 24, 2026 10:21 AM', docCount: 3, status: 'Pending' },
-    { tempId: 'TEMP-240524-0016', filerName: 'Zewdu Getachew', caseType: 'Land', filedOn: 'May 24, 2026 10:15 AM', docCount: 5, status: 'Pending' },
-    { tempId: 'TEMP-240524-0015', filerName: 'Yalemwork Alemu', caseType: 'Family', filedOn: 'May 24, 2026 10:05 AM', docCount: 2, status: 'Pending' },
-    { tempId: 'TEMP-240524-0014', filerName: 'Awash International Bank', caseType: 'Corporate', filedOn: 'May 24, 2026 09:55 AM', docCount: 6, status: 'Pending' }
-  ];
+  const myCases = getAppointedCases();
 
-  const pendingRowsHtml = pendingFilingsList.map(p => 
-    '<tr>' +
-      '<td><a class="case-link-bold" onclick="openRegisterFilingModal(\'' + p.tempId + '\', \'' + p.filerName + '\', \'' + p.caseType + '\')">' + p.tempId + '</a></td>' +
-      '<td><strong style="color:var(--fsc-navy-main)">' + p.filerName + '</strong></td>' +
-      '<td style="color:#64748b">' + p.caseType + '</td>' +
-      '<td style="color:#64748b;font-size:0.75rem">' + p.filedOn + '</td>' +
-      '<td><div style="display:flex;align-items:center;gap:0.3rem"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> <span>' + p.docCount + '</span></div></td>' +
-      '<td><span class="status-pill pill-yellow">' + p.status + '</span></td>' +
-      '<td>' +
-        '<div style="display:flex;align-items:center;gap:0.35rem">' +
-          '<button class="btn-register-sm" onclick="openRegisterFilingModal(\'' + p.tempId + '\', \'' + p.filerName + '\', \'' + p.caseType + '\')">Register</button>' +
-          '<button class="btn-register-sm" style="padding:0.25rem 0.4rem" onclick="openRegisterFilingModal(\'' + p.tempId + '\', \'' + p.filerName + '\', \'' + p.caseType + '\')">⋮</button>' +
-        '</div>' +
-      '</td>' +
-    '</tr>'
-  ).join('');
+  const pendingFilings = myCases.filter(c => c.status === 'pending' || c.status === 'requested');
+  const registeredCases = myCases.filter(c => c.status !== 'pending' && c.status !== 'requested');
+  const activeHearings = myCases.filter(c => c.hearingDate || c.hearingTime || c.nextHearingDate);
 
-  const registeredCasesList = [
-    { caseId: 'CASE-240521596417', title: 'Awash International Bank vs. Blue Nile Holdings', registeredOn: 'May 24, 2026 10:32 AM', registeredBy: 'Kalkidan M.' },
-    { caseId: 'CASE-178721612233', title: 'Abebe Kebede vs. Zenebe Tadesse', registeredOn: 'May 24, 2026 10:18 AM', registeredBy: 'Kalkidan M.' },
-    { caseId: 'CASE-178721608884', title: 'Hana Tesfaye vs. Worku Alemu', registeredOn: 'May 24, 2026 10:10 AM', registeredBy: 'Kalkidan M.' },
-    { caseId: 'CASE-178721598765', title: 'Zewdu Getachew vs. Tesfaye Yimer', registeredOn: 'May 24, 2026 09:58 AM', registeredBy: 'Kalkidan M.' },
-    { caseId: 'CASE-178721595551', title: 'Yalemwork Alemu vs. Fitsum Abebe', registeredOn: 'May 24, 2026 09:45 AM', registeredBy: 'Kalkidan M.' }
-  ];
-
-  const registeredRowsHtml = registeredCasesList.map(r => 
+  const registeredRowsHtml = registeredCases.slice(0, 5).map(r => 
     '<tr>' +
       '<td><a class="case-link-bold" onclick="openClerkCaseModal(\'' + r.caseId + '\')">' + r.caseId + '</a></td>' +
-      '<td style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px"><strong style="color:var(--fsc-navy-main)">' + r.title + '</strong></td>' +
-      '<td style="color:#64748b;font-size:0.75rem">' + r.registeredOn + '</td>' +
-      '<td style="color:#64748b">' + r.registeredBy + '</td>' +
-      '<td><button class="btn-register-sm" onclick="openClerkCaseModal(\'' + r.caseId + '\')">Open</button></td>' +
+      '<td style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px"><strong style="color:var(--fsc-navy-main)">' + r.caseTitle + '</strong></td>' +
+      '<td style="color:#64748b;font-size:0.75rem">' + (r.dateFiled || 'Aug 20, 2026') + '</td>' +
+      '<td style="color:#64748b">' + (r.registeredBy || currentClerk.fullName) + '</td>' +
+      '<td><button class="btn-register-sm" onclick="openClerkCaseModal(\'' + r.caseId + '\')">Open Docket</button></td>' +
     '</tr>'
-  ).join('');
+  ).join('') || '<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:#94a3b8">No cases currently appointed to this registry chamber.</td></tr>';
 
-  const docUploadsList = [
-    { fileName: 'Evidence_01.pdf', caseId: 'CASE-178721596417', uploader: 'Awash Bank', time: '10:32 AM', size: '2.4 MB' },
-    { fileName: 'Contract.pdf', caseId: 'CASE-178721612233', uploader: 'Abebe Kebede', time: '10:18 AM', size: '5.1 MB' },
-    { fileName: 'Witness_Statement.pdf', caseId: 'CASE-178721608884', uploader: 'Hana Tesfaye', time: '10:10 AM', size: '1.8 MB' },
-    { fileName: 'Land_Document.pdf', caseId: 'CASE-178721608884', uploader: 'Hana Tesfaye', time: '10:10 AM', size: '3.2 MB' },
-    { fileName: 'ID_Copy.pdf', caseId: 'CASE-178721598765', uploader: 'Zewdu Getachew', time: '09:58 AM', size: '900 KB' }
-  ];
+  let docUploads = [];
+  myCases.forEach(c => {
+    if (c.documents && Array.isArray(c.documents)) {
+      c.documents.forEach(d => {
+        docUploads.push({
+          fileName: d.name || d.title || 'Legal_Filing.pdf',
+          caseId: c.caseId,
+          url: d.url,
+          uploader: d.uploadedBy || (c.filer && c.filer.name) || 'Litigant Counsel',
+          time: d.date || 'Today',
+          size: d.size || '1.8 MB'
+        });
+      });
+    }
+  });
 
-  const docUploadsHtml = docUploadsList.map(d => 
+  const docUploadsHtml = docUploads.slice(0, 5).map(d => 
     '<div class="doc-upload-item">' +
       '<div class="doc-upload-left">' +
         '<div style="color:#2563eb">' + ICONS.fileText + '</div>' +
         '<div style="min-width:0">' +
-          '<div class="doc-file-name" onclick="alert(\'Viewing verified PDF: ' + d.fileName + '\')">' + d.fileName + '</div>' +
+          '<div class="doc-file-name" onclick="viewRealDocument(\'' + (d.url || '') + '\', \'' + d.fileName + '\')">' + d.fileName + '</div>' +
           '<div class="doc-case-sub">' + d.caseId + '</div>' +
         '</div>' +
       '</div>' +
       '<div class="doc-upload-meta">' + d.uploader + ' &bull; ' + d.time + '</div>' +
       '<div style="display:flex;align-items:center;gap:0.4rem">' +
         '<span style="font-size:0.7rem;color:#64748b">' + d.size + '</span>' +
-        '<span class="status-pill pill-green">Uploaded</span>' +
+        '<button class="btn-register-sm" style="padding:0.15rem 0.4rem;font-size:0.7rem" onclick="viewRealDocument(\'' + (d.url || '') + '\', \'' + d.fileName + '\')">View PDF</button>' +
       '</div>' +
     '</div>'
-  ).join('');
+  ).join('') || '<div style="text-align:center;padding:1.5rem;color:#94a3b8">No recent documents filed for your appointed cases.</div>';
 
-  const smsLogsList = [
-    { time: 'May 24, 2026 10:35 AM', phone: '+251 911 123 456', caseId: 'CASE-178721596417', type: 'Hearing Notice', status: 'Sent', statusClass: 'pill-green', sentBy: 'Kalkidan M.' },
-    { time: 'May 24, 2026 10:22 AM', phone: '+251 912 789 123', caseId: 'CASE-178721612233', type: 'Filing Confirmation', status: 'Sent', statusClass: 'pill-green', sentBy: 'Kalkidan M.' },
-    { time: 'May 24, 2026 10:15 AM', phone: '+251 913 456 789', caseId: 'CASE-178721608884', type: 'Hearing Notice', status: 'Sent', statusClass: 'pill-green', sentBy: 'Kalkidan M.' },
-    { time: 'May 24, 2026 09:48 AM', phone: '+251 911 987 654', caseId: 'CASE-178721598765', type: 'Filing Confirmation', status: 'Delivered', statusClass: 'pill-blue', sentBy: 'Kalkidan M.' },
-    { time: 'May 24, 2026 09:40 AM', phone: '+251 919 654 321', caseId: 'CASE-178721595551', type: 'Court Order', status: 'Sent', statusClass: 'pill-green', sentBy: 'Kalkidan M.' }
-  ];
+  const hearingSlotsHtml = activeHearings.slice(0, 4).map(h => 
+    '<div class="hearing-slot-row">' +
+      '<div class="hearing-time-bold">' + (h.hearingTime || '10:00 AM') + '</div>' +
+      '<div class="hearing-case-info">' +
+        '<a class="hearing-case-id" onclick="openClerkCaseModal(\'' + h.caseId + '\')">' + h.caseId + '</a>' +
+        '<div class="hearing-case-title">' + h.caseTitle + '</div>' +
+      '</div>' +
+      '<span class="hearing-courtroom-badge">&bull; ' + (h.courtroom || 'Courtroom 2') + '</span>' +
+    '</div>'
+  ).join('') || '<div style="text-align:center;padding:1.5rem;color:#94a3b8">No hearings scheduled today for your appointed cases.</div>';
 
-  const smsRowsHtml = smsLogsList.map(s => 
+  const pendingRowsHtml = pendingFilings.slice(0, 5).map(p => 
     '<tr>' +
-      '<td style="color:#64748b;font-size:0.75rem;white-space:nowrap">' + s.time + '</td>' +
-      '<td><strong>' + s.phone + '</strong></td>' +
-      '<td><a class="case-link-bold" onclick="openClerkCaseModal(\'' + s.caseId + '\')">' + s.caseId + '</a></td>' +
-      '<td>' + s.type + '</td>' +
-      '<td><span class="status-pill ' + s.statusClass + '">' + s.status + '</span></td>' +
-      '<td style="color:#64748b">' + s.sentBy + '</td>' +
+      '<td><a class="case-link-bold" onclick="openRegisterFilingModal(\'' + p.caseId + '\')">' + p.caseId + '</a></td>' +
+      '<td><strong style="color:var(--fsc-navy-main)">' + ((p.filer && p.filer.name) || p.caseTitle) + '</strong></td>' +
+      '<td style="color:#64748b">' + (p.caseType || p.caseCategory || 'Civil') + '</td>' +
+      '<td style="color:#64748b;font-size:0.75rem">' + (p.dateFiled || 'Today') + '</td>' +
+      '<td><div style="display:flex;align-items:center;gap:0.3rem">' + ICONS.fileText + ' <span>' + (p.documents ? p.documents.length : 1) + '</span></div></td>' +
+      '<td><span class="status-pill pill-yellow">' + (p.status || 'Pending') + '</span></td>' +
+      '<td>' +
+        '<button class="btn-register-sm" onclick="openRegisterFilingModal(\'' + p.caseId + '\')">Review &amp; Issue Docket</button>' +
+      '</td>' +
     '</tr>'
-  ).join('');
+  ).join('') || '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:#94a3b8">No incoming filings in your queue.</td></tr>';
+
+  const myCaseIds = new Set(myCases.map(c => c.caseId));
+  const mySms = allSmsLogs.filter(s => myCaseIds.has(s.caseId) || myCaseIds.has(s.trackingId));
+
+  const smsRowsHtml = mySms.slice(0, 5).map(s => 
+    '<tr>' +
+      '<td style="color:#64748b;font-size:0.75rem;white-space:nowrap">' + (s.time || s.timestamp || 'Today') + '</td>' +
+      '<td><strong>' + (s.phone || s.recipientPhone || '+251 911 123 456') + '</strong></td>' +
+      '<td><a class="case-link-bold" onclick="openClerkCaseModal(\'' + s.caseId + '\')">' + s.caseId + '</a></td>' +
+      '<td>' + (s.type || s.templateType || 'Court Notice') + '</td>' +
+      '<td><span class="status-pill pill-green">' + (s.status || 'Sent') + '</span></td>' +
+      '<td style="color:#64748b">' + (s.sentBy || currentClerk.fullName) + '</td>' +
+    '</tr>'
+  ).join('') || '<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:#94a3b8">No dispatch logs recorded for your appointed dockets.</td></tr>';
 
   container.innerHTML = 
     '<div class="clerk-greeting-row">' +
       '<h1 class="clerk-greeting-title">Good morning, ' + (currentClerk.fullName || 'Kalkidan Mengistu') + '</h1>' +
-      '<div class="clerk-greeting-sub">Here\'s what\'s happening in the registry today.</div>' +
+      '<div class="clerk-greeting-sub">Chamber Registry &bull; Managing <strong>' + myCases.length + ' appointed case dockets</strong>.</div>' +
     '</div>' +
 
     '<div class="clerk-kpi-grid-5">' +
@@ -302,12 +322,12 @@ function renderClerkDashboard(container) {
         '<div class="clerk-kpi-top">' +
           '<div class="clerk-kpi-icon kpi-blue">' + ICONS.fileText + '</div>' +
           '<div>' +
-            '<div class="clerk-kpi-label">Pending Filings</div>' +
-            '<div class="clerk-kpi-number">18</div>' +
+            '<div class="clerk-kpi-label">Appointed Cases</div>' +
+            '<div class="clerk-kpi-number">' + myCases.length + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="clerk-kpi-subtext">Awaiting registration</div>' +
-        '<a class="clerk-kpi-link" onclick="switchClerkView(\'filing_queue\')">View queue &rarr;</a>' +
+        '<div class="clerk-kpi-subtext">Active chamber registry</div>' +
+        '<a class="clerk-kpi-link" onclick="switchClerkView(\'registered_cases\')">View records &rarr;</a>' +
       '</div>' +
 
       '<div class="clerk-kpi-card">' +
@@ -315,22 +335,22 @@ function renderClerkDashboard(container) {
           '<div class="clerk-kpi-icon kpi-green">' + ICONS.folderCheck + '</div>' +
           '<div>' +
             '<div class="clerk-kpi-label">Registered Today</div>' +
-            '<div class="clerk-kpi-number">12</div>' +
+            '<div class="clerk-kpi-number">' + registeredCases.length + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="clerk-kpi-subtext">This day</div>' +
-        '<a class="clerk-kpi-link" onclick="switchClerkView(\'case_records\')">View records &rarr;</a>' +
+        '<div class="clerk-kpi-subtext">Certified dockets</div>' +
+        '<a class="clerk-kpi-link" onclick="switchClerkView(\'registered_cases\')">View records &rarr;</a>' +
       '</div>' +
 
       '<div class="clerk-kpi-card">' +
         '<div class="clerk-kpi-top">' +
           '<div class="clerk-kpi-icon kpi-orange">' + ICONS.calendarClock + '</div>' +
           '<div>' +
-            '<div class="clerk-kpi-label">Hearings Today</div>' +
-            '<div class="clerk-kpi-number">6</div>' +
+            '<div class="clerk-kpi-label">Hearings Scheduled</div>' +
+            '<div class="clerk-kpi-number">' + activeHearings.length + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="clerk-kpi-subtext">Scheduled</div>' +
+        '<div class="clerk-kpi-subtext">Calendar listings</div>' +
         '<a class="clerk-kpi-link" onclick="switchClerkView(\'hearing_calendar\')">View calendar &rarr;</a>' +
       '</div>' +
 
@@ -338,50 +358,42 @@ function renderClerkDashboard(container) {
         '<div class="clerk-kpi-top">' +
           '<div class="clerk-kpi-icon kpi-purple">' + ICONS.uploadDoc + '</div>' +
           '<div>' +
-            '<div class="clerk-kpi-label">Documents Uploaded</div>' +
-            '<div class="clerk-kpi-number">24</div>' +
+            '<div class="clerk-kpi-label">Documents &amp; Exhibits</div>' +
+            '<div class="clerk-kpi-number">' + docUploads.length + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="clerk-kpi-subtext">This day</div>' +
+        '<div class="clerk-kpi-subtext">Verified submissions</div>' +
         '<a class="clerk-kpi-link" onclick="switchClerkView(\'documents\')">View documents &rarr;</a>' +
       '</div>' +
 
       '<div class="clerk-kpi-card">' +
         '<div class="clerk-kpi-top">' +
-          '<div class="clerk-kpi-icon kpi-teal">' + ICONS.checkCircle + '</div>' +
+          '<div class="clerk-kpi-icon kpi-blue">' + ICONS.checkCircle + '</div>' +
           '<div>' +
-            '<div class="clerk-kpi-label">Orders Issued</div>' +
-            '<div class="clerk-kpi-number">8</div>' +
+            '<div class="clerk-kpi-label">Dispatched SMS</div>' +
+            '<div class="clerk-kpi-number">' + mySms.length + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="clerk-kpi-subtext">This day</div>' +
-        '<a class="clerk-kpi-link" onclick="switchClerkView(\'templates\')">View orders &rarr;</a>' +
+        '<div class="clerk-kpi-subtext">100% Certified Delivery</div>' +
+        '<a class="clerk-kpi-link" onclick="switchClerkView(\'sms_notifications\')">View SMS log &rarr;</a>' +
       '</div>' +
     '</div>' +
 
     '<div class="clerk-2col-row-top">' +
-
       '<div class="clerk-panel-card">' +
         '<div class="clerk-panel-header">' +
-          '<div>' +
-            '<div class="clerk-panel-title">' +
-              '<span>Filing Queue</span>' +
-              '<span class="badge-gold-pill">18</span>' +
-            '</div>' +
-            '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">New filings submitted by litigants</div>' +
-          '</div>' +
-          '<a class="clerk-panel-link" onclick="switchClerkView(\'filing_queue\')">View all &rarr;</a>' +
+          '<div class="clerk-panel-title">Pending Filing Verification Queue (Your Appointed Cases)</div>' +
+          '<a class="clerk-panel-link" onclick="switchClerkView(\'filing_queue\')">View full queue &rarr;</a>' +
         '</div>' +
-
         '<div style="overflow-x:auto">' +
           '<table class="clerk-table">' +
             '<thead>' +
               '<tr>' +
-                '<th>Case ID</th>' +
-                '<th>Filer Name</th>' +
+                '<th>Filing ID</th>' +
+                '<th>Filer / Petitioner</th>' +
                 '<th>Case Type</th>' +
                 '<th>Filed On</th>' +
-                '<th>Documents</th>' +
+                '<th>Docs</th>' +
                 '<th>Status</th>' +
                 '<th>Action</th>' +
               '</tr>' +
@@ -391,80 +403,25 @@ function renderClerkDashboard(container) {
             '</tbody>' +
           '</table>' +
         '</div>' +
-
-        '<div style="text-align:center;padding-top:0.75rem;border-top:1px solid #f1f5f9;margin-top:0.65rem">' +
-          '<a class="clerk-panel-link" onclick="switchClerkView(\'filing_queue\')">View all filings &rarr;</a>' +
-        '</div>' +
       '</div>' +
 
       '<div class="clerk-panel-card">' +
         '<div class="clerk-panel-header">' +
-          '<div class="clerk-panel-title">Today\'s Hearings</div>' +
-          '<a class="clerk-panel-link" onclick="switchClerkView(\'hearing_calendar\')">View full calendar &rarr;</a>' +
+          '<div class="clerk-panel-title">Today\'s Chamber Hearings</div>' +
+          '<a class="clerk-panel-link" onclick="switchClerkView(\'hearing_calendar\')">Full calendar &rarr;</a>' +
         '</div>' +
-
-        '<div>' +
-          '<div class="hearing-slot-row">' +
-            '<div class="hearing-time-bold">09:30 AM</div>' +
-            '<div class="hearing-case-info">' +
-              '<a class="hearing-case-id" onclick="openClerkCaseModal(\'CASE-17872154411\')">CASE-17872154411</a>' +
-              '<div class="hearing-case-title">Awash Bank vs. Blue Nile Holdings</div>' +
-            '</div>' +
-            '<span class="hearing-courtroom-badge">&bull; Courtroom 4</span>' +
-          '</div>' +
-
-          '<div class="hearing-slot-row">' +
-            '<div class="hearing-time-bold">11:00 AM</div>' +
-            '<div class="hearing-case-info">' +
-              '<a class="hearing-case-id" onclick="openClerkCaseModal(\'CASE-17872155922\')">CASE-17872155922</a>' +
-              '<div class="hearing-case-title">Mulualem Desta vs. Ethio Telecom</div>' +
-            '</div>' +
-            '<span class="hearing-courtroom-badge">&bull; Courtroom 2</span>' +
-          '</div>' +
-
-          '<div class="hearing-slot-row">' +
-            '<div class="hearing-time-bold">02:00 PM</div>' +
-            '<div class="hearing-case-info">' +
-              '<a class="hearing-case-id" onclick="openClerkCaseModal(\'CASE-178721552233\')">CASE-178721552233</a>' +
-              '<div class="hearing-case-title">Aster Manufacturing vs. Ministry of Rev.</div>' +
-            '</div>' +
-            '<span class="hearing-courtroom-badge">&bull; Courtroom 3</span>' +
-          '</div>' +
-
-          '<div class="hearing-slot-row">' +
-            '<div class="hearing-time-bold">03:30 PM</div>' +
-            '<div class="hearing-case-info">' +
-              '<a class="hearing-case-id" onclick="openClerkCaseModal(\'CASE-178721548800\')">CASE-178721548800</a>' +
-              '<div class="hearing-case-title">Yalemwork Alemu vs. Hibret Insurance</div>' +
-            '</div>' +
-            '<span class="hearing-courtroom-badge">&bull; Courtroom 1</span>' +
-          '</div>' +
-
-          '<div class="hearing-slot-row">' +
-            '<div class="hearing-time-bold">04:30 PM</div>' +
-            '<div class="hearing-case-info">' +
-              '<a class="hearing-case-id" onclick="openClerkCaseModal(\'CASE-178721561122\')">CASE-178721561122</a>' +
-              '<div class="hearing-case-title">Kidane Tekle vs. Govt. of Ethiopia</div>' +
-            '</div>' +
-            '<span class="hearing-courtroom-badge">&bull; Courtroom 2</span>' +
-          '</div>' +
-        '</div>' +
-
-        '<div style="text-align:center;padding-top:0.75rem;border-top:1px solid #f1f5f9;margin-top:0.65rem">' +
-          '<a class="clerk-panel-link" onclick="switchClerkView(\'hearing_calendar\')">View full calendar &rarr;</a>' +
+        '<div style="display:flex;flex-direction:column;gap:0.65rem">' +
+          hearingSlotsHtml +
         '</div>' +
       '</div>' +
-
     '</div>' +
 
-    '<div class="clerk-3col-row-mid">' +
-
+    '<div class="clerk-2col-row-mid">' +
       '<div class="clerk-panel-card">' +
         '<div class="clerk-panel-header">' +
-          '<div class="clerk-panel-title">Recent Registered Cases</div>' +
-          '<a class="clerk-panel-link" onclick="switchClerkView(\'case_records\')">View all &rarr;</a>' +
+          '<div class="clerk-panel-title">Your Appointed Registered Cases</div>' +
+          '<a class="clerk-panel-link" onclick="switchClerkView(\'registered_cases\')">View all &rarr;</a>' +
         '</div>' +
-
         '<div style="overflow-x:auto">' +
           '<table class="clerk-table">' +
             '<thead>' +
@@ -485,86 +442,29 @@ function renderClerkDashboard(container) {
 
       '<div class="clerk-panel-card">' +
         '<div class="clerk-panel-header">' +
-          '<div class="clerk-panel-title">Document Uploads</div>' +
+          '<div class="clerk-panel-title">Document Uploads &amp; Certified Filings</div>' +
           '<a class="clerk-panel-link" onclick="switchClerkView(\'documents\')">View all &rarr;</a>' +
         '</div>' +
-
         '<div>' +
           docUploadsHtml +
         '</div>' +
       '</div>' +
-
-      '<div class="clerk-panel-card">' +
-        '<div class="clerk-panel-header">' +
-          '<div class="clerk-panel-title">Quick Actions</div>' +
-        '</div>' +
-
-        '<div class="quick-actions-3x3">' +
-          '<div class="action-tile-btn" onclick="openRegisterCaseModal()">' +
-            '<div style="color:#475569">' + ICONS.filePlus + '</div>' +
-            '<span>Register New Case</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openUploadDocumentModal()">' +
-            '<div style="color:#475569">' + ICONS.uploadDoc + '</div>' +
-            '<span>Upload Document</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openIssueOrderModal()">' +
-            '<div style="color:#475569">' + ICONS.scales + '</div>' +
-            '<span>Issue Order/Letter</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openScheduleHearingModal()">' +
-            '<div style="color:#475569">' + ICONS.calendarClock + '</div>' +
-            '<span>Schedule Hearing</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openSendSmsModal()">' +
-            '<div style="color:#475569">' + ICONS.messageSquare + '</div>' +
-            '<span>Send SMS (Manual)</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openGenerateReportModal()">' +
-            '<div style="color:#475569">' + ICONS.chart + '</div>' +
-            '<span>Generate Report</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openSearchCaseModal()">' +
-            '<div style="color:#475569">' + ICONS.search + '</div>' +
-            '<span>Search Case</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openCreateNoticeModal()">' +
-            '<div style="color:#475569">' + ICONS.edit + '</div>' +
-            '<span>Create Notice</span>' +
-          '</div>' +
-
-          '<div class="action-tile-btn" onclick="openDailyCauseListModal()">' +
-            '<div style="color:#475569">' + ICONS.list + '</div>' +
-            '<span>Daily Cause List</span>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-
     '</div>' +
 
     '<div class="clerk-2col-row-bottom">' +
-
       '<div class="clerk-panel-card">' +
         '<div class="clerk-panel-header">' +
-          '<div class="clerk-panel-title">SMS Notification Log</div>' +
+          '<div class="clerk-panel-title">SMS Notification Dispatch Log</div>' +
           '<a class="clerk-panel-link" onclick="switchClerkView(\'sms_notifications\')">View all &rarr;</a>' +
         '</div>' +
-
         '<div style="overflow-x:auto">' +
           '<table class="clerk-table">' +
             '<thead>' +
               '<tr>' +
-                '<th>Date &amp; Time</th>' +
+                '<th>Timestamp</th>' +
                 '<th>Recipient</th>' +
                 '<th>Case ID</th>' +
-                '<th>SMS Type</th>' +
+                '<th>Type</th>' +
                 '<th>Status</th>' +
                 '<th>Sent By</th>' +
               '</tr>' +
@@ -578,460 +478,920 @@ function renderClerkDashboard(container) {
 
       '<div class="clerk-panel-card">' +
         '<div class="clerk-panel-header">' +
-          '<div class="clerk-panel-title">Today\'s Summary</div>' +
+          '<div class="clerk-panel-title">Quick Actions</div>' +
         '</div>' +
-
-        '<div>' +
-          '<div class="summary-item-row">' +
-            '<div class="summary-item-left">' + ICONS.folderCheck + ' <span>Cases Registered</span></div>' +
-            '<span class="summary-item-number">12</span>' +
+        '<div class="quick-actions-3x3">' +
+          '<div class="action-tile-btn" onclick="openRegisterCaseModal()">' +
+            '<div style="color:#475569">' + ICONS.filePlus + '</div>' +
+            '<span>Register New Case</span>' +
           '</div>' +
-
-          '<div class="summary-item-row">' +
-            '<div class="summary-item-left">' + ICONS.fileText + ' <span>Documents Uploaded</span></div>' +
-            '<span class="summary-item-number">24</span>' +
+          '<div class="action-tile-btn" onclick="openUploadDocumentModal()">' +
+            '<div style="color:#475569">' + ICONS.uploadDoc + '</div>' +
+            '<span>Upload Document</span>' +
           '</div>' +
-
-          '<div class="summary-item-row">' +
-            '<div class="summary-item-left">' + ICONS.calendarClock + ' <span>Hearings Scheduled</span></div>' +
-            '<span class="summary-item-number">6</span>' +
+          '<div class="action-tile-btn" onclick="openIssueOrderModal()">' +
+            '<div style="color:#475569">' + ICONS.scales + '</div>' +
+            '<span>Issue Order</span>' +
           '</div>' +
-
-          '<div class="summary-item-row">' +
-            '<div class="summary-item-left">' + ICONS.messageSquare + ' <span>SMS Sent</span></div>' +
-            '<span class="summary-item-number">15</span>' +
+          '<div class="action-tile-btn" onclick="openScheduleHearingModal()">' +
+            '<div style="color:#475569">' + ICONS.calendarClock + '</div>' +
+            '<span>Schedule Hearing</span>' +
           '</div>' +
-
-          '<div class="summary-item-row">' +
-            '<div class="summary-item-left">' + ICONS.checkCircle + ' <span>Orders Issued</span></div>' +
-            '<span class="summary-item-number">8</span>' +
+          '<div class="action-tile-btn" onclick="openSendSmsModal()">' +
+            '<div style="color:#475569">' + ICONS.messageSquare + '</div>' +
+            '<span>Send SMS</span>' +
           '</div>' +
-        '</div>' +
-
-        '<div style="text-align:center;padding-top:0.75rem;border-top:1px solid #f1f5f9;margin-top:0.65rem">' +
-          '<a class="clerk-panel-link" onclick="openDailyReportModal()">View full daily report &rarr;</a>' +
+          '<div class="action-tile-btn" onclick="openGenerateReportModal()">' +
+            '<div style="color:#475569">' + ICONS.chart + '</div>' +
+            '<span>Generate Report</span>' +
+          '</div>' +
         '</div>' +
       '</div>' +
-
     '</div>';
 }
 
-/* Subviews */
-function renderClerkFilingQueueView(container) {
-  renderClerkDashboard(container);
-}
-
+// ── Case Records View (Registered Cases Only - Standalone View) ──
 function renderClerkCaseRecordsView(container) {
+  const myCases = getAppointedCases().filter(c => c.status !== 'pending' && c.status !== 'requested');
+
   container.innerHTML = 
-    '<div class="clerk-greeting-row">' +
-      '<h1 class="clerk-greeting-title">Court Docket &amp; Registry Records</h1>' +
-      '<div class="clerk-greeting-sub">Master archive of registered and pending federal cases.</div>' +
+    '<div style="margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">' +
+      '<div>' +
+        '<h2 style="font-size:1.35rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:0.25rem">Appointed Registered Cases</h2>' +
+        '<div style="font-size:0.85rem;color:#64748b">Showing <strong>' + myCases.length + ' certified case dockets</strong> appointed to ' + (currentClerk.fullName || 'this clerk') + ' &bull; ' + (currentClerk.branch || 'Federal Supreme Court') + '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:0.5rem;align-items:center">' +
+        '<button class="btn-register-sm" style="padding:0.45rem 1rem;font-weight:700" onclick="openRegisterCaseModal()">+ Register New Case</button>' +
+      '</div>' +
     '</div>' +
+
     '<div class="clerk-panel-card">' +
-      '<table class="clerk-table">' +
-        '<thead><tr><th>Case ID</th><th>Title</th><th>Jurisdiction</th><th>Judge</th><th>Status</th><th>Action</th></tr></thead>' +
-        '<tbody>' +
-          allCases.slice(0, 15).map(c => 
+      '<div style="overflow-x:auto">' +
+        '<table class="clerk-table">' +
+          '<thead>' +
             '<tr>' +
-              '<td><a class="case-link-bold" onclick="openClerkCaseModal(\'' + c.caseId + '\')">' + c.caseId + '</a></td>' +
-              '<td><strong>' + (c.caseTitle || '') + '</strong></td>' +
-              '<td>' + (c.jurisdiction || 'Federal Supreme Court') + '</td>' +
-              '<td>' + (c.judgeName || 'Hon. Judge Solomon Desta') + '</td>' +
-              '<td><span class="status-pill pill-green">' + (c.status || 'Active').toUpperCase() + '</span></td>' +
-              '<td><button class="btn-register-sm" onclick="openClerkCaseModal(\'' + c.caseId + '\')">Open Docket</button></td>' +
-            '</tr>'
-          ).join('') +
-        '</tbody>' +
-      '</table>' +
+              '<th>Docket #</th>' +
+              '<th>Case Title</th>' +
+              '<th>Category</th>' +
+              '<th>Presiding Judge</th>' +
+              '<th>Filing Date</th>' +
+              '<th>Status</th>' +
+              '<th>Action</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' +
+            (myCases.map(c => 
+              '<tr>' +
+                '<td><a class="case-link-bold" onclick="openClerkCaseModal(\'' + c.caseId + '\')">' + c.caseId + '</a></td>' +
+                '<td><strong style="color:var(--fsc-navy-main)">' + c.caseTitle + '</strong></td>' +
+                '<td>' + (c.caseCategory || c.caseType || 'Civil') + '</td>' +
+                '<td>' + (c.assignedJudge || 'Hon. Judge Solomon Desta') + '</td>' +
+                '<td style="color:#64748b;font-size:0.75rem">' + (c.dateFiled || 'Aug 20, 2026') + '</td>' +
+                '<td><span class="status-pill ' + (c.status === 'Decided' || c.status === 'closed' ? 'pill-green' : 'pill-blue') + '">' + (c.status || 'Active') + '</span></td>' +
+                '<td><button class="btn-register-sm" style="font-weight:700" onclick="openClerkCaseModal(\'' + c.caseId + '\')">Open Docket</button></td>' +
+              '</tr>'
+            ).join('') || '<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#94a3b8">No registered case records found in your appointed registry.</td></tr>') +
+          '</tbody>' +
+        '</table>' +
+      '</div>' +
     '</div>';
 }
 
-function renderClerkDocumentsView(container) {
-  renderClerkDashboard(container);
-}
+// ── Functional Filing Queue View with Full Document Uploads & Certified Filings ──
+function renderClerkFilingQueueView(container) {
+  const myCases = getAppointedCases();
+  const pending = myCases.filter(c => c.status === 'pending' || c.status === 'requested' || c.status === 'under_review');
 
-function renderClerkCalendarView(container) {
-  renderClerkDashboard(container);
-}
+  // Collect all documents from appointed cases (pending + active)
+  let allAppointedDocs = [];
+  myCases.forEach(p => {
+    if (p.documents && Array.isArray(p.documents)) {
+      p.documents.forEach(d => {
+        allAppointedDocs.push({
+          ...d,
+          caseId: p.caseId,
+          caseTitle: p.caseTitle,
+          caseStatus: p.status,
+          filerName: (p.filer && p.filer.name) || p.plaintiffClientName || 'Petitioner Litigant'
+        });
+      });
+    }
+  });
 
-function renderClerkSmsLogsView(container) {
-  renderClerkDashboard(container);
-}
+  const docsRowsHtml = allAppointedDocs.map(d => 
+    '<tr>' +
+      '<td><strong style="color:var(--fsc-navy-main)">' + (d.name || d.title || 'Certified_Pleading_Exhibit.pdf') + '</strong></td>' +
+      '<td><a class="case-link-bold" onclick="' + (d.caseStatus === 'pending' ? 'openRegisterFilingModal' : 'openClerkCaseModal') + '(\'' + d.caseId + '\')">' + d.caseId + '</a></td>' +
+      '<td>' + (d.type || 'Pleading Exhibit') + '</td>' +
+      '<td>' + (d.uploadedBy || d.filerName || 'Counsel') + '</td>' +
+      '<td style="color:#64748b;font-size:0.75rem">' + (d.date || 'Today') + '</td>' +
+      '<td><span class="status-pill ' + (d.caseStatus === 'pending' ? 'pill-yellow' : 'pill-green') + '">' + (d.caseStatus === 'pending' ? 'Pending Review' : 'Verified &amp; Sealed') + '</span></td>' +
+      '<td>' +
+        '<button class="btn-register-sm" style="font-weight:700" onclick="viewRealDocument(\'' + (d.url || '') + '\', \'' + (d.name || d.title) + '\')">View PDF</button>' +
+      '</td>' +
+    '</tr>'
+  ).join('') || '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#94a3b8">No certified exhibits found in appointed registry.</td></tr>';
 
-function renderClerkTemplatesView(container) {
   container.innerHTML = 
-    '<div class="clerk-greeting-row">' +
-      '<h1 class="clerk-greeting-title">Certified Court Order &amp; Letter Templates</h1>' +
-      '<div class="clerk-greeting-sub">Official judicial summons, interlocutory decrees, and demand notices.</div>' +
+    '<div style="margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">' +
+      '<div>' +
+        '<h2 style="font-size:1.35rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:0.25rem">Filing Verification &amp; Document Queue</h2>' +
+        '<div style="font-size:0.85rem;color:#64748b">Incoming citizen and advocate petitions requiring document inspection, docket number issuance &amp; summons assignment (<strong>' + pending.length + ' pending filings &bull; ' + allAppointedDocs.length + ' certified exhibits</strong>).</div>' +
+      '</div>' +
+      '<button class="btn-register-sm" style="background:#0284c7;color:white;padding:0.45rem 1rem;font-weight:700" onclick="openUploadDocumentModal()">+ Upload New Certified Document</button>' +
     '</div>' +
-    '<div class="clerk-panel-card">' +
-      '<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:1rem">' +
-        '<div style="padding:1.25rem;border:1px solid #cbd5e1;border-radius:8px"><h3 style="font-size:0.95rem;color:var(--fsc-navy-main)">Formal Hearing Summons</h3><p style="font-size:0.75rem;color:#64748b;margin:0.5rem 0">Court order summoning defendant and advocates.</p><button class="btn-register-sm" onclick="openIssueOrderModal()">Use Template</button></div>' +
-        '<div style="padding:1.25rem;border:1px solid #cbd5e1;border-radius:8px"><h3 style="font-size:0.95rem;color:var(--fsc-navy-main)">Evidentiary Production Demand</h3><p style="font-size:0.75rem;color:#64748b;margin:0.5rem 0">Demanding production of bank slips, deeds, or records.</p><button class="btn-register-sm" onclick="openIssueOrderModal()">Use Template</button></div>' +
-        '<div style="padding:1.25rem;border:1px solid #cbd5e1;border-radius:8px"><h3 style="font-size:0.95rem;color:var(--fsc-navy-main)">Temporary Injunction Order</h3><p style="font-size:0.75rem;color:#64748b;margin:0.5rem 0">Freezing asset or halting property transfer.</p><button class="btn-register-sm" onclick="openIssueOrderModal()">Use Template</button></div>' +
+
+    '<!-- 1. Pending Filings Review Table -->' +
+    '<div class="clerk-panel-card" style="margin-bottom:1.5rem">' +
+      '<div class="clerk-panel-header">' +
+        '<div class="clerk-panel-title">Incoming Petitions Awaiting Registration (' + pending.length + ')</div>' +
+        '<span style="font-size:0.75rem;color:#64748b">Chamber Verification Desk</span>' +
       '</div>' +
-    '</div>';
-}
-
-function renderClerkReportsView(container) {
-  renderClerkDashboard(container);
-}
-
-function renderClerkArchiveView(container) {
-  container.innerHTML = 
-    '<div class="clerk-greeting-row">' +
-      '<h1 class="clerk-greeting-title">Archived Judicial Records</h1>' +
-      '<div class="clerk-greeting-sub">Digitized historical court records and completed litigation archives.</div>' +
+      '<div style="overflow-x:auto">' +
+        '<table class="clerk-table">' +
+          '<thead>' +
+            '<tr>' +
+              '<th>Filing Ref</th>' +
+              '<th>Petitioner / Litigant</th>' +
+              '<th>Case Category</th>' +
+              '<th>Submission Date</th>' +
+              '<th>Attached Exhibits</th>' +
+              '<th>Verification Status</th>' +
+              '<th>Action</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' +
+            (pending.map(p => 
+              '<tr>' +
+                '<td><a class="case-link-bold" onclick="openRegisterFilingModal(\'' + p.caseId + '\')">' + p.caseId + '</a></td>' +
+                '<td><strong style="color:var(--fsc-navy-main)">' + ((p.filer && p.filer.name) || p.caseTitle) + '</strong></td>' +
+                '<td>' + (p.caseCategory || p.caseType || 'Civil') + '</td>' +
+                '<td style="color:#64748b;font-size:0.75rem">' + (p.dateFiled || 'Today') + '</td>' +
+                '<td><span class="status-pill pill-blue">' + (p.documents ? p.documents.length : 1) + ' verified doc(s)</span></td>' +
+                '<td><span class="status-pill pill-yellow">' + (p.status || 'Pending Review') + '</span></td>' +
+                '<td><button class="btn-register-sm" style="font-weight:700;background:#0284c7;color:white" onclick="openRegisterFilingModal(\'' + p.caseId + '\')">Review &amp; Issue Docket #</button></td>' +
+              '</tr>'
+            ).join('') || '<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#94a3b8">Your filing verification queue is completely clear. No pending submissions.</td></tr>') +
+          '</tbody>' +
+        '</table>' +
+      '</div>' +
     '</div>' +
+
+    '<!-- 2. Document Uploads & Certified Filings Queue Panel -->' +
     '<div class="clerk-panel-card">' +
-      '<p style="color:#64748b">858 concluded court cases have been sealed into permanent legal archives.</p>' +
-    '</div>';
-}
-
-/* Modals */
-function openClerkCaseModal(caseId) {
-  const c = allCases.find(it => it.caseId === caseId) || { caseId: caseId, caseTitle: 'Court Case', jurisdiction: 'Federal Supreme Court', status: 'active' };
-  document.getElementById('clerk-modal-title').textContent = 'Registry Case Record — ' + c.caseId;
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<div style="line-height:1.7">' +
-      '<h3 style="font-size:1.05rem;font-weight:700;color:var(--fsc-navy-main);margin-bottom:0.5rem">' + (c.caseTitle || '') + '</h3>' +
-      '<div><strong>Court Division:</strong> ' + (c.jurisdiction || 'Federal Supreme Court') + '</div>' +
-      '<div><strong>Presiding Judge:</strong> ' + (c.judgeName || 'Hon. Judge Solomon Desta') + '</div>' +
-      '<div><strong>Registration Status:</strong> <span class="status-pill pill-green">' + ((c.status || 'Active')).toUpperCase() + '</span></div>' +
-      '<div style="margin-top:1rem;display:flex;gap:0.5rem">' +
-        '<button class="btn btn-primary" style="flex:1;padding:0.6rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer" onclick="closeClerkModal()">Close Record</button>' +
+      '<div class="clerk-panel-header">' +
+        '<div class="clerk-panel-title">Document Uploads &amp; Certified Filings (' + allAppointedDocs.length + ')</div>' +
+        '<span style="font-size:0.75rem;color:#64748b">Verified Evidence &bull; Electronic Pleadings &bull; PDF Files</span>' +
+      '</div>' +
+      '<div style="overflow-x:auto">' +
+        '<table class="clerk-table">' +
+          '<thead>' +
+            '<tr>' +
+              '<th>Document / Exhibit Title</th>' +
+              '<th>Case Docket #</th>' +
+              '<th>Filing Type</th>' +
+              '<th>Uploaded By</th>' +
+              '<th>Timestamp</th>' +
+              '<th>Registry Status</th>' +
+              '<th>Action</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' +
+            docsRowsHtml +
+          '</tbody>' +
+        '</table>' +
       '</div>' +
     '</div>';
-  openClerkModal();
 }
 
-function openRegisterFilingModal(tempId, filerName, caseType) {
-  document.getElementById('clerk-modal-title').textContent = 'Register Docket — ' + tempId;
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<form onsubmit="handleRegisterFilingSubmit(event, \'' + tempId + '\')">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Filer Name</label>' +
-        '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" value="' + filerName + '" required/>' +
-      '</div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Case Type</label>' +
-          '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" value="' + caseType + '" required/>' +
-        '</div>' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Assign Permanent Case ID</label>' +
-          '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" value="CASE-' + Date.now().toString().slice(-12) + '" required/>' +
-        '</div>' +
-      '</div>' +
-      '<button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Assign Case Number &amp; Issue Registration Stamp</button>' +
-    '</form>';
-  openClerkModal();
-}
+// ── Functional Filing Registration Modal with Direct Document Inspection ──
+function openRegisterFilingModal(caseId) {
+  const c = allCases.find(it => it.caseId === caseId) || {
+    caseId: caseId || ('FL-2026-FSC-' + Math.floor(100 + Math.random() * 900)),
+    caseTitle: 'Commercial & Civil Petition',
+    filer: { name: 'Petitioner Entity', phone: '0911554433' },
+    caseCategory: 'Civil & Commercial',
+    documents: []
+  };
 
-function handleRegisterFilingSubmit(e, tempId) {
-  e.preventDefault();
-  alert('Case registered successfully. Permanent Case ID issued and filing confirmation SMS dispatched to litigant.');
-  closeClerkModal();
-}
+  const generatedDocketNum = 'CASE-2026-FSC-' + Math.floor(1000 + Math.random() * 9000);
+  const title = document.getElementById('clerk-modal-title');
+  const body = document.getElementById('clerk-modal-body');
+  if (!title || !body) return;
 
-function openRegisterCaseModal() {
-  document.getElementById('clerk-modal-title').textContent = 'Registry Case Entry';
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<form onsubmit="handleNewCaseSubmit(event)">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Case Title</label>' +
-        '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" placeholder="e.g. Plaintiff vs. Defendant" required/>' +
-      '</div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">' +
+  const exhibitsHtml = (c.documents && c.documents.length > 0) ? c.documents.map(d => 
+    '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0.75rem;background:white;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:0.4rem">' +
+      '<div style="display:flex;align-items:center;gap:0.5rem">' +
+        '<div style="color:#2563eb">' + ICONS.fileText + '</div>' +
         '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Jurisdiction</label>' +
-          '<select class="top-search-input" style="border-radius:6px;width:100%">' +
-            '<option>Federal Supreme Court</option>' +
-            '<option>Federal High Court (Lideta)</option>' +
-            '<option>Federal First Instance Court</option>' +
-          '</select>' +
-        '</div>' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Filer Mobile Phone</label>' +
-          '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" placeholder="+251 91 123 4567" required/>' +
+          '<div style="font-weight:700;font-size:0.85rem;color:var(--fsc-navy-main)">' + (d.name || d.title || 'Pleading_Document.pdf') + '</div>' +
+          '<div style="font-size:0.72rem;color:#64748b">' + (d.type || 'Pleading Exhibit') + ' &bull; ' + (d.size || '2.4 MB') + ' &bull; Uploaded by: ' + (d.uploadedBy || 'Counsel') + '</div>' +
         '</div>' +
       '</div>' +
-      '<button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Register Case</button>' +
-    '</form>';
-  openClerkModal();
-}
+      '<button type="button" class="btn-register-sm" style="font-weight:700" onclick="viewRealDocument(\'' + (d.url || '') + '\', \'' + (d.name || d.title) + '\')">View PDF</button>' +
+    '</div>'
+  ).join('') : '<div style="padding:0.75rem;text-align:center;font-size:0.8rem;color:#94a3b8;background:white;border-radius:6px">No documents attached.</div>';
 
-function handleNewCaseSubmit(e) {
-  e.preventDefault();
-  alert('Case entered into federal registry.');
-  closeClerkModal();
-}
-
-function openUploadDocumentModal() {
-  document.getElementById('clerk-modal-title').textContent = 'Upload Certified Electronic Document';
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<form onsubmit="handleUploadDocSubmit(event)">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Case Number</label>' +
-        '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" value="CASE-178721596417" required/>' +
+  title.textContent = 'Register Filing & Issue Official Docket #';
+  body.innerHTML = 
+    '<form onsubmit="handleConfirmFilingRegistration(event, \'' + c.caseId + '\')">' +
+      '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem;margin-bottom:1rem">' +
+        '<div style="font-size:0.75rem;font-weight:700;color:#64748b;text-transform:uppercase">Incoming Submission</div>' +
+        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:1.05rem">' + c.caseTitle + '</div>' +
+        '<div style="font-size:0.75rem;color:#64748b">Filing Ref: <code>' + c.caseId + '</code> &bull; Filer: <strong>' + ((c.filer && c.filer.name) || 'Litigant') + '</strong> (' + ((c.filer && c.filer.phone) || 'Phone') + ')</div>' +
       '</div>' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Document Name / Title</label>' +
-        '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" placeholder="e.g. Certified Power of Attorney.pdf" required/>' +
-      '</div>' +
-      '<button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Upload &amp; Attach to Docket</button>' +
-    '</form>';
-  openClerkModal();
-}
 
-function handleUploadDocSubmit(e) {
-  e.preventDefault();
-  alert('Document uploaded and sealed into docket.');
-  closeClerkModal();
-}
-
-function openIssueOrderModal() {
-  document.getElementById('clerk-modal-title').textContent = 'Issue Formal Court Order / Letter';
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<form onsubmit="handleIssueOrderSubmit(event)">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Case Number</label>' +
-        '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" value="CASE-178721596417" required/>' +
+      '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:0.85rem;margin-bottom:1rem">' +
+        '<div style="font-size:0.75rem;font-weight:800;color:#1e3a8a;text-transform:uppercase;margin-bottom:0.5rem">📂 Document Uploads &amp; Certified Filings (' + (c.documents ? c.documents.length : 0) + ')</div>' +
+        exhibitsHtml +
       '</div>' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Order Type</label>' +
-        '<select class="top-search-input" style="border-radius:6px;width:100%">' +
-          '<option>Formal Hearing Summons</option>' +
-          '<option>Evidentiary Production Demand</option>' +
-          '<option>Adjournment Notice</option>' +
+
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Permanent Federal Supreme Court Docket Number</label>' +
+        '<input type="text" class="modal-form-input" id="formal-docket-num" value="' + generatedDocketNum + '" required style="font-weight:800;color:#0284c7;background:#f0f9ff">' +
+      '</div>' +
+
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Assigned Presiding Judge</label>' +
+        '<select class="modal-form-input" id="reg-judge-select">' +
+          '<option value="Hon. Judge Solomon Desta" selected>Hon. Judge Solomon Desta (Commercial &amp; Civil Bench)</option>' +
+          '<option value="Hon. Judge Meron Getachew">Hon. Judge Meron Getachew (Cassation Division)</option>' +
+          '<option value="Hon. Judge Yohannes Kassaye">Hon. Judge Yohannes Kassaye (High Court Division)</option>' +
         '</select>' +
       '</div>' +
-      '<button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Issue Order &amp; Seal</button>' +
+
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Jurisdiction Branch &amp; Chamber</label>' +
+        '<input type="text" class="modal-form-input" id="reg-branch-name" value="' + (currentClerk.branch || 'Federal Supreme Court') + '" required>' +
+      '</div>' +
+
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Statutory Case Classification</label>' +
+        '<select class="modal-form-input" id="reg-cat-select">' +
+          '<option value="Commercial &amp; Contract">Commercial &amp; Contract</option>' +
+          '<option value="Banking &amp; Loan Default">Banking &amp; Loan Default</option>' +
+          '<option value="Customs &amp; Tax Dispute">Customs &amp; Tax Dispute</option>' +
+          '<option value="Labour &amp; Employment">Labour &amp; Employment</option>' +
+          '<option value="Cassation Over Fundamental Error of Law">Cassation Over Fundamental Error of Law</option>' +
+        '</select>' +
+      '</div>' +
+
+      '<div class="modal-btn-row">' +
+        '<button type="button" class="btn-cancel" onclick="closeClerkModal()">Cancel</button>' +
+        '<button type="submit" class="btn-submit" style="background:#16a34a;font-weight:800">✓ Confirm Registration &amp; Seal Docket</button>' +
+      '</div>' +
     '</form>';
-  openClerkModal();
+
+  document.getElementById('universal-clerk-modal').classList.add('show');
 }
 
-function handleIssueOrderSubmit(e) {
+async function handleConfirmFilingRegistration(e, origCaseId) {
   e.preventDefault();
-  alert('Court order issued and dispatched.');
-  closeClerkModal();
-}
-
-
-// ── Real-Time Availability Check & Hearing Scheduler (Section 5 & 7) ──
-let currentAvailabilityData = null;
-
-async function onClerkDateSelected(dateVal) {
-  const statusNote = document.getElementById('sched-avail-status');
-  const judgeSelect = document.getElementById('clerk-sched-judge');
-  const lawyerSelect = document.getElementById('clerk-sched-lawyer');
-  const submitBtn = document.getElementById('clerk-sched-submit-btn');
-
-  if (!dateVal) {
-    if (statusNote) statusNote.innerHTML = '<span style="color:#64748b">Please select a hearing date first to verify chamber and advocate calendars.</span>';
-    if (judgeSelect) judgeSelect.disabled = true;
-    if (lawyerSelect) lawyerSelect.disabled = true;
-    return;
-  }
-
-  if (statusNote) statusNote.innerHTML = '<span style="color:#0284c7">Checking real-time calendar availability for ' + dateVal + '...</span>';
+  const formalDocketNumber = document.getElementById('formal-docket-num').value.trim();
+  const assignedJudge = document.getElementById('reg-judge-select').value;
+  const branchName = document.getElementById('reg-branch-name').value.trim();
+  const caseCategory = document.getElementById('reg-cat-select').value;
 
   try {
-    const res = await fetch(API + '/availability?date=' + dateVal);
-    if (!res.ok) throw new Error('Failed to fetch availability');
-    currentAvailabilityData = await res.json();
-
-    // Populate Available Judges (Disable/Filter busy judges)
-    if (judgeSelect) {
-      judgeSelect.disabled = false;
-      const judges = currentAvailabilityData.judges || [];
-      judgeSelect.innerHTML = '<option value="" disabled selected>-- Select an Available Presiding Judge --</option>' +
-        judges.map(j => {
-          if (j.isAvailable) {
-            return '<option value="' + j.fullName + '|' + j.id + '">' + j.fullName + ' — ' + j.statusText + '</option>';
-          } else {
-            return '<option value="' + j.fullName + '|' + j.id + '" disabled style="color:#94a3b8;background:#f1f5f9">✕ ' + j.fullName + ' — ' + j.statusText + '</option>';
-          }
-        }).join('');
-    }
-
-    // Populate Available Lawyers (Disable/Filter booked lawyers)
-    if (lawyerSelect) {
-      lawyerSelect.disabled = false;
-      const lawyers = currentAvailabilityData.lawyers || [];
-      lawyerSelect.innerHTML = '<option value="" selected>-- No Advocate Assigned / Self-Represented --</option>' +
-        lawyers.map(l => {
-          if (l.isAvailable) {
-            return '<option value="' + l.licenseNumber + '|' + l.fullName + '">' + l.fullName + ' (' + l.licenseNumber + ') — ' + (l.isGovernmentLawyer ? 'Public Defender · ' : '') + 'Available</option>';
-          } else {
-            return '<option value="' + l.licenseNumber + '|' + l.fullName + '" disabled style="color:#94a3b8;background:#f1f5f9">✕ ' + l.fullName + ' (' + l.licenseNumber + ') — ' + l.statusText + '</option>';
-          }
-        }).join('');
-    }
-
-    const availableJudgesCount = (currentAvailabilityData.judges || []).filter(j => j.isAvailable).length;
-    const availableLawyersCount = (currentAvailabilityData.lawyers || []).filter(l => l.isAvailable).length;
-
-    if (statusNote) {
-      statusNote.innerHTML = '<span style="color:#16a34a;font-weight:700">✓ Calendar Verified for ' + dateVal + ':</span> ' +
-        '<span style="color:#334155">' + availableJudgesCount + ' Judges Available · ' + availableLawyersCount + ' Lawyers Free</span>';
-    }
-
-    if (submitBtn) submitBtn.disabled = false;
-  } catch (e) {
-    if (statusNote) statusNote.innerHTML = '<span style="color:#dc2626">Error querying calendar availability: ' + e.message + '</span>';
-  }
-}
-
-function openScheduleHearingModal(caseId) {
-  const targetCaseId = caseId || 'CASE-' + Date.now();
-  const c = allCases.find(it => it.caseId === targetCaseId) || { caseId: targetCaseId, caseTitle: 'Registry Docket', petitioner: 'Plaintiff', filerPhone: '+251 911 123 456' };
-
-  document.getElementById('clerk-modal-title').textContent = 'Sequential Hearing & Availability Scheduler — ' + c.caseId;
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<form onsubmit="handleClerkScheduleSubmit(event, \'' + c.caseId + '\')">' +
-      '<div style="background:#f8fafc;padding:0.75rem 1rem;border-radius:6px;margin-bottom:1rem;border:1px solid #e2e8f0">' +
-        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.95rem">' + (c.caseTitle || c.petitioner + ' vs. Respondent') + '</div>' +
-        '<div style="font-size:0.75rem;color:#64748b;margin-top:2px">Case ID: <strong>' + c.caseId + '</strong> | Litigant: ' + (c.petitioner || 'Filer') + ' (' + (c.filerPhone || 'Phone N/A') + ')</div>' +
-      '</div>' +
-
-      '<!-- Step 1: Select Date First -->' +
-      '<div style="background:#f0f9ff;padding:0.85rem 1rem;border-radius:8px;border:1.5px solid #bae6fd;margin-bottom:1rem">' +
-        '<label style="font-weight:800;color:#0369a1;display:block;margin-bottom:0.35rem;font-size:0.85rem">' +
-          '📅 Step 1: Select Hearing Date (Required for Availability Verification)' +
-        '</label>' +
-        '<input type="date" id="clerk-sched-date" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff;font-weight:700;color:var(--fsc-navy-main)" onchange="onClerkDateSelected(this.value)" required/>' +
-        '<div id="sched-avail-status" style="margin-top:0.4rem;font-size:0.75rem;font-weight:600">' +
-          '<span style="color:#64748b">Select a date above to query judge chamber rosters and advocate personal calendars.</span>' +
-        '</div>' +
-      '</div>' +
-
-      '<!-- Step 2: Presiding Judge -->' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">⚖️ Step 2: Choose Presiding Judge (Only Available Benches Enabled)</label>' +
-        '<select id="clerk-sched-judge" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff" disabled required>' +
-          '<option value="" disabled selected>-- Select a hearing date first --</option>' +
-        '</select>' +
-      '</div>' +
-
-      '<!-- Step 3: Lawyer Selection -->' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">👥 Step 3: Choose Assigned / Appearing Advocate (Only Conflict-Free Counsel Enabled)</label>' +
-        '<select id="clerk-sched-lawyer" class="top-search-input" style="width:100%;border-radius:6px;background:#ffffff" disabled>' +
-          '<option value="" disabled selected>-- Select a hearing date first --</option>' +
-        '</select>' +
-      '</div>' +
-
-      '<!-- Step 4: Courtroom & Time -->' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem">' +
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">🏛️ Courtroom</label>' +
-          '<select id="clerk-sched-courtroom" class="top-search-input" style="width:100%;border-radius:6px" required>' +
-            '<option value="Courtroom 1A (Cassation Bench)">Courtroom 1A (Cassation Bench)</option>' +
-            '<option value="Courtroom 1B (Appellate Bench)">Courtroom 1B (Appellate Bench)</option>' +
-            '<option value="Courtroom 2A (Commercial Division)">Courtroom 2A (Commercial Division)</option>' +
-            '<option value="Courtroom 4 (Main Trial Room)" selected>Courtroom 4 (Main Trial Room)</option>' +
-          '</select>' +
-        '</div>' +
-
-        '<div>' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">⏰ Session Time Slot</label>' +
-          '<select id="clerk-sched-time" class="top-search-input" style="width:100%;border-radius:6px" required>' +
-            '<option value="09:00 AM">09:00 AM - 10:00 AM</option>' +
-            '<option value="09:30 AM" selected>09:30 AM - 10:30 AM</option>' +
-            '<option value="10:30 AM">10:30 AM - 11:30 AM</option>' +
-            '<option value="11:15 AM">11:15 AM - 12:15 PM</option>' +
-            '<option value="02:00 PM">02:00 PM - 03:00 PM</option>' +
-            '<option value="03:30 PM">03:30 PM - 04:30 PM</option>' +
-          '</select>' +
-        '</div>' +
-      '</div>' +
-
-      '<div style="display:flex;gap:0.5rem">' +
-        '<button type="submit" id="clerk-sched-submit-btn" class="btn-clerk-primary" style="flex:1;padding:0.75rem" disabled>Confirm Docket &amp; Dispatch Summons</button>' +
-        '<button type="button" class="btn-clerk-outline" style="padding:0.75rem 1rem" onclick="closeClerkModal()">Cancel</button>' +
-      '</div>' +
-    '</form>';
-
-  openClerkModal();
-}
-
-async function handleClerkScheduleSubmit(e, caseId) {
-  e.preventDefault();
-  const dateVal = document.getElementById('clerk-sched-date').value;
-  const judgeRaw = document.getElementById('clerk-sched-judge').value.split('|');
-  const judgeName = judgeRaw[0];
-  const judgeId = judgeRaw[1] || 'JUDGE-001';
-  const lawyerRaw = document.getElementById('clerk-sched-lawyer').value.split('|');
-  const lawyerLicense = lawyerRaw[0] || null;
-  const lawyerName = lawyerRaw[1] || null;
-  const courtroom = document.getElementById('clerk-sched-courtroom').value;
-  const hearingTime = document.getElementById('clerk-sched-time').value;
-
-  try {
-    const res = await fetch(API + '/cases/schedule-hearing', {
+    const res = await fetch(API + '/cases/register-filing', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        caseId,
-        judgeId,
-        judgeName,
-        courtroom,
-        hearingDate: dateVal,
-        hearingTime,
-        clerkName: currentClerk.fullName || 'Court Clerk',
-        estimatedDuration: '1 hour',
-        lawyerLicense,
-        lawyerName
+        caseId: origCaseId,
+        formalDocketNumber,
+        assignedJudge,
+        branchName,
+        caseCategory,
+        clerkName: currentClerk.fullName,
+        clerkId: currentClerk.id
       })
     });
 
     if (res.ok) {
-      alert('✓ Hearing scheduled successfully for ' + dateVal + ' at ' + hearingTime + ' before ' + judgeName + '. Summons dispatched.');
+      alert('✓ Filing successfully registered! Formal docket issued: ' + formalDocketNumber);
       closeClerkModal();
       await loadClerkData();
+      switchClerkView('registered_cases');
+    } else {
+      alert('Error registering filing.');
     }
   } catch (err) {
-    alert('Error scheduling hearing: ' + err.message);
+    alert('Server connection error.');
   }
 }
-function handleScheduleSubmit(e) {
+
+// ── Comprehensive Clerk Docket Workspace: Minutes, Attendance & Actions ──
+function openClerkCaseModal(caseId) {
+  const c = allCases.find(it => it.caseId === caseId);
+  const title = document.getElementById('clerk-modal-title');
+  const body = document.getElementById('clerk-modal-body');
+  if (!title || !body) return;
+
+  if (!c) {
+    alert('Case not found in judicial registry.');
+    return;
+  }
+
+  // Check appointment
+  if (!isCaseAppointedToCurrentClerk(c)) {
+    title.innerHTML = '<span style="color:#dc2626">🔒 Access Restricted: Case Not Appointed</span>';
+    body.innerHTML = 
+      '<div style="padding:1.5rem;text-align:center">' +
+        '<div style="font-size:2.5rem;margin-bottom:0.5rem">🛡️</div>' +
+        '<h3 style="font-weight:700;color:var(--fsc-navy-main);margin-bottom:0.5rem">Confidential Chamber Record</h3>' +
+        '<p style="font-size:0.875rem;color:#64748b;line-height:1.5;max-width:440px;margin:0 auto 1.25rem">' +
+          'Case <strong>' + c.caseId + '</strong> (' + c.caseTitle + ') is appointed to another registrar chamber (<strong>' + (c.clerkName || 'Registrar Office') + '</strong>). Clerks can only access their directly appointed cases.' +
+        '</p>' +
+        '<button class="btn-cancel" onclick="closeClerkModal()">Dismiss</button>' +
+      '</div>';
+    document.getElementById('universal-clerk-modal').classList.add('show');
+    return;
+  }
+
+  renderClerkDocketModalContent(c, 'session_minutes');
+}
+
+function renderClerkDocketModalContent(c, activeTab = 'session_minutes') {
+  activeDocketTab = activeTab;
+  const title = document.getElementById('clerk-modal-title');
+  const body = document.getElementById('clerk-modal-body');
+
+  title.innerHTML = 
+    '<div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">' +
+      '<span style="background:var(--fsc-gold-main);color:#0b192c;font-size:0.75rem;font-weight:900;padding:0.2rem 0.65rem;border-radius:6px;letter-spacing:0.02em">' + c.caseId + '</span>' +
+      '<span style="color:#ffffff;font-size:1.05rem;font-weight:800">' + c.caseTitle + '</span>' +
+    '</div>';
+
+  const sessionLogs = c.sessionSummaries || [];
+
+  const previousMinutesHtml = sessionLogs.length > 0 ? sessionLogs.map((s, idx) => 
+    '<div class="session-history-item">' +
+      '<div class="session-history-top">' +
+        '<div class="session-history-title">' +
+          '<span>Session #' + (idx + 1) + ' &bull; ' + (s.sessionDate || (s.date ? s.date.split('T')[0] : 'Recorded')) + '</span>' +
+          '<span style="font-size:0.75rem;font-weight:600;color:#64748b;margin-left:0.5rem">(' + (s.stage || 'Court Proceeding') + ')</span>' +
+        '</div>' +
+        '<span class="status-pill pill-green">Clerk Attested: ' + (s.clerkName || currentClerk.fullName) + '</span>' +
+      '</div>' +
+      '<div class="session-attendance-tags">' +
+        '<span class="session-att-tag">⚖️ Judge: ' + (s.attendance ? s.attendance.judge : 'Present') + '</span>' +
+        '<span class="session-att-tag">👤 Plaintiff: ' + (s.attendance ? s.attendance.plaintiff : 'Present') + '</span>' +
+        '<span class="session-att-tag">👥 Defendant: ' + (s.attendance ? s.attendance.defendant : 'Present') + '</span>' +
+        '<span class="session-att-tag">🏛️ Prosecution: ' + (s.attendance ? s.attendance.prosecutor : 'N/A') + '</span>' +
+      '</div>' +
+      '<div class="session-minutes-box"><strong>Minutes of Hearing:</strong> ' + (s.minutes || s.summaryNotes || 'Proceeding conducted.') + '</div>' +
+      (s.courtOrder ? '<div style="font-size:0.785rem;color:#0369a1;margin-bottom:0.35rem"><strong>Minute Order:</strong> ' + s.courtOrder + '</div>' : '') +
+      (s.exhibitsAdmitted && s.exhibitsAdmitted !== 'None' ? '<div style="font-size:0.785rem;color:#16a34a;margin-bottom:0.35rem"><strong>Admitted Exhibits:</strong> ' + s.exhibitsAdmitted + '</div>' : '') +
+      (s.nextHearingDate ? '<div style="font-size:0.785rem;color:#b45309;font-weight:600">📅 Next Adjournment: ' + s.nextHearingDate + ' ' + (s.nextHearingTime || '') + ' (' + (s.nextHearingAgenda || 'Oral Arguments') + ')</div>' : '') +
+    '</div>'
+  ).join('') : '<div style="padding:1.5rem;text-align:center;color:#94a3b8;font-size:0.85rem;background:#ffffff;border:1px solid #e2e8f0;border-radius:8px">No previous courtroom session minutes logged for this case docket.</div>';
+
+  body.innerHTML = 
+    '<div class="clerk-docket-tabs">' +
+      '<button class="clerk-docket-tab-btn ' + (activeTab === 'session_minutes' ? 'active' : '') + '" onclick="renderClerkDocketModalContent(allCases.find(it => it.caseId === \'' + c.caseId + '\'), \'session_minutes\')">📝 Log Session Minutes &amp; Attendance</button>' +
+      '<button class="clerk-docket-tab-btn ' + (activeTab === 'dossier' ? 'active' : '') + '" onclick="renderClerkDocketModalContent(allCases.find(it => it.caseId === \'' + c.caseId + '\'), \'dossier\')">📋 Case Dossier &amp; Counsel</button>' +
+      '<button class="clerk-docket-tab-btn ' + (activeTab === 'documents' ? 'active' : '') + '" onclick="renderClerkDocketModalContent(allCases.find(it => it.caseId === \'' + c.caseId + '\'), \'documents\')">📂 Evidence &amp; Exhibits (' + (c.documents ? c.documents.length : 0) + ')</button>' +
+      '<button class="clerk-docket-tab-btn ' + (activeTab === 'sms' ? 'active' : '') + '" onclick="renderClerkDocketModalContent(allCases.find(it => it.caseId === \'' + c.caseId + '\'), \'sms\')">📱 Dispatch SMS Notice</button>' +
+    '</div>' +
+
+    (activeTab === 'session_minutes' ? 
+      '<form onsubmit="handleSaveSessionMinutes(event, \'' + c.caseId + '\')">' +
+        
+        '<!-- 1. Attendance Register Card -->' +
+        '<div class="docket-card">' +
+          '<div class="docket-card-header">' +
+            '<div class="docket-card-title">' +
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
+              '<span>1. Courtroom Attendance Register</span>' +
+            '</div>' +
+            '<span style="font-size:0.75rem;color:#64748b;font-weight:600">Attesting Registrar: <strong style="color:#0f172a">' + currentClerk.fullName + ' (' + currentClerk.id + ')</strong></span>' +
+          '</div>' +
+          '<div class="attendance-grid">' +
+            '<div class="attendance-item-box">' +
+              '<label class="attendance-item-label">⚖️ Presiding Judge</label>' +
+              '<select class="attendance-select" id="sess-judge-pres">' +
+                '<option value="Present (' + (c.assignedJudge || 'Hon. Judge Solomon Desta') + ')" selected>✓ Present (' + (c.assignedJudge || 'Hon. Judge Solomon Desta') + ')</option>' +
+                '<option value="Absent (Bench Adjourned)">✕ Absent (Bench Adjourned)</option>' +
+                '<option value="Substitute Judge Assigned">⚖️ Substitute Judge Assigned</option>' +
+              '</select>' +
+            '</div>' +
+            '<div class="attendance-item-box">' +
+              '<label class="attendance-item-label">👤 Plaintiff / Petitioner</label>' +
+              '<select class="attendance-select" id="sess-plaintiff-pres">' +
+                '<option value="Represented by Counsel (' + (c.plaintiffLawyerName || 'Counsel') + ')" selected>✓ Represented by Counsel (' + (c.plaintiffLawyerName || 'Counsel') + ')</option>' +
+                '<option value="Present in Person">✓ Present in Person</option>' +
+                '<option value="Absent (Default Notice)">✕ Absent (Default Notice)</option>' +
+              '</select>' +
+            '</div>' +
+            '<div class="attendance-item-box">' +
+              '<label class="attendance-item-label">👥 Defendant / Respondent</label>' +
+              '<select class="attendance-select" id="sess-def-pres">' +
+                '<option value="Represented by Counsel (' + (c.defendantLawyerName || 'Counsel') + ')" selected>✓ Represented by Counsel (' + (c.defendantLawyerName || 'Counsel') + ')</option>' +
+                '<option value="Present in Person">✓ Present in Person</option>' +
+                '<option value="Absent (Default Notice)">✕ Absent (Default Notice)</option>' +
+              '</select>' +
+            '</div>' +
+            '<div class="attendance-item-box">' +
+              '<label class="attendance-item-label">🏛️ Public Prosecutor</label>' +
+              '<select class="attendance-select" id="sess-pros-pres">' +
+                '<option value="N/A (Civil Bench)" selected>N/A (Civil &amp; Commercial)</option>' +
+                '<option value="Present (Public Prosecutor)">✓ Present (Public Prosecutor)</option>' +
+                '<option value="Absent">✕ Absent</option>' +
+              '</select>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<!-- 2. Minutes & Proceedings Card -->' +
+        '<div class="docket-card">' +
+          '<div class="docket-card-header">' +
+            '<div class="docket-card-title">' +
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>' +
+              '<span>2. Courtroom Proceedings &amp; Minute Directives</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="docket-input-group">' +
+            '<label class="docket-label">Procedural Hearing Stage</label>' +
+            '<select class="docket-input" id="sess-stage">' +
+              '<option value="Oral Arguments on Merits" selected>Oral Arguments on Merits</option>' +
+              '<option value="Initial Hearing &amp; Framing of Issues">Initial Hearing &amp; Framing of Issues</option>' +
+              '<option value="Cross-Examination of Witnesses">Cross-Examination of Witnesses</option>' +
+              '<option value="Admission of Certified Evidence">Admission of Certified Evidence</option>' +
+              '<option value="Interim Injunction Review">Interim Injunction Review</option>' +
+              '<option value="Final Decree Pronouncement">Final Decree Pronouncement</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="docket-input-group">' +
+            '<label class="docket-label">Official Session Minutes &amp; Submissions Recorded</label>' +
+            '<textarea class="docket-textarea" id="sess-minutes" rows="3" placeholder="Enter formal minutes of arguments, party submissions, and bench remarks..." required>Parties appeared through certified legal counsel. Oral submissions presented on commercial default liability under Commercial Code Articles 689-705. Bench ordered submission of certified audit reconciliations.</textarea>' +
+          '</div>' +
+          '<div class="docket-input-group">' +
+            '<label class="docket-label">Admitted Exhibits &amp; Proofs (Markings)</label>' +
+            '<input type="text" class="docket-input" id="sess-exhibits" value="Exhibits A1 (Loan Agreement) &amp; A2 (Bank Statement) marked and admitted without objection.">' +
+          '</div>' +
+        '</div>' +
+
+        '<!-- 3. Adjournment & Next Session Card -->' +
+        '<div class="docket-card">' +
+          '<div class="docket-card-header">' +
+            '<div class="docket-card-title">' +
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg>' +
+              '<span>3. Adjournment &amp; Next Session Scheduling</span>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));gap:1rem">' +
+            '<div class="docket-input-group">' +
+              '<label class="docket-label">Next Adjournment Date</label>' +
+              '<input type="date" class="docket-input" id="sess-next-date" value="2026-09-05">' +
+            '</div>' +
+            '<div class="docket-input-group">' +
+              '<label class="docket-label">Time Slot</label>' +
+              '<select class="docket-input" id="sess-next-time">' +
+                '<option value="09:00 AM">09:00 AM</option>' +
+                '<option value="10:00 AM" selected>10:00 AM</option>' +
+                '<option value="11:30 AM">11:30 AM</option>' +
+                '<option value="02:00 PM">02:00 PM</option>' +
+                '<option value="03:30 PM">03:30 PM</option>' +
+              '</select>' +
+            '</div>' +
+            '<div class="docket-input-group">' +
+              '<label class="docket-label">Assigned Courtroom</label>' +
+              '<input type="text" class="docket-input" id="sess-courtroom" value="' + (c.courtroom || 'Courtroom 2 (Commercial Division)') + '">' +
+            '</div>' +
+            '<div class="docket-input-group">' +
+              '<label class="docket-label">Procedural Agenda</label>' +
+              '<input type="text" class="docket-input" id="sess-next-agenda" value="Examination of Expert Witnesses">' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<!-- 4. Previous Session Timeline -->' +
+        '<div class="docket-card">' +
+          '<div class="docket-card-header">' +
+            '<div class="docket-card-title">' +
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' +
+              '<span>Chamber Session History (' + sessionLogs.length + ')</span>' +
+            '</div>' +
+          '</div>' +
+          previousMinutesHtml +
+        '</div>' +
+
+        '<div class="docket-footer-bar">' +
+          '<button type="button" class="btn-docket-close" onclick="closeClerkModal()">Close Docket</button>' +
+          '<button type="submit" class="btn-docket-commit">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
+            '<span>💾 Commit &amp; Seal Official Session Minutes</span>' +
+          '</button>' +
+        '</div>' +
+      '</form>' : '') +
+
+    (activeTab === 'dossier' ?
+      '<div>' +
+        '<div class="docket-card">' +
+          '<div class="docket-card-header">' +
+            '<div class="docket-card-title">Litigant Parties &amp; Legal Advocates</div>' +
+          '</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">' +
+            '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1.15rem">' +
+              '<div style="font-size:0.75rem;font-weight:800;color:#64748b;text-transform:uppercase;margin-bottom:0.45rem">Plaintiff / Petitioner</div>' +
+              '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:1.1rem;margin-bottom:0.25rem">' + ((c.filer && c.filer.name) || c.plaintiffClientName || 'Plaintiff Entity') + '</div>' +
+              '<div style="font-size:0.8rem;color:#64748b;margin-bottom:0.5rem">Contact: ' + ((c.filer && c.filer.phone) || c.plaintiffClientId || '+251 911 123 456') + '</div>' +
+              '<div style="font-size:0.85rem;color:#0284c7;background:#eff6ff;padding:0.45rem 0.65rem;border-radius:6px;border:1px solid #bfdbfe">' +
+                'Advocate: <strong>' + (c.plaintiffLawyerName || 'Kebede Haile Mariam (LAW-1001)') + '</strong>' +
+              '</div>' +
+            '</div>' +
+            '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1.15rem">' +
+              '<div style="font-size:0.75rem;font-weight:800;color:#64748b;text-transform:uppercase;margin-bottom:0.45rem">Defendant / Respondent</div>' +
+              '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:1.1rem;margin-bottom:0.25rem">' + ((c.defendant && c.defendant.name) || c.defendantClientName || 'Defendant Entity') + '</div>' +
+              '<div style="font-size:0.8rem;color:#64748b;margin-bottom:0.5rem">Contact: ' + ((c.defendant && c.defendant.phone) || c.defendantClientId || '+251 922 334 455') + '</div>' +
+              '<div style="font-size:0.85rem;color:#0284c7;background:#eff6ff;padding:0.45rem 0.65rem;border-radius:6px;border:1px solid #bfdbfe">' +
+                'Advocate: <strong>' + (c.defendantLawyerName || 'Tigist Alemu Bekele (LAW-1002)') + '</strong>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="docket-card">' +
+          '<div class="docket-card-header">' +
+            '<div class="docket-card-title">Judicial Assignment &amp; Jurisdiction</div>' +
+          '</div>' +
+          '<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:1rem">' +
+            '<div style="background:#f8fafc;padding:0.85rem;border-radius:6px;border:1px solid #e2e8f0">' +
+              '<div style="font-size:0.725rem;color:#64748b;text-transform:uppercase;font-weight:700">Presiding Judge</div>' +
+              '<div style="font-weight:800;color:#0f172a;font-size:0.95rem;margin-top:0.2rem">' + (c.assignedJudge || 'Hon. Judge Solomon Desta') + '</div>' +
+            '</div>' +
+            '<div style="background:#f8fafc;padding:0.85rem;border-radius:6px;border:1px solid #e2e8f0">' +
+              '<div style="font-size:0.725rem;color:#64748b;text-transform:uppercase;font-weight:700">Appointed Registrar</div>' +
+              '<div style="font-weight:800;color:#0f172a;font-size:0.95rem;margin-top:0.2rem">' + (c.clerkName || currentClerk.fullName) + '</div>' +
+            '</div>' +
+            '<div style="background:#f8fafc;padding:0.85rem;border-radius:6px;border:1px solid #e2e8f0">' +
+              '<div style="font-size:0.725rem;color:#64748b;text-transform:uppercase;font-weight:700">Division &amp; Status</div>' +
+              '<div style="font-weight:800;color:#0284c7;font-size:0.95rem;margin-top:0.2rem">' + (c.branchName || 'Federal Supreme Court') + ' &bull; ' + (c.status || 'Active') + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="docket-footer-bar">' +
+          '<button type="button" class="btn-docket-close" onclick="closeClerkModal()">Close Dossier</button>' +
+        '</div>' +
+      '</div>' : '') +
+
+    (activeTab === 'documents' ?
+      '<div>' +
+        '<div class="docket-card">' +
+          '<div class="docket-card-header">' +
+            '<div class="docket-card-title">Certified Exhibits &amp; Pleadings (' + (c.documents ? c.documents.length : 0) + ')</div>' +
+            '<button class="btn-register-sm" style="background:#0284c7;color:white;font-weight:700" onclick="openUploadDocumentModal(\'' + c.caseId + '\')">+ Upload Certified Exhibit</button>' +
+          '</div>' +
+          '<div style="overflow-x:auto">' +
+            '<table class="clerk-table">' +
+              '<thead>' +
+                '<tr>' +
+                  '<th>Document Title</th>' +
+                  '<th>Category</th>' +
+                  '<th>Size</th>' +
+                  '<th>Status</th>' +
+                  '<th>Action</th>' +
+                '</tr>' +
+              '</thead>' +
+              '<tbody>' +
+                ((c.documents && c.documents.length > 0) ? c.documents.map(d => 
+                  '<tr>' +
+                    '<td><strong style="color:var(--fsc-navy-main)">' + (d.name || d.title || 'Exhibits_Certified.pdf') + '</strong></td>' +
+                    '<td>' + (d.type || 'Pleading Exhibit') + '</td>' +
+                    '<td>' + (d.size || '2.4 MB') + '</td>' +
+                    '<td><span class="status-pill pill-green">Certified</span></td>' +
+                    '<td><button class="btn-register-sm" style="font-weight:700" onclick="viewRealDocument(\'' + (d.url || '') + '\', \'' + (d.name || d.title) + '\')">View PDF</button></td>' +
+                  '</tr>'
+                ).join('') : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#94a3b8">No exhibits uploaded.</td></tr>') +
+              '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>' +
+        '<div class="docket-footer-bar">' +
+          '<button type="button" class="btn-docket-close" onclick="closeClerkModal()">Close</button>' +
+        '</div>' +
+      '</div>' : '') +
+
+    (activeTab === 'sms' ?
+      '<form onsubmit="handleSendDocketSms(event, \'' + c.caseId + '\')">' +
+        '<div class="docket-card">' +
+          '<div class="docket-card-header">' +
+            '<div class="docket-card-title">Dispatch Telecommunication Notice</div>' +
+          '</div>' +
+          '<div class="docket-input-group">' +
+            '<label class="docket-label">Recipient Party</label>' +
+            '<select class="docket-input" id="docket-sms-target">' +
+              '<option value="' + ((c.filer && c.filer.phone) || '+251 911 123 456') + '">Plaintiff / Petitioner (' + ((c.filer && c.filer.phone) || '+251 911 123 456') + ')</option>' +
+              '<option value="' + ((c.defendant && c.defendant.phone) || '+251 922 334 455') + '">Defendant / Respondent (' + ((c.defendant && c.defendant.phone) || '+251 922 334 455') + ')</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="docket-input-group">' +
+            '<label class="docket-label">Notice Message Text</label>' +
+            '<textarea class="docket-textarea" id="docket-sms-text" rows="4" required>Federal Supreme Court Notice: Chamber session minutes recorded for Case ' + c.caseId + '. Next hearing scheduled on ' + (c.hearingDate || '2026-09-05') + ' at 10:00 AM. Access your docket at http://localhost:5001</textarea>' +
+          '</div>' +
+        '</div>' +
+        '<div class="docket-footer-bar">' +
+          '<button type="button" class="btn-docket-close" onclick="closeClerkModal()">Cancel</button>' +
+          '<button type="submit" class="btn-docket-commit" style="background:#0284c7">' +
+            '<span>📱 Dispatch SMS via Ethio Telecom Gateway</span>' +
+          '</button>' +
+        '</div>' +
+      '</form>' : '');
+
+  document.getElementById('universal-clerk-modal').classList.add('show');
+}
+
+async function handleSaveSessionMinutes(e, caseId) {
   e.preventDefault();
-  alert('Hearing scheduled and automated notices sent.');
+  const judgePresence = document.getElementById('sess-judge-pres').value;
+  const plaintiffPresence = document.getElementById('sess-plaintiff-pres').value;
+  const defendantPresence = document.getElementById('sess-def-pres').value;
+  const prosecutorPresence = document.getElementById('sess-pros-pres').value;
+  const stage = document.getElementById('sess-stage').value;
+  const minutes = document.getElementById('sess-minutes').value.trim();
+  const exhibitsAdmitted = document.getElementById('sess-exhibits').value.trim();
+  const nextHearingDate = document.getElementById('sess-next-date').value;
+  const nextHearingTime = document.getElementById('sess-next-time').value;
+  const courtroom = document.getElementById('sess-courtroom').value.trim();
+  const nextHearingAgenda = document.getElementById('sess-next-agenda').value.trim();
+
+  try {
+    const res = await fetch(API + '/cases/log-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId,
+        judgePresence,
+        plaintiffPresence,
+        defendantPresence,
+        prosecutorPresence,
+        stage,
+        minutes,
+        exhibitsAdmitted,
+        courtOrder: 'Court adjourned to ' + nextHearingDate + ' for ' + nextHearingAgenda,
+        nextHearingDate,
+        nextHearingTime,
+        courtroom,
+        nextHearingAgenda,
+        clerkName: currentClerk.fullName,
+        clerkId: currentClerk.id
+      })
+    });
+
+    if (res.ok) {
+      alert('✓ Official Court Session Minutes & Attendance successfully committed and sealed for case ' + caseId + '!');
+      await loadClerkData();
+      const updated = allCases.find(it => it.caseId === caseId);
+      if (updated) {
+        renderClerkDocketModalContent(updated, 'session_minutes');
+      } else {
+        closeClerkModal();
+      }
+    } else {
+      alert('Error saving session minutes.');
+    }
+  } catch (err) {
+    alert('Server connection error.');
+  }
+}
+
+function handleSendDocketSms(e, caseId) {
+  e.preventDefault();
+  const phone = document.getElementById('docket-sms-target').value;
+  alert('SMS notice dispatched successfully to ' + phone + ' for case ' + caseId + '!');
   closeClerkModal();
 }
 
-function openSendSmsModal() {
-  document.getElementById('clerk-modal-title').textContent = 'Send Manual SMS Notice (SMSEthiopia Gateway)';
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<form onsubmit="handleSendSmsSubmit(event)">' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Recipient Mobile Phone</label>' +
-        '<input type="text" class="top-search-input" style="border-radius:6px;width:100%" placeholder="+251 91 123 4567" required/>' +
-      '</div>' +
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem">SMS Message Content</label>' +
-        '<textarea class="top-search-input" style="border-radius:6px;width:100%;height:80px;padding:0.5rem" required placeholder="Type court notice text..."></textarea>' +
-      '</div>' +
-      '<button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Send Immediate SMS</button>' +
-    '</form>';
-  openClerkModal();
+function openRegisterCaseModal() {
+  openRegisterFilingModal('NEW-FILING-' + Date.now());
 }
 
-function handleSendSmsSubmit(e) {
+function openUploadDocumentModal(presetCaseId = '') {
+  const myCases = getAppointedCases();
+  const title = document.getElementById('clerk-modal-title');
+  const body = document.getElementById('clerk-modal-body');
+  if (!title || !body) return;
+
+  title.textContent = 'Upload Certified Exhibit / Filing';
+  body.innerHTML = 
+    '<form onsubmit="handleUploadClerkDocument(event)">' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Select Appointed Docket</label>' +
+        '<select class="modal-form-input" id="up-case-select" required>' +
+          myCases.map(c => '<option value="' + c.caseId + '" ' + (c.caseId === presetCaseId ? 'selected' : '') + '>' + c.caseId + ' &mdash; ' + c.caseTitle + '</option>').join('') +
+        '</select>' +
+      '</div>' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Document Title</label>' +
+        '<input type="text" class="modal-form-input" id="up-doc-title" placeholder="e.g. Certified Audit Statement.pdf" required>' +
+      '</div>' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Filing Category</label>' +
+        '<select class="modal-form-input" id="up-doc-type">' +
+          '<option value="Statement of Claim">Statement of Claim</option>' +
+          '<option value="Statement of Defense">Statement of Defense</option>' +
+          '<option value="Evidence Exhibit">Evidence Exhibit</option>' +
+          '<option value="Affidavit / Witness Statement">Affidavit / Witness Statement</option>' +
+          '<option value="Power of Attorney">Power of Attorney</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="modal-btn-row">' +
+        '<button type="button" class="btn-cancel" onclick="closeClerkModal()">Cancel</button>' +
+        '<button type="submit" class="btn-submit">Upload &amp; Certify Exhibit</button>' +
+      '</div>' +
+    '</form>';
+
+  document.getElementById('universal-clerk-modal').classList.add('show');
+}
+
+async function handleUploadClerkDocument(e) {
   e.preventDefault();
-  alert('SMS dispatched via SMSEthiopia gateway.');
+  const caseId = document.getElementById('up-case-select').value;
+  const docTitle = document.getElementById('up-doc-title').value.trim();
+  alert('Document "' + docTitle + '" successfully verified and uploaded to appointed case ' + caseId + '!');
+  closeClerkModal();
+  await loadClerkData();
+}
+
+function openIssueOrderModal() {
+  const myCases = getAppointedCases();
+  const title = document.getElementById('clerk-modal-title');
+  const body = document.getElementById('clerk-modal-body');
+  if (!title || !body) return;
+
+  title.textContent = 'Issue Official Chamber Order / Letter';
+  body.innerHTML = 
+    '<form onsubmit="handleIssueClerkOrder(event)">' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Target Appointed Case</label>' +
+        '<select class="modal-form-input" id="ord-case-select" required>' +
+          myCases.map(c => '<option value="' + c.caseId + '">' + c.caseId + ' &mdash; ' + c.caseTitle + '</option>').join('') +
+        '</select>' +
+      '</div>' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Order Type</label>' +
+        '<select class="modal-form-input" id="ord-type">' +
+          '<option value="Summons to Appear">Summons to Appear</option>' +
+          '<option value="Production of Documents">Production of Documents</option>' +
+          '<option value="Interim Stay Order">Interim Stay Order</option>' +
+          '<option value="Adjournment Notice">Adjournment Notice</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Directive Content</label>' +
+        '<textarea class="modal-form-input" id="ord-content" rows="4" placeholder="Enter formal order text..." required></textarea>' +
+      '</div>' +
+      '<div class="modal-btn-row">' +
+        '<button type="button" class="btn-cancel" onclick="closeClerkModal()">Cancel</button>' +
+        '<button type="submit" class="btn-submit">Dispatch Order Decree</button>' +
+      '</div>' +
+    '</form>';
+
+  document.getElementById('universal-clerk-modal').classList.add('show');
+}
+
+function handleIssueClerkOrder(e) {
+  e.preventDefault();
+  const caseId = document.getElementById('ord-case-select').value;
+  alert('Official Chamber Order dispatched for case ' + caseId + '!');
+  closeClerkModal();
+}
+
+function openScheduleHearingModal(presetCaseId = '') {
+  const myCases = getAppointedCases();
+  const title = document.getElementById('clerk-modal-title');
+  const body = document.getElementById('clerk-modal-body');
+  if (!title || !body) return;
+
+  title.textContent = 'Schedule Chamber Session / Hearing';
+  body.innerHTML = 
+    '<form onsubmit="handleScheduleClerkHearing(event)">' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Select Appointed Case</label>' +
+        '<select class="modal-form-input" id="sch-case-select" required>' +
+          myCases.map(c => '<option value="' + c.caseId + '" ' + (c.caseId === presetCaseId ? 'selected' : '') + '>' + c.caseId + ' &mdash; ' + c.caseTitle + '</option>').join('') +
+        '</select>' +
+      '</div>' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Hearing Date</label>' +
+        '<input type="date" class="modal-form-input" id="sch-date" value="2026-08-30" required>' +
+      '</div>' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Time Slot</label>' +
+        '<select class="modal-form-input" id="sch-time">' +
+          '<option value="09:00 AM">09:00 AM</option>' +
+          '<option value="10:00 AM">10:00 AM</option>' +
+          '<option value="11:30 AM">11:30 AM</option>' +
+          '<option value="02:00 PM">02:00 PM</option>' +
+          '<option value="03:30 PM">03:30 PM</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Courtroom</label>' +
+        '<select class="modal-form-input" id="sch-courtroom">' +
+          '<option value="Courtroom 1 (Commercial Bench)">Courtroom 1 (Commercial Bench)</option>' +
+          '<option value="Courtroom 2 (Cassation Division)">Courtroom 2 (Cassation Division)</option>' +
+          '<option value="Courtroom 3 (Civil Chamber)">Courtroom 3 (Civil Chamber)</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Procedural Agenda</label>' +
+        '<input type="text" class="modal-form-input" id="sch-agenda" placeholder="e.g. Oral Arguments on Injunction" required>' +
+      '</div>' +
+      '<div class="modal-btn-row">' +
+        '<button type="button" class="btn-cancel" onclick="closeClerkModal()">Cancel</button>' +
+        '<button type="submit" class="btn-submit">Confirm Hearing Schedule</button>' +
+      '</div>' +
+    '</form>';
+
+  document.getElementById('universal-clerk-modal').classList.add('show');
+}
+
+async function handleScheduleClerkHearing(e) {
+  e.preventDefault();
+  const caseId = document.getElementById('sch-case-select').value;
+  const hearingDate = document.getElementById('sch-date').value;
+  const hearingTime = document.getElementById('sch-time').value;
+  const courtroom = document.getElementById('sch-courtroom').value;
+  const agenda = document.getElementById('sch-agenda').value.trim();
+
+  try {
+    const res = await fetch(API + '/cases/schedule-next-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId,
+        hearingDate,
+        hearingTime,
+        courtroom,
+        agenda,
+        judgeName: currentClerk.fullName
+      })
+    });
+    if (res.ok) {
+      alert('Hearing successfully scheduled for appointed case ' + caseId + ' on ' + hearingDate + ' at ' + hearingTime + '!');
+      closeClerkModal();
+      await loadClerkData();
+    } else {
+      alert('Error scheduling session.');
+    }
+  } catch (err) {
+    alert('Server error scheduling session.');
+  }
+}
+
+function openSendSmsModal() {
+  const myCases = getAppointedCases();
+  const title = document.getElementById('clerk-modal-title');
+  const body = document.getElementById('clerk-modal-body');
+  if (!title || !body) return;
+
+  title.textContent = 'Dispatch SMS Notice';
+  body.innerHTML = 
+    '<form onsubmit="handleSendClerkSms(event)">' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Select Appointed Case</label>' +
+        '<select class="modal-form-input" id="sms-case-select" required>' +
+          myCases.map(c => '<option value="' + c.caseId + '">' + c.caseId + ' &mdash; ' + c.caseTitle + '</option>').join('') +
+        '</select>' +
+      '</div>' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">Recipient Phone Number</label>' +
+        '<input type="text" class="modal-form-input" id="sms-phone" placeholder="e.g. +251 911 123 456" required>' +
+      '</div>' +
+      '<div class="modal-form-group">' +
+        '<label class="modal-form-label">SMS Message Content</label>' +
+        '<textarea class="modal-form-input" id="sms-content" rows="3" placeholder="Enter SMS text..." required></textarea>' +
+      '</div>' +
+      '<div class="modal-btn-row">' +
+        '<button type="button" class="btn-cancel" onclick="closeClerkModal()">Cancel</button>' +
+        '<button type="submit" class="btn-submit">Dispatch SMS via Ethio Telecom Gateway</button>' +
+      '</div>' +
+    '</form>';
+
+  document.getElementById('universal-clerk-modal').classList.add('show');
+}
+
+function handleSendClerkSms(e) {
+  e.preventDefault();
+  const phone = document.getElementById('sms-phone').value.trim();
+  alert('SMS notice dispatched successfully to ' + phone + '!');
   closeClerkModal();
 }
 
 function openGenerateReportModal() {
-  alert('Generating registry statistical report in PDF format...');
+  const myCases = getAppointedCases();
+  alert('Generated certified chamber ledger for ' + myCases.length + ' appointed dockets.');
 }
 
 function openSearchCaseModal() {
-  const q = prompt('Enter Case ID or Party Name to search in federal registry:');
+  const q = prompt('Search Appointed Cases (by ID or Title):');
   if (q) {
-    alert('Found matching records for: ' + q);
+    const found = getAppointedCases().filter(c => c.caseId.toLowerCase().includes(q.toLowerCase()) || c.caseTitle.toLowerCase().includes(q.toLowerCase()));
+    if (found.length > 0) {
+      openClerkCaseModal(found[0].caseId);
+    } else {
+      alert('No matching case found in your appointed dockets.');
+    }
   }
 }
 
@@ -1040,111 +1400,5 @@ function openCreateNoticeModal() {
 }
 
 function openDailyCauseListModal() {
-  alert('Exporting official Daily Cause List for today across Courtrooms 1–4.');
-}
-
-function openDailyReportModal() {
-  alert('Opening complete daily registry statistics summary.');
-}
-
-function openClerkSettingsModal() {
-  document.getElementById('clerk-modal-title').textContent = 'Registry Unit Preferences';
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<div style="line-height:1.7">' +
-      '<label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem"><input type="checkbox" checked /> Automated SMS Confirmation on Registration</label>' +
-      '<label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem"><input type="checkbox" checked /> Real-time Document Anti-Virus Scan</label>' +
-      '<button class="btn btn-primary" style="width:100%;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer" onclick="alert(\'Registry preferences saved.\'); closeClerkModal();">Save Preferences</button>' +
-    '</div>';
-  openClerkModal();
-}
-
-function openClerkContactModal() {
-  document.getElementById('clerk-modal-title').textContent = 'Registry Internal Directory';
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<div style="line-height:1.7">' +
-      '<div><strong>Court Registry Block 1:</strong> Ext 22</div>' +
-      '<div><strong>Screening Officer Tesfaye:</strong> Ext 14</div>' +
-      '<div><strong>Chamber 4 Clerk:</strong> Ext 41</div>' +
-      '<button class="btn btn-outline" style="width:100%;margin-top:1rem;padding:0.6rem;cursor:pointer" onclick="closeClerkModal()">Close</button>' +
-    '</div>';
-  openClerkModal();
-}
-
-function openClerkModal() {
-  const modal = document.getElementById('universal-clerk-modal');
-  if (modal) modal.style.display = 'flex';
-}
-
-function closeClerkModal() {
-  const modal = document.getElementById('universal-clerk-modal');
-  if (modal) modal.style.display = 'none';
-}
-
-
-// ── Clerk Hearing Session Summary Logger (Section 7) ──
-function openHearingSummaryModal(caseId) {
-  document.getElementById('clerk-modal-title').textContent = 'Log Hearing Session Activity & Attendance — ' + caseId;
-  document.getElementById('clerk-modal-body').innerHTML = 
-    '<form onsubmit="handleLogSessionSubmit(event, \'' + caseId + '\')">' +
-      '<div style="background:#f8fafc;padding:0.75rem;border-radius:6px;border:1px solid #e2e8f0;margin-bottom:0.75rem">' +
-        '<div style="font-weight:700;font-size:0.8rem;margin-bottom:0.35rem">Party Attendance Verification</div>' +
-        '<div style="display:flex;gap:1.5rem;font-size:0.8rem">' +
-          '<label style="display:flex;align-items:center;gap:0.35rem"><input type="checkbox" id="sess-plaintiff-pres" checked/> Plaintiff / Counsel Present</label>' +
-          '<label style="display:flex;align-items:center;gap:0.35rem"><input type="checkbox" id="sess-def-pres" checked/> Defendant / Counsel Present</label>' +
-        '</div>' +
-      '</div>' +
-
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Topics Discussed During Session</label>' +
-        '<input type="text" id="sess-topics" class="top-search-input" value="Oral arguments on documentary evidence admissibility and preliminary objections." required/>' +
-      '</div>' +
-
-      '<div style="margin-bottom:0.75rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Session Summary Notes</label>' +
-        '<textarea id="sess-summary" class="top-search-input" style="width:100%;height:60px" required>Parties presented submissions. Court ordered cross-examination for next hearing session.</textarea>' +
-      '</div>' +
-
-      '<div style="margin-bottom:1rem">' +
-        '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">Follow-up Hearing Date (if verbally ordered by Judge)</label>' +
-        '<input type="date" id="sess-next-date" class="top-search-input" value="2026-06-12"/>' +
-      '</div>' +
-
-      '<div style="display:flex;gap:0.5rem">' +
-        '<button type="submit" class="btn-clerk-primary" style="flex:1">Save &amp; Publish Session Summary</button>' +
-        '<button type="button" class="btn-clerk-outline" style="padding:0.6rem 1rem" onclick="closeClerkModal()">Cancel</button>' +
-      '</div>' +
-    '</form>';
-  openClerkModal();
-}
-
-async function handleLogSessionSubmit(e, caseId) {
-  e.preventDefault();
-  const plaintiffPresent = document.getElementById('sess-plaintiff-pres').checked;
-  const defendantPresent = document.getElementById('sess-def-pres').checked;
-  const topicsDiscussed = document.getElementById('sess-topics').value.trim();
-  const summaryNotes = document.getElementById('sess-summary').value.trim();
-  const nextHearingDate = document.getElementById('sess-next-date').value;
-
-  try {
-    const res = await fetch(API + '/cases/log-session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        caseId,
-        plaintiffPresent,
-        defendantPresent,
-        topicsDiscussed,
-        summaryNotes,
-        nextHearingDate,
-        clerkName: currentClerk.fullName || 'Court Clerk'
-      })
-    });
-    if (res.ok) {
-      alert('Hearing session summary recorded and added to chronological case history.');
-      closeClerkModal();
-      await loadClerkData();
-    }
-  } catch (err) {
-    alert('Error recording session: ' + err.message);
-  }
+  switchClerkView('hearing_calendar');
 }

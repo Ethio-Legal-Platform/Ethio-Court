@@ -1,0 +1,74 @@
+[
+  {
+    "id": "APP-2026-006",
+    "caseId": "CASE-178721589765",
+    "defendantName": "Yimer Getachew",
+    "originalCourt": "Federal High Court",
+    "appealCourt": "Federal Supreme Court — Appellate Division",
+    "grounds": "Procedural challenge",
+    "filingDate": "2026-08-21",
+    "status": "Brief Filed",
+    "hearingDate": "2026-06-15 09:30 AM",
+    "leadProsecutor": "Bereket Girma"
+  },
+  {
+    "id": "APP-2026-001",
+    "caseId": "CASE-178721599881",
+    "defendantName": "Kassahun Tsegaye",
+    "originalCourt": "Federal High Court — Lideta Division",
+    "appealCourt": "Federal Supreme Court — Appellate Division",
+    "grounds": "Misapplication of Penal Code Art. 689 burden of proof regarding documentary evidence and forged state tax invoices.",
+    "filingDate": "2026-05-18",
+    "status": "Brief Filed",
+    "hearingDate": "2026-06-10 10:00 AM",
+    "leadProsecutor": "Bereket Girma"
+  },
+  {
+    "id": "APP-2026-002",
+    "caseId": "CASE-178721544321",
+    "defendantName": "Tadesse Woldemariam",
+    "originalCourt": "Federal High Court — Kirkos Division",
+    "appealCourt": "Federal Supreme Court — Cassation Division",
+    "grounds": "Fundamental error of law in sentencing mitigation contrary to Anti-Corruption Proclamation Art. 13.",
+    "filingDate": "2026-05-12",
+    "status": "Under Cassation Review",
+    "hearingDate": "2026-06-15 09:30 AM",
+    "leadProsecutor": "Bereket Girma"
+  },
+  {
+    "id": "APP-2026-003",
+    "caseId": "CASE-178721533119",
+    "defendantName": "Binyam Haile",
+    "originalCourt": "Federal First Instance Court — Arada Division",
+    "appealCourt": "Federal High Court — Criminal Appeals Bench",
+    "grounds": "Erroneous grant of bail for non-bailable offense under Computer Crime Proclamation 958/2016.",
+    "filingDate": "2026-05-20",
+    "status": "Pending Response",
+    "hearingDate": "2026-06-04 02:00 PM",
+    "leadProsecutor": "Bereket Girma"
+  },
+  {
+    "id": "APP-2026-004",
+    "caseId": "CASE-178721522008",
+    "defendantName": "Alemu Kebede & Partners",
+    "originalCourt": "Federal High Court — Commercial Division",
+    "appealCourt": "Federal Supreme Court — Appellate Bench 2",
+    "grounds": "State petition contesting exclusion of digital bank transaction logs as hearsay evidence.",
+    "filingDate": "2026-05-08",
+    "status": "Hearing Scheduled",
+    "hearingDate": "2026-05-29 11:00 AM",
+    "leadProsecutor": "Bereket Girma"
+  },
+  {
+    "id": "APP-2026-005",
+    "caseId": "CASE-178721511994",
+    "defendantName": "Mulugeta Tesfaye",
+    "originalCourt": "Federal First Instance Court — Lideta",
+    "appealCourt": "Federal High Court — Appellate Division",
+    "grounds": "Jurisdictional dispute concerning cross-regional commercial fraud offenses.",
+    "filingDate": "2026-05-02",
+    "status": "Judgment Reserved",
+    "hearingDate": "2026-06-01 09:30 AM",
+    "leadProsecutor": "Bereket Girma"
+  }
+]

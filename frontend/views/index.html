@@ -882,7 +882,7 @@ async function handleLogin(e) {
       else if (data.user.role === 'admin') targetUrl = '/admin';
       else if (data.user.role === 'clerk') targetUrl = '/clerk';
       else if (data.user.role === 'officer' || data.user.role === 'screening' || data.user.role === 'official') targetUrl = '/official';
-      else if (data.user.role === 'client' || data.user.role === 'litigant' || data.user.role === 'temporary') targetUrl = '/temporary';
+      else if (data.user.role === 'client' || data.user.role === 'litigant' || data.user.role === 'temporary' || data.user.role === 'defendant') targetUrl = '/temporary';
       setTimeout(() => window.location.href = targetUrl, 600);
     } else {
       showAlert(data.error || 'Authentication failed');

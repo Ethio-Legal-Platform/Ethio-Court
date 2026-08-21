@@ -1,0 +1,37 @@
+[
+  {
+    "id": "DEM-1480",
+    "caseId": "CASE-178721589765",
+    "respondent": "Ethio Telecom",
+    "demandTitle": "Subpoena for CDR Records",
+    "description": "Call detail logs for target phone.",
+    "deadline": "7 Days",
+    "status": "Awaiting Response",
+    "daysOpen": 1,
+    "issuedAt": "2026-08-21T03:36:09.091Z"
+  },
+  {
+    "id": "DEM-101",
+    "caseId": "CASE-178721589765",
+    "respondent": "National Bank of Ethiopia",
+    "demandTitle": "Certified SWIFT Wire Records (Ref: ETH-9942)",
+    "status": "Awaiting Response",
+    "daysOpen": 4
+  },
+  {
+    "id": "DEM-102",
+    "caseId": "CASE-178721632211",
+    "respondent": "Ministry of Revenue",
+    "demandTitle": "VAT Declarations 2024-2026",
+    "status": "Awaiting Response",
+    "daysOpen": 2
+  },
+  {
+    "id": "DEM-103",
+    "caseId": "CASE-178721555922",
+    "respondent": "Ethio Telecom",
+    "demandTitle": "IP Access Logs & Subscriber IMEI",
+    "status": "Fulfilled",
+    "daysOpen": 1
+  }
+]

@@ -1,0 +1,331 @@
+[
+  {
+    "id": "WIT-2671",
+    "caseId": "CASE-178721589765",
+    "witnessName": "Protected Informant Alpha",
+    "protectionLevel": "High Security Safehouse Relocation",
+    "assignedOfficer": "Cmdr. Teklu Assefa",
+    "details": "In-Camera testimony order granted under FSC Rule 44.",
+    "createdAt": "2026-08-21T03:36:09.081Z"
+  },
+  {
+    "id": "WIT-1001",
+    "caseId": "CASE-178721589765",
+    "witnessName": "Tadesse Hailu (Protected Witness #1)",
+    "protectionLevel": "High Security Witness Relocation",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-10",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1002",
+    "caseId": "CASE-178721612233",
+    "witnessName": "Almaz Tesfaye (Protected Witness #2)",
+    "protectionLevel": "High Security Witness Relocation",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-11",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1003",
+    "caseId": "CASE-178721555922",
+    "witnessName": "Marta Bekele (Protected Witness #3)",
+    "protectionLevel": "High Security Witness Relocation",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-12",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1004",
+    "caseId": "CASE-178721560884",
+    "witnessName": "Yohannes Desta (Protected Witness #4)",
+    "protectionLevel": "High Security Witness Relocation",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-13",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1005",
+    "caseId": "CASE-178721632211",
+    "witnessName": "Ephrem Alemayehu (Protected Witness #5)",
+    "protectionLevel": "High Security Witness Relocation",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-14",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1006",
+    "caseId": "CASE-178721540800",
+    "witnessName": "Genet Kebede (Protected Witness #6)",
+    "protectionLevel": "High Security Witness Relocation",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-15",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1007",
+    "caseId": "CASE-178721589765",
+    "witnessName": "Solomon Fekadu (Protected Witness #7)",
+    "protectionLevel": "High Security Witness Relocation",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-16",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1008",
+    "caseId": "CASE-178721612233",
+    "witnessName": "Rahel Girma (Protected Witness #8)",
+    "protectionLevel": "High Security Witness Relocation",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-17",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1009",
+    "caseId": "CASE-178721555922",
+    "witnessName": "Tadesse Hailu (Protected Witness #9)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-18",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1010",
+    "caseId": "CASE-178721560884",
+    "witnessName": "Almaz Tesfaye (Protected Witness #10)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-19",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1011",
+    "caseId": "CASE-178721632211",
+    "witnessName": "Marta Bekele (Protected Witness #11)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-20",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1012",
+    "caseId": "CASE-178721540800",
+    "witnessName": "Yohannes Desta (Protected Witness #12)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-21",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1013",
+    "caseId": "CASE-178721589765",
+    "witnessName": "Ephrem Alemayehu (Protected Witness #13)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-22",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1014",
+    "caseId": "CASE-178721612233",
+    "witnessName": "Genet Kebede (Protected Witness #14)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-23",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1015",
+    "caseId": "CASE-178721555922",
+    "witnessName": "Solomon Fekadu (Protected Witness #15)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-24",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1016",
+    "caseId": "CASE-178721560884",
+    "witnessName": "Rahel Girma (Protected Witness #16)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-10",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1017",
+    "caseId": "CASE-178721632211",
+    "witnessName": "Tadesse Hailu (Protected Witness #17)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-11",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1018",
+    "caseId": "CASE-178721540800",
+    "witnessName": "Almaz Tesfaye (Protected Witness #18)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-12",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1019",
+    "caseId": "CASE-178721589765",
+    "witnessName": "Marta Bekele (Protected Witness #19)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-13",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1020",
+    "caseId": "CASE-178721612233",
+    "witnessName": "Yohannes Desta (Protected Witness #20)",
+    "protectionLevel": "Court Identity Concealment",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-14",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1021",
+    "caseId": "CASE-178721555922",
+    "witnessName": "Ephrem Alemayehu (Protected Witness #21)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-15",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1022",
+    "caseId": "CASE-178721560884",
+    "witnessName": "Genet Kebede (Protected Witness #22)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-16",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1023",
+    "caseId": "CASE-178721632211",
+    "witnessName": "Solomon Fekadu (Protected Witness #23)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-17",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1024",
+    "caseId": "CASE-178721540800",
+    "witnessName": "Rahel Girma (Protected Witness #24)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-18",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1025",
+    "caseId": "CASE-178721589765",
+    "witnessName": "Tadesse Hailu (Protected Witness #25)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-19",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1026",
+    "caseId": "CASE-178721612233",
+    "witnessName": "Almaz Tesfaye (Protected Witness #26)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-20",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1027",
+    "caseId": "CASE-178721555922",
+    "witnessName": "Marta Bekele (Protected Witness #27)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-21",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1028",
+    "caseId": "CASE-178721560884",
+    "witnessName": "Yohannes Desta (Protected Witness #28)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-22",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1029",
+    "caseId": "CASE-178721632211",
+    "witnessName": "Ephrem Alemayehu (Protected Witness #29)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-23",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1030",
+    "caseId": "CASE-178721540800",
+    "witnessName": "Genet Kebede (Protected Witness #30)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-24",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1031",
+    "caseId": "CASE-178721589765",
+    "witnessName": "Solomon Fekadu (Protected Witness #31)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-10",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  },
+  {
+    "id": "WIT-1032",
+    "caseId": "CASE-178721612233",
+    "witnessName": "Rahel Girma (Protected Witness #32)",
+    "protectionLevel": "Police Patrol Monitoring",
+    "status": "Under Protection",
+    "assignedOfficer": "Commander Teklu Assefa (Federal Police)",
+    "depositionDate": "2026-05-11",
+    "notes": "Key eyewitness testimony in state prosecution proceedings."
+  }
+]

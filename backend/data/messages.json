@@ -1,0 +1,50 @@
+[
+  {
+    "id": "MSG-PROS-8148",
+    "sender": "Senior Public Prosecutor Bereket Girma",
+    "senderRole": "Public Prosecutor (PROS-2001)",
+    "recipient": "Chief Registrar",
+    "subject": "Urgent Filing Confirmation",
+    "content": "Testing dispatch delivery",
+    "timestamp": "2026-08-21T03:45:48.148Z",
+    "isRead": false,
+    "priority": "NORMAL",
+    "caseId": "CASE-178721589765"
+  },
+  {
+    "id": "MSG-PROS-001",
+    "sender": "Registrar Office (Federal Supreme Court)",
+    "senderRole": "Chief Registrar",
+    "recipient": "Senior Public Prosecutor Bereket Girma",
+    "subject": "Certified Copy of Bench Ruling - CASE-178721589765",
+    "content": "The Presiding Bench has issued an interlocutory order admitting Exhibit P-4 (Forensic Audit Report) into evidence. Defense objections under Art. 142 have been overruled. Formal trial hearing is confirmed for May 27, 2026 at 09:30 AM in Courtroom 4.",
+    "timestamp": "2026-05-24T08:30:00Z",
+    "isRead": false,
+    "priority": "HIGH",
+    "caseId": "CASE-178721589765"
+  },
+  {
+    "id": "MSG-PROS-002",
+    "sender": "Federal Police Crime Investigation Bureau",
+    "senderRole": "Commander Teklu Assefa",
+    "recipient": "Senior Public Prosecutor Bereket Girma",
+    "subject": "Subpoena Execution & Witness Protection Confirmation - CASE-178721555922",
+    "content": "Please be advised that the witness protection detail for Informant Alpha has been established at Safehouse 3. In-camera video blurring equipment has been requisitioned for the upcoming preliminary deposition.",
+    "timestamp": "2026-05-24T07:15:00Z",
+    "isRead": false,
+    "priority": "URGENT",
+    "caseId": "CASE-178721555922"
+  },
+  {
+    "id": "MSG-PROS-003",
+    "sender": "Directorate of Public Prosecution",
+    "senderRole": "Director General of Prosecution",
+    "recipient": "Senior Public Prosecutor Bereket Girma",
+    "subject": "Assignment to Special Anti-Corruption Taskforce",
+    "content": "You have been designated Lead Counsel for the Federal Special Anti-Corruption Prosecution panel reviewing financial sector embezzlement dockets. Please review the attached briefing memorandum.",
+    "timestamp": "2026-05-23T14:45:00Z",
+    "isRead": true,
+    "priority": "NORMAL",
+    "caseId": "CASE-178721632211"
+  }
+]
