@@ -1,5 +1,13 @@
 [
   {
+    "id": "AUD-1787323083761",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T14:38:03.761Z",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-1787320030473",
     "action": "USER_LOGIN",
     "user": "Hon. Judge Solomon Desta",
