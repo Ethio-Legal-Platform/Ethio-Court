@@ -1,5 +1,14 @@
 [
   {
+    "licenseNumber": "LAW-1000",
+    "fullName": "Advocate Kalalew Terefe",
+    "status": "ACTIVE",
+    "issueDate": "2012-01-15",
+    "expiryDate": "2032-01-15",
+    "specialization": "Criminal & Commercial Law",
+    "tier": "Federal Supreme Court"
+  },
+  {
     "licenseNumber": "LAW-1001",
     "fullName": "Kebede Haile Mariam",
     "status": "ACTIVE",

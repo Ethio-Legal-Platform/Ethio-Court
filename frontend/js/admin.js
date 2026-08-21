@@ -769,28 +769,91 @@ function renderReportsAnalyticsView(container) {
   renderAdminDashboard(container);
 }
 
-function renderWebhookIntegrationView(container) {
+async function renderWebhookIntegrationView(container) {
+  let webhookLogs = [];
+  let webhookConfig = { targetBaseUrl: 'http://127.0.0.1:5000', sealGracePeriodMinutes: '5.0' };
+  
+  try {
+    const [lRes, cRes] = await Promise.all([
+      fetch(API + '/webhooks/logs').catch(() => null),
+      fetch(API + '/webhooks/config').catch(() => null)
+    ]);
+    if (lRes && lRes.ok) webhookLogs = await lRes.json();
+    if (cRes && cRes.ok) webhookConfig = await cRes.json();
+  } catch (e) {}
+
+  const pendingSealedCases = (allCases || []).filter(c => c.ratingSyncStatus === 'pending' && c.ratingSyncScheduledAt);
+
   container.innerHTML = 
     '<div class="admin-header-row">' +
       '<div>' +
         '<h1 class="admin-greeting-title">LEX-RATING Webhook Dispatcher &amp; MoJ Sync</h1>' +
-        '<div class="admin-greeting-sub">Automated event streaming for concluded court cases and verified advocate licenses.</div>' +
+        '<div class="admin-greeting-sub">Automated event streaming: Concluded cases auto-post after a 5-minute test delay (representing 30-day appeal window).</div>' +
       '</div>' +
       '<button class="btn-sync-now" style="width:auto;margin:0;padding:0.6rem 1.25rem" onclick="triggerLexRatingSync()">Sync All Now</button>' +
     '</div>' +
-    '<div class="admin-panel-card">' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">' +
-        '<div style="padding:1.25rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">' +
-          '<h3 style="font-size:1rem;color:var(--fsc-navy-main);font-weight:700">Case Webhook Endpoint</h3>' +
-          '<p style="font-size:0.8rem;color:#64748b;margin:0.5rem 0">Dispatches concluded adversarial advocate cases to LEX-RATING.</p>' +
-          '<button class="btn-view-sm" onclick="syncEndpoint(\'/api/webhooks/sync-cases\')">Bulk Push Concluded Cases</button>' +
+    
+    '<div class="admin-panel-card" style="margin-bottom:1.5rem">' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">' +
+        '<div style="padding:1rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">' +
+          '<div style="font-size:0.75rem;color:#64748b;font-weight:700;text-transform:uppercase">Target Rating Server</div>' +
+          '<div style="font-size:1rem;font-weight:800;color:#0b1a30;margin-top:0.25rem">' + (webhookConfig.targetBaseUrl || 'http://127.0.0.1:5000') + '</div>' +
+          '<div style="font-size:0.75rem;color:#16a34a;margin-top:0.25rem">● Service Key Configured</div>' +
         '</div>' +
-        '<div style="padding:1.25rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">' +
-          '<h3 style="font-size:1rem;color:var(--fsc-navy-main);font-weight:700">MoJ License Sync Endpoint</h3>' +
-          '<p style="font-size:0.8rem;color:#64748b;margin:0.5rem 0">Pushes 37 active Ministry of Justice verified advocate licenses.</p>' +
-          '<button class="btn-view-sm" onclick="syncEndpoint(\'/api/webhooks/sync-licenses\')">Bulk Push MoJ Licenses</button>' +
+        '<div style="padding:1rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">' +
+          '<div style="font-size:0.75rem;color:#64748b;font-weight:700;text-transform:uppercase">Seal Grace Period</div>' +
+          '<div style="font-size:1rem;font-weight:800;color:#0b1a30;margin-top:0.25rem">' + (webhookConfig.sealGracePeriodMinutes || '5.0') + ' Minutes</div>' +
+          '<div style="font-size:0.75rem;color:#ea580c;margin-top:0.25rem">Test mode (30-day window)</div>' +
+        '</div>' +
+        '<div style="padding:1rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">' +
+          '<div style="font-size:0.75rem;color:#64748b;font-weight:700;text-transform:uppercase">Pending Sealed Queue</div>' +
+          '<div style="font-size:1rem;font-weight:800;color:#0b1a30;margin-top:0.25rem">' + pendingSealedCases.length + ' Case(s)</div>' +
+          '<div style="font-size:0.75rem;color:#2563eb;margin-top:0.25rem">Auto-dispatching on timer</div>' +
         '</div>' +
       '</div>' +
+    '</div>' +
+
+    (pendingSealedCases.length > 0 ? 
+      '<div class="admin-panel-card" style="margin-bottom:1.5rem;border-left:4px solid #ea580c">' +
+        '<h3 style="font-size:0.95rem;font-weight:800;color:#0b1a30;margin-bottom:0.75rem">⏳ Cases in 5-Minute Seal Countdown Queue</h3>' +
+        '<table class="admin-table">' +
+          '<thead><tr><th>Case ID</th><th>Title</th><th>Sealed At</th><th>Scheduled Dispatch</th><th>Action</th></tr></thead>' +
+          '<tbody>' +
+            pendingSealedCases.map(c => 
+              '<tr>' +
+                '<td><strong>' + c.caseId + '</strong></td>' +
+                '<td>' + (c.caseTitle || 'Litigation Docket') + '</td>' +
+                '<td style="color:#64748b">' + new Date(c.sealedAt || Date.now()).toLocaleTimeString() + '</td>' +
+                '<td><span class="status-pill pill-amber">In ' + Math.max(0, Math.round((new Date(c.ratingSyncScheduledAt).getTime() - Date.now()) / 1000)) + 's</span></td>' +
+                '<td><button class="btn-view-sm" onclick="syncEndpoint(\'/api/webhooks/sync-cases\')">Dispatch Now</button></td>' +
+              '</tr>'
+            ).join('') +
+          '</tbody>' +
+        '</table>' +
+      '</div>'
+    : '') +
+
+    '<div class="admin-panel-card">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">' +
+        '<h3 style="font-size:0.95rem;font-weight:800;color:#0b1a30;margin:0">Outbound Webhook Delivery Logs</h3>' +
+        '<div style="display:flex;gap:0.5rem">' +
+          '<button class="btn-view-sm" onclick="syncEndpoint(\'/api/webhooks/sync-cases\')">Push Concluded Cases</button>' +
+          '<button class="btn-view-sm" onclick="syncEndpoint(\'/api/webhooks/sync-licenses\')">Push MoJ Licenses</button>' +
+        '</div>' +
+      '</div>' +
+      '<table class="admin-table">' +
+        '<thead><tr><th>Timestamp</th><th>Event</th><th>Target URL / Ref</th><th>Status</th></tr></thead>' +
+        '<tbody>' +
+          (webhookLogs && webhookLogs.length ? webhookLogs.slice(0, 15).map(w => 
+            '<tr>' +
+              '<td style="color:#64748b">' + new Date(w.timestamp || Date.now()).toLocaleString() + '</td>' +
+              '<td><strong>' + (w.event || 'CASE_SEALED_RATING_SYNC') + '</strong></td>' +
+              '<td>' + (w.caseId ? 'Case: ' + w.caseId : (w.targetUrl || 'Rating Endpoint')) + '</td>' +
+              '<td><span class="status-pill ' + (w.delivered ? 'pill-green' : 'pill-amber') + '">' + (w.delivered ? 'DELIVERED (200)' : (w.statusText || 'LOGGED')) + '</span></td>' +
+            '</tr>'
+          ).join('') : '<tr><td colspan="4" style="text-align:center;color:#64748b">No webhook dispatches yet. Delivered verdicts will populate here automatically.</td></tr>') +
+        '</tbody>' +
+      '</table>' +
     '</div>';
 }
 

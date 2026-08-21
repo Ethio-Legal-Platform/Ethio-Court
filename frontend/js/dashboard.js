@@ -32,7 +32,7 @@ async function initAdvocatePortal() {
     currentUser = {
       id: "LAWYER-002",
       username: "lawyer.tigist",
-      fullName: "Advocate Tigist Assefa",
+      fullName: "Advocate Tigist Alemu Bekele",
       role: "lawyer",
       licenseNumber: "LAW-1002",
       specialization: "Civil Dispute & Commercial Litigation",
@@ -99,31 +99,35 @@ function isCaseAppointedToCurrentLawyer(c) {
   const lawyerName = (currentUser ? (currentUser.fullName || '') : '').toLowerCase();
   const tokens = lawyerName.split(/\s+/).filter(t => t.length > 2 && !t.includes('advocate'));
 
-  // If there is ONLY a pending request and it is NOT appointed, it is NOT in active cases
-  if (c.pendingLawyerRequest && (!c.lawyerAppointed || c.pendingLawyerRequest.status === 'pending')) {
-    return false;
-  }
-
-  // 1. Direct lawyerAppointed match
-  if (c.lawyerAppointed) {
+  // 1. Direct lawyerAppointed match (Plaintiff representation)
+  if (c.lawyerAppointed && c.lawyerAppointed.status !== 'declined') {
     const la = c.lawyerAppointed;
     if (la.lawyerId && la.lawyerId.toUpperCase() === lawyerId) return true;
     if (la.licenseNumber && la.licenseNumber.toUpperCase() === license) return true;
-    if (la.lawyerName) {
+    if (la.lawyerName && tokens.length) {
       const laName = la.lawyerName.toLowerCase();
       if (tokens.some(t => laName.includes(t))) return true;
     }
   }
 
-  // 2. Direct plaintiff/defendant lawyer id match (when no pending request)
+  // 2. Direct plaintiff lawyer match
   if (c.plaintiffLawyerId && c.plaintiffLawyerId.toUpperCase() === lawyerId) return true;
-  if (c.defendantLawyerId && c.defendantLawyerId.toUpperCase() === lawyerId) return true;
   if (c.plaintiffLawyerLic && c.plaintiffLawyerLic.toUpperCase() === license) return true;
-  if (c.defendantLawyerLic && c.defendantLawyerLic.toUpperCase() === license) return true;
+  if (c.plaintiffLawyerName && tokens.length && tokens.some(t => c.plaintiffLawyerName.toLowerCase().includes(t))) return true;
 
-  if (c.lawyerName && tokens.length && tokens.some(t => c.lawyerName.toLowerCase().includes(t))) {
-    return true;
+  // 3. Defendant Representation match (Defense counsel)
+  if (c.defendantRepresentation && c.defendantRepresentation.type !== 'self' && c.defendantRepresentation.type !== 'declined') {
+    const dr = c.defendantRepresentation;
+    if (dr.lawyerId && dr.lawyerId.toUpperCase() === lawyerId) return true;
+    if (dr.licenseNumber && dr.licenseNumber.toUpperCase() === license) return true;
+    if (dr.lawyerName && tokens.length) {
+      const drName = dr.lawyerName.toLowerCase();
+      if (tokens.some(t => drName.includes(t))) return true;
+    }
   }
+  if (c.defendantLawyerId && c.defendantLawyerId.toUpperCase() === lawyerId) return true;
+  if (c.defendantLawyerLic && c.defendantLawyerLic.toUpperCase() === license) return true;
+  if (c.defendantLawyerName && tokens.length && tokens.some(t => c.defendantLawyerName.toLowerCase().includes(t))) return true;
 
   return false;
 }
@@ -140,16 +144,34 @@ function getIncomingLawyerRequests() {
   const lawyerName = (currentUser ? (currentUser.fullName || '') : '').toLowerCase();
   const tokens = lawyerName.split(/\s+/).filter(t => t.length > 2 && !t.includes('advocate'));
 
-  return allCases.filter(c => {
-    if (!c.pendingLawyerRequest) return false;
-    const p = c.pendingLawyerRequest;
-    if (p.status && p.status !== 'pending') return false;
+  const matches = [];
+  allCases.forEach(c => {
+    // 1. Plaintiff representation request
+    if (c.pendingLawyerRequest && c.pendingLawyerRequest.status === 'pending') {
+      const p = c.pendingLawyerRequest;
+      const matchesLawyer = (p.lawyerId && p.lawyerId.toUpperCase() === lawyerId) ||
+        (p.licenseNumber && p.licenseNumber.toUpperCase() === license) ||
+        (p.lawyerName && tokens.some(t => p.lawyerName.toLowerCase().includes(t)));
+      if (matchesLawyer) {
+        matches.push(Object.assign({}, c, { _incomingReq: p, _side: 'Plaintiff / Filer' }));
+        return;
+      }
+    }
 
-    if (p.lawyerId && p.lawyerId.toUpperCase() === lawyerId) return true;
-    if (p.licenseNumber && p.licenseNumber.toUpperCase() === license) return true;
-    if (p.lawyerName && tokens.some(t => p.lawyerName.toLowerCase().includes(t))) return true;
-    return false;
+    // 2. Defendant representation request
+    if (c.pendingDefendantLawyerRequest && c.pendingDefendantLawyerRequest.status === 'pending') {
+      const p = c.pendingDefendantLawyerRequest;
+      const matchesLawyer = (p.lawyerId && p.lawyerId.toUpperCase() === lawyerId) ||
+        (p.licenseNumber && p.licenseNumber.toUpperCase() === license) ||
+        (p.lawyerName && tokens.some(t => p.lawyerName.toLowerCase().includes(t)));
+      if (matchesLawyer) {
+        matches.push(Object.assign({}, c, { _incomingReq: p, _side: 'Defendant / Accused' }));
+        return;
+      }
+    }
   });
+
+  return matches;
 }
 
 async function loadDashboardData() {
@@ -235,12 +257,12 @@ function renderAdvocateDashboard(container) {
         '<div style="display:flex;align-items:center;gap:0.85rem">' +
           '<div style="width:40px;height:40px;border-radius:50%;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0">📬</div>' +
           '<div>' +
-            '<div style="font-weight:800;color:#92400e;font-size:0.95rem">You have ' + incomingRequests.length + ' incoming representation request(s) awaiting review</div>' +
-            '<div style="font-size:0.8rem;color:#b45309;margin-top:2px">Litigants have selected your Bar credentials to represent their dockets before the Federal Supreme Court.</div>' +
+            '<div style="font-weight:800;color:#92400e;font-size:0.95rem">You have ' + incomingRequests.length + ' incoming representation invitation(s) awaiting review</div>' +
+            '<div style="font-size:0.8rem;color:#b45309;margin-top:2px">Litigants have transmitted invitations to your Bar credentials to represent their dockets before the Federal Supreme Court.</div>' +
           '</div>' +
         '</div>' +
         '<button class="btn btn-primary" style="background:#d97706;border:none;color:#fff;font-weight:700;padding:0.6rem 1.15rem;border-radius:6px;cursor:pointer;white-space:nowrap" onclick="switchView(\'appointment_requests\')">' +
-          'Review Requests (' + incomingRequests.length + ') &rarr;' +
+          'Review Invitations (' + incomingRequests.length + ') &rarr;' +
         '</button>' +
       '</div>';
   }
@@ -279,8 +301,8 @@ function renderAdvocateDashboard(container) {
     '</tr>';
   }).join('') : '<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:#94a3b8">' +
     (incomingRequests.length > 0 ? 
-      'You have ' + incomingRequests.length + ' pending representation request(s). Click <a style="color:#0284c7;font-weight:700;cursor:pointer" onclick="switchView(\'appointment_requests\')">Client Requests</a> to accept mandates and populate your active caseload.' :
-      'No active appointed cases in your caseload docket. Litigant representation requests will appear here once approved.') +
+      'You have ' + incomingRequests.length + ' pending representation invitation(s). Click <a style="color:#0284c7;font-weight:700;cursor:pointer" onclick="switchView(\'appointment_requests\')">Client Requests</a> to accept mandates and populate your active caseload.' :
+      'No active appointed cases in your caseload docket. Litigant representation invitations will appear here once approved.') +
   '</td></tr>';
 
   container.innerHTML = 
@@ -304,7 +326,7 @@ function renderAdvocateDashboard(container) {
       '<div class="kpi-stat-card" style="cursor:pointer" onclick="switchView(\'appointment_requests\')">' +
         '<div class="kpi-number-label">' +
           '<span class="kpi-number" style="color:#d97706">' + pendingCount + '</span>' +
-          '<span class="kpi-label">Pending Client Requests</span>' +
+          '<span class="kpi-label">Pending Client Invitations</span>' +
         '</div>' +
       '</div>' +
       '<div class="kpi-stat-card">' +
@@ -464,31 +486,33 @@ function renderAppointmentRequestsView(container) {
   const requests = getIncomingLawyerRequests();
 
   const rowsHtml = requests.length > 0 ? requests.map(r => {
-    const reqInfo = r.pendingLawyerRequest || {};
-    const clientName = reqInfo.requestedBy || r.petitioner || r.filerName || 'Litigant Filer';
-    const clientPhone = r.filerPhone || r.phone || '+251 9XX XXX XXX';
+    const reqInfo = r._incomingReq || r.pendingLawyerRequest || r.pendingDefendantLawyerRequest || {};
+    const clientName = reqInfo.requestedBy || r.petitioner || r.respondent || r.filerName || 'Litigant Client';
+    const sideTag = r._side || (reqInfo.side === 'defendant' ? 'Defendant / Accused' : 'Plaintiff / Filer');
+    const clientPhone = r.filerPhone || r.defendantPhone || r.phone || '+251 9XX XXX XXX';
     const reqDate = reqInfo.requestedAt ? new Date(reqInfo.requestedAt).toLocaleString() : 'Recently';
+    const noteText = reqInfo.note ? '<div style="font-size:0.75rem;color:#0284c7;margin-top:3px;font-style:italic">"' + reqInfo.note + '"</div>' : '';
 
     return '<tr>' +
       '<td><span class="case-id-badge" onclick="openCaseDetailsModal(\'' + r.caseId + '\')">' + r.caseId + '</span></td>' +
-      '<td><strong style="color:var(--fsc-navy-main);font-size:0.9rem">' + clientName + '</strong><br><span style="font-size:0.75rem;color:#64748b">' + (r.caseTitle || 'Civil Dispute Proceeding') + '</span></td>' +
-      '<td>' + (r.caseCategory || r.caseType || 'Civil & Commercial') + '</td>' +
+      '<td><strong style="color:var(--fsc-navy-main);font-size:0.9rem">' + clientName + '</strong><br><span style="font-size:0.75rem;color:#64748b">' + (r.caseTitle || 'Civil Dispute Proceeding') + '</span>' + noteText + '</td>' +
+      '<td><span class="status-pill ' + (reqInfo.side === 'defendant' ? 'pill-purple' : 'pill-blue') + '" style="font-size:0.7rem">' + sideTag + '</span></td>' +
       '<td>' + clientPhone + '</td>' +
       '<td><span style="font-size:0.75rem;color:#475569">' + reqDate + '</span></td>' +
-      '<td><span class="status-pill pill-amber">PENDING YOUR APPROVAL</span></td>' +
+      '<td><span class="status-pill pill-amber">PENDING YOUR ACCEPTANCE</span></td>' +
       '<td>' +
         '<button class="btn btn-sm btn-primary" style="background:#16a34a;border:none;margin-right:0.35rem;font-weight:700;padding:0.45rem 0.9rem;border-radius:6px;cursor:pointer" onclick="respondToRepresentationRequest(\'' + r.caseId + '\', true)">Accept Mandate</button>' +
         '<button class="btn btn-sm btn-outline" style="border:1px solid #dc2626;color:#dc2626;margin-right:0.35rem;padding:0.45rem 0.85rem;border-radius:6px;cursor:pointer" onclick="respondToRepresentationRequest(\'' + r.caseId + '\', false)">Decline</button>' +
         '<button class="btn btn-sm btn-outline" style="padding:0.45rem 0.85rem;border-radius:6px;cursor:pointer" onclick="openCaseDetailsModal(\'' + r.caseId + '\')">View Docket</button>' +
       '</td>' +
     '</tr>';
-  }).join('') : '<tr><td colspan="7" style="text-align:center;padding:3rem;color:#94a3b8">No pending client representation requests at this time.</td></tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;padding:3rem;color:#94a3b8">No pending client representation invitations at this time.</td></tr>';
 
   container.innerHTML = 
     '<div class="workspace-header-row">' +
       '<div>' +
-        '<h1 class="workspace-greeting-title">Incoming Representation Requests (' + requests.length + ')</h1>' +
-        '<div class="workspace-greeting-sub">Direct representation applications submitted by litigants under Federal Supreme Court Practice Rules. Accept the mandate to add the case to your active caseload.</div>' +
+        '<h1 class="workspace-greeting-title">Incoming Representation Invitations (' + requests.length + ')</h1>' +
+        '<div class="workspace-greeting-sub">Direct representation invitations transmitted by litigants under Federal Supreme Court Practice Rules. Accept the mandate to add the case to your active caseload.</div>' +
       '</div>' +
     '</div>' +
     '<div class="fsc-panel-card">' +
@@ -497,7 +521,7 @@ function renderAppointmentRequestsView(container) {
           '<tr>' +
             '<th>Case Docket</th>' +
             '<th>Client / Case</th>' +
-            '<th>Category</th>' +
+            '<th>Representation Side</th>' +
             '<th>Contact Phone</th>' +
             '<th>Transmitted Date</th>' +
             '<th>Status</th>' +
@@ -793,7 +817,24 @@ function handleAdvocateEditProfileSubmit(e) {
 }
 
 function openCaseDetailsModal(caseId) {
-  const c = allCases.find(x => x.caseId === caseId) || { caseId, petitioner: 'Plaintiff', respondent: 'Defendant' };
+  const c = allCases.find(x => x.caseId === caseId);
+  if (!c) {
+    alert('Case docket not found in registry.');
+    return;
+  }
+
+  // Strict legal mandate access check
+  if (!isCaseAppointedToCurrentLawyer(c)) {
+    const isPending = c.pendingLawyerRequest && (
+      (c.pendingLawyerRequest.lawyerId && c.pendingLawyerRequest.lawyerId.toUpperCase() === (currentUser ? currentUser.id : 'LAWYER-002').toUpperCase()) ||
+      (c.pendingLawyerRequest.licenseNumber && c.pendingLawyerRequest.licenseNumber.toUpperCase() === (currentUser ? (currentUser.licenseNumber || currentUser.license) : 'LAW-1002').toUpperCase())
+    );
+    if (!isPending) {
+      alert('🔒 Access Restricted: Case ' + caseId + ' (' + (c.caseTitle || 'Litigation') + ') is self-represented or appointed to another counsel.\n\nAdvocates only have access to dockets where their legal representation mandate is actively certified.');
+      return;
+    }
+  }
+
   document.getElementById('universal-modal-title').textContent = 'Case Docket: ' + caseId;
   document.getElementById('universal-modal-body').innerHTML = 
     '<div style="margin-bottom:1rem">' +
@@ -801,8 +842,8 @@ function openCaseDetailsModal(caseId) {
       '<div style="font-size:0.8rem;color:#64748b;margin-top:2px">Category: ' + (c.caseType || c.caseCategory || 'Civil Dispute') + ' &bull; Status: <strong style="color:#0284c7">' + (c.status || 'Active').toUpperCase() + '</strong></div>' +
     '</div>' +
     '<div style="background:#f8fafc;padding:1rem;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:1rem;font-size:0.85rem">' +
-      '<div><strong>Petitioner / Filer:</strong> ' + (c.petitioner || 'Citizen') + ' (' + (c.filerPhone || 'N/A') + ')</div>' +
-      '<div style="margin-top:0.35rem"><strong>Respondent:</strong> ' + (c.respondent || c.defendantName || 'Respondent') + '</div>' +
+      '<div><strong>Petitioner / Filer:</strong> ' + (c.petitioner || c.filerName || 'Citizen') + ' (' + (c.filerPhone || 'N/A') + ')</div>' +
+      '<div style="margin-top:0.35rem"><strong>Respondent:</strong> ' + (c.respondent || c.defendantName || 'Respondent') + ' (' + (c.defendantPhone || 'N/A') + ')</div>' +
       '<div style="margin-top:0.35rem"><strong>Presiding Bench:</strong> ' + (c.judgeName || 'Hon. Judge Presiding') + ' &bull; ' + (c.courtroom || 'Courtroom 4') + '</div>' +
       '<div style="margin-top:0.35rem"><strong>Hearing Schedule:</strong> ' + (c.hearingDate || 'Pending Allocation') + ' ' + (c.hearingTime || '') + '</div>' +
     '</div>' +
@@ -827,7 +868,7 @@ function openHearingDetailsModal(caseId) {
 
 function openUploadDocModal() {
   const appointed = getAppointedLawyerCases();
-  const options = appointed.map(c => '<option value="' + c.caseId + '">' + c.caseId + ' — ' + (c.caseTitle || c.petitioner) + '</option>').join('');
+  const options = appointed.length > 0 ? appointed.map(c => '<option value="' + c.caseId + '">' + c.caseId + ' — ' + (c.caseTitle || c.petitioner) + '</option>').join('') : '<option value="" disabled selected>No active appointed cases available</option>';
 
   document.getElementById('universal-modal-title').textContent = 'Upload Certified Pleadings / Exhibit';
   document.getElementById('universal-modal-body').innerHTML = 
@@ -835,7 +876,7 @@ function openUploadDocModal() {
       '<div style="margin-bottom:0.75rem">' +
         '<label style="font-weight:700;display:block;margin-bottom:0.35rem">Select Case Docket</label>' +
         '<select id="up-doc-caseid" class="top-search-input" style="width:100%" required>' +
-          (options || '<option value="CASE-1787286146761">CASE-1787286146761 — Adnan</option>') +
+          options +
         '</select>' +
       '</div>' +
       '<div style="margin-bottom:0.75rem">' +
@@ -851,7 +892,7 @@ function openUploadDocModal() {
         '</select>' +
       '</div>' +
       '<div style="display:flex;gap:0.5rem">' +
-        '<button type="submit" class="btn btn-primary" style="flex:1;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer">Submit to Registry</button>' +
+        '<button type="submit" class="btn btn-primary" style="flex:1;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer" ' + (appointed.length === 0 ? 'disabled' : '') + '>Submit to Registry</button>' +
         '<button type="button" class="btn btn-outline" style="padding:0.75rem 1rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeUniversalModal()">Cancel</button>' +
       '</div>' +
     '</form>';

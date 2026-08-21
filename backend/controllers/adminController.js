@@ -74,7 +74,17 @@ async function createBranchRequest(req, res) {
   res.status(201).json({ success: true, request: newReq });
 }
 
+async function getWebhookLogs(req, res) {
+  const logs = await dbService.readJSON('webhook_logs');
+  res.json(logs);
+}
+
 module.exports = {
   getBranchRequests,
   markBranchRequestRead,
-  createBranchRequest, getSystemMetrics, getAuditLogs, getSystemHealth };
+  createBranchRequest,
+  getSystemMetrics,
+  getAuditLogs,
+  getSystemHealth,
+  getWebhookLogs
+};

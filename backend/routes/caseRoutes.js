@@ -37,8 +37,15 @@ router.post('/cases/classify-evidence', caseController.classifyEvidence);
 router.post('/cases/log-session', caseController.logHearingSession);
 router.post('/cases/register-filing', caseController.registerFiling);
 
-// Verdict & Closure
+// Verdict, Sealing & LEX-RATING Dispatch
 router.post('/cases/verdict', caseController.issueFinalVerdict);
+router.post('/cases/:id/seal', caseController.sealCase);
+
+// Webhook & LEX-RATING Endpoints
+router.post('/webhooks/sync-cases', caseController.bulkSyncCasesToRating);
+router.post('/webhooks/sync-licenses', caseController.bulkSyncLicensesToRating);
+router.get('/webhooks/logs', caseController.getWebhookLogs);
+router.get('/webhooks/config', caseController.getWebhookConfig);
 
 // Notes & Demands
 router.post('/cases/add-note', caseController.addCaseNote);

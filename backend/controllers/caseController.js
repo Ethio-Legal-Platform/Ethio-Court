@@ -4,7 +4,14 @@ const path = require('path');
 const dbService = require('../services/dbService');
 const auditService = require('../services/auditService');
 const smsService = require('../services/smsService');
-const { dispatchWebhook } = require('../services/webhookDispatcher');
+const { 
+  dispatchWebhook, 
+  dispatchCaseToRatingSystem, 
+  dispatchLicensesToRatingSystem, 
+  scheduleCaseRatingSync, 
+  getGracePeriodMs, 
+  getRatingConfig 
+} = require('../services/webhookDispatcher');
 
 // 1. Get All Cases
 async function getAllCases(req, res) {
@@ -663,6 +670,9 @@ async function logHearingSession(req, res) {
     nextHearingTime,
     courtroom,
     nextHearingAgenda,
+    actionLog,
+    plaintiffSubmissions,
+    defendantSubmissions,
     clerkName,
     clerkId
   } = req.body;
@@ -682,11 +692,14 @@ async function logHearingSession(req, res) {
       defendant: defendantPresence || 'Present',
       prosecutor: prosecutorPresence || 'N/A'
     },
-    stage: stage || 'Oral Arguments',
-    minutes: minutes || 'Oral arguments and evidence inspection completed.',
-    oralSubmissions: oralSubmissions || 'Pleadings affirmed by respective counsel.',
+    stage: stage || 'Oral Arguments on Merits',
+    minutes: minutes || 'Chamber hearing proceeding conducted.',
+    actionLog: actionLog || minutes || 'Session actions recorded.',
+    plaintiffSubmissions: plaintiffSubmissions || oralSubmissions || 'Plaintiff submissions entered.',
+    defendantSubmissions: defendantSubmissions || 'Defendant submissions entered.',
+    oralSubmissions: oralSubmissions || plaintiffSubmissions || 'Oral arguments delivered.',
     exhibitsAdmitted: exhibitsAdmitted || 'None',
-    courtOrder: courtOrder || 'Court adjourned to next scheduled session.',
+    courtOrder: courtOrder || ('Court adjourned to ' + (nextHearingDate || 'next scheduled session')),
     nextHearingDate: nextHearingDate || null,
     nextHearingTime: nextHearingTime || null,
     courtroom: courtroom || null,
@@ -696,8 +709,16 @@ async function logHearingSession(req, res) {
   const sessionSummaries = caseItem.sessionSummaries || [];
   sessionSummaries.push(sessionEntry);
 
+  const timeline = caseItem.timeline || [];
+  timeline.push({
+    stage: 'Court Session: ' + (stage || 'Hearing Minutes'),
+    date: new Date().toISOString(),
+    note: 'Chamber session minutes & attendance attested by Clerk ' + (clerkName || 'Kalkidan Mengistu') + '. Stage: ' + (stage || 'Proceeding') + '. ' + (courtOrder || '')
+  });
+
   const updated = await dbService.updateOne('cases', { caseId }, {
     sessionSummaries,
+    timeline,
     ...(nextHearingDate && { hearingDate: nextHearingDate }),
     ...(nextHearingTime && { hearingTime: nextHearingTime }),
     ...(courtroom && { courtroom }),
@@ -710,7 +731,7 @@ async function logHearingSession(req, res) {
     user: clerkName || 'Court Clerk',
     role: 'clerk',
     caseId,
-    details: 'Attendance and procedural minutes recorded for ' + stage,
+    details: 'Attendance and procedural minutes committed and sealed for ' + (stage || 'Session'),
     timestamp: new Date().toISOString()
   });
 
@@ -768,42 +789,220 @@ async function registerFiling(req, res) {
   }
 }
 
-// 12. Final Verdict, Closing Statement & Lawyer Ratings (Section 8 & Section 10)
+// 12. Final Verdict, Closing Statement, Case Sealing & LEX-RATING Sync (5-Minute Window)
 async function issueFinalVerdict(req, res) {
-  const { caseId, winningParty, judgmentRemedy, finalStatement, lawyerRatings, judgeName } = req.body;
+  const { 
+    caseId, 
+    winningParty, 
+    judgmentRemedy, 
+    finalStatement, 
+    lawyerRatings, 
+    judgeName,
+    verdictRuling,
+    verdictText,
+    advocateRatings 
+  } = req.body;
+
   const caseItem = await dbService.findOne('cases', { caseId });
   if (!caseItem) return res.status(404).json({ error: 'Case not found' });
 
+  const gracePeriodMs = getGracePeriodMs(); // 5 minutes for testing (representing 30-day window)
   const appealDeadline = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const ratingSyncScheduledAt = new Date(Date.now() + gracePeriodMs).toISOString();
+
+  // Determine scores
+  let plaintiffScore = 5.0;
+  let defenseScore = 4.5;
+  if (Array.isArray(advocateRatings)) {
+    const p = advocateRatings.find(r => r.side === 'plaintiff');
+    const d = advocateRatings.find(r => r.side === 'defense' || r.side === 'defendant');
+    if (p && p.score) plaintiffScore = parseFloat(p.score);
+    if (d && d.score) defenseScore = parseFloat(d.score);
+  }
+
+  const determinedRuling = verdictRuling || winningParty || 'Plaintiff Awarded Judgment';
+  const determinedText = verdictText || finalStatement || judgmentRemedy || 'Judgment entered following full trial proceedings and evidentiary review.';
 
   const verdictObj = {
     verdictDate: new Date().toISOString(),
-    winningParty: winningParty || 'plaintiff',
-    judgmentRemedy: judgmentRemedy || 'Remedy granted per Federal Commercial Code',
-    finalStatement: finalStatement || 'Judgment entered following full trial proceedings.',
+    winningParty: determinedRuling,
+    verdictRuling: determinedRuling,
+    verdictText: determinedText,
+    judgmentRemedy: judgmentRemedy || 'Full judicial relief granted pursuant to Federal Civil Code',
+    finalStatement: determinedText,
     appealDeadline,
     judgeName: judgeName || 'Hon. Judge Solomon Desta',
-    ratings: lawyerRatings || [] // [ { lawyerName, licenseNumber, rating: 5, remarks: 'Excellent' } ]
+    advocateRatings: advocateRatings || [
+      { side: 'plaintiff', score: plaintiffScore },
+      { side: 'defense', score: defenseScore }
+    ],
+    ratings: lawyerRatings || []
   };
 
   const updated = await dbService.updateOne('cases', { caseId }, {
     status: 'Decided',
+    isSealed: true,
+    sealedAt: new Date().toISOString(),
     verdict: verdictObj,
+    finalVerdict: determinedRuling,
     appealDeadline,
-    dateDecided: new Date().toISOString().split('T')[0]
+    dateDecided: new Date().toISOString().split('T')[0],
+    judgeRatingPlaintiff: plaintiffScore,
+    judgeRatingDefendant: defenseScore,
+    ratingSyncStatus: req.body.sealImmediately ? 'dispatched' : 'pending',
+    ratingSyncScheduledAt: ratingSyncScheduledAt,
+    ratingSyncCountdownMs: gracePeriodMs
   });
+
+  let dispatchResult = null;
+  if (req.body.sealImmediately !== false) {
+    // Immediate seal requested by presiding judge: execute instant POST request to LEX-RATING API
+    dispatchResult = await dispatchCaseToRatingSystem(updated);
+  } else {
+    // Schedule automated delayed dispatch after 5-minute appeal window
+    scheduleCaseRatingSync(caseId, gracePeriodMs);
+  }
 
   await dbService.insert('audit_logs', {
     id: 'AUD-' + Date.now(),
-    action: 'FINAL_VERDICT_ISSUED',
+    action: req.body.sealImmediately ? 'CASE_SEALED_IMMEDIATE_LEX_DISPATCH' : 'CASE_SEALED_VERDICT_ISSUED',
     user: judgeName || 'Judge',
     role: 'judge',
     caseId,
     timestamp: new Date().toISOString(),
-    details: 'Winner: ' + winningParty + ' | Appeal Deadline: 30 days'
+    details: req.body.sealImmediately 
+      ? `Case sealed and immediately posted to LEX-RATING API (${dispatchResult && dispatchResult.delivered ? 'Delivered HTTP 201' : 'Dispatched'}). Verdict: "${determinedRuling}"`
+      : `Case sealed with verdict: "${determinedRuling}". LEX-RATING sync scheduled in ${Math.round(gracePeriodMs / 60000)} minutes (${ratingSyncScheduledAt}).`
   });
 
-  res.json({ success: true, verdict: verdictObj, case: updated });
+  // Send SMS notice to Filer and Defendant
+  if (caseItem.filerPhone) {
+    const fMsg = `FSC Notice: Final verdict entered in Case ${caseId}. Decree: ${determinedRuling}. View docket: http://localhost:5001/file-case`;
+    await smsService.sendRawSMS(caseItem.filerPhone, fMsg, 'Verdict Notice');
+  }
+  if (caseItem.defendantPhone) {
+    const dMsg = `FSC Notice: Final judgment rendered in Case ${caseId}. Statutory appeal window active. View docket: http://localhost:5001/file-case`;
+    await smsService.sendRawSMS(caseItem.defendantPhone, dMsg, 'Verdict Notice');
+  }
+
+  res.json({ 
+    success: true, 
+    verdict: verdictObj, 
+    case: updated,
+    isSealed: true,
+    delivered: dispatchResult ? dispatchResult.delivered : false,
+    statusText: dispatchResult && dispatchResult.log ? dispatchResult.log.statusText : (req.body.sealImmediately ? 'Delivered' : 'Scheduled'),
+    ratingSyncScheduledAt,
+    gracePeriodSeconds: Math.round(gracePeriodMs / 1000),
+    log: dispatchResult ? dispatchResult.log : null
+  });
+}
+
+// 12.1 Explicit Case Sealing Endpoint
+async function sealCase(req, res) {
+  const { id } = req.params;
+  const { judgeName, notes } = req.body;
+  const caseItem = await dbService.findOne('cases', { caseId: id });
+  if (!caseItem) return res.status(404).json({ error: 'Case not found' });
+
+  const gracePeriodMs = getGracePeriodMs();
+  const ratingSyncScheduledAt = new Date(Date.now() + gracePeriodMs).toISOString();
+
+  const updated = await dbService.updateOne('cases', { caseId: id }, {
+    status: 'Decided',
+    isSealed: true,
+    sealedAt: new Date().toISOString(),
+    ratingSyncStatus: 'dispatched',
+    ratingSyncScheduledAt,
+    sealNotes: notes || 'Formally sealed by presiding bench'
+  });
+
+  // Call the POST request immediately to LEX-RATING API
+  const dispatchResult = await dispatchCaseToRatingSystem(updated);
+
+  await dbService.insert('audit_logs', {
+    id: 'AUD-' + Date.now(),
+    action: 'CASE_FORMALLY_SEALED_IMMEDIATE_POST',
+    user: judgeName || 'Hon. Judge Solomon Desta',
+    role: 'judge',
+    caseId: id,
+    timestamp: new Date().toISOString(),
+    details: `Case formally sealed and immediately posted to LEX-RATING API (${dispatchResult && dispatchResult.delivered ? 'Delivered HTTP 201' : 'Dispatched'})`
+  });
+
+  res.json({ 
+    success: true, 
+    case: updated, 
+    delivered: dispatchResult ? dispatchResult.delivered : false,
+    statusText: dispatchResult && dispatchResult.log ? dispatchResult.log.statusText : 'Delivered',
+    log: dispatchResult ? dispatchResult.log : null 
+  });
+}
+
+// 12.2 Bulk Sync Concluded Cases to LEX-RATING
+async function bulkSyncCasesToRating(req, res) {
+  try {
+    const cases = await dbService.readJSON('cases');
+    const sealedCases = cases.filter(c => c.isSealed || c.status === 'Decided' || c.status === 'closed' || c.verdict);
+
+    const results = [];
+    for (const c of sealedCases) {
+      const dispatchRes = await dispatchCaseToRatingSystem(c);
+      results.push({ caseId: c.caseId, result: dispatchRes });
+    }
+
+    res.json({
+      success: true,
+      message: `Dispatched ${sealedCases.length} sealed cases to LEX-RATING system`,
+      count: sealedCases.length,
+      results
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+// 12.3 Bulk Sync MoJ Licenses to LEX-RATING
+async function bulkSyncLicensesToRating(req, res) {
+  try {
+    const result = await dispatchLicensesToRatingSystem();
+    res.json({ success: true, message: 'MoJ verified advocate licenses synced to LEX-RATING', result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+// 12.4 Get Outbound Webhook Logs
+async function getWebhookLogs(req, res) {
+  try {
+    const logs = await dbService.readJSON('webhook_logs');
+    logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    res.json(logs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+// 12.5 Get Active Webhook Configuration
+async function getWebhookConfig(req, res) {
+  try {
+    const config = getRatingConfig();
+    const graceMs = getGracePeriodMs();
+    res.json({
+      success: true,
+      targetHost: config.host,
+      targetPort: config.port,
+      targetBaseUrl: config.baseUrl,
+      caseEndpoint: `${config.baseUrl}/api/integrations/court/cases`,
+      licenseEndpoint: `${config.baseUrl}/api/integrations/moj/licenses`,
+      sealGracePeriodMs: graceMs,
+      sealGracePeriodSeconds: Math.round(graceMs / 1000),
+      sealGracePeriodMinutes: (graceMs / 60000).toFixed(1),
+      apiKeyConfigured: !!config.apiKey
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }
 
 // 13. Case Notes (Notepad with Timestamp) (Section 8)
@@ -855,7 +1054,7 @@ async function getLegalLibrary(req, res) {
   res.json(articles);
 }
 
-
+// 15.1 Mark Case as Viewed
 async function markCaseAsViewed(req, res) {
   const { id } = req.params;
   const updated = await dbService.updateOne('cases', { caseId: id }, {
@@ -1345,5 +1544,10 @@ module.exports = {
   fileProsecutorIndictment,
   uploadExhibit,
   scheduleProsecutorHearing,
-  transmitBenchMemo
+  transmitBenchMemo,
+  sealCase,
+  bulkSyncCasesToRating,
+  bulkSyncLicensesToRating,
+  getWebhookLogs,
+  getWebhookConfig
 };

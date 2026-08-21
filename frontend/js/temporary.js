@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       email: 'qalalewtere@gmail.com',
       appointedLawyer: {
         id: 'LAWYER-002',
-        fullName: 'Advocate Tigist Assefa',
+        fullName: 'Advocate Tigist Alemu Bekele',
         licenseNumber: 'LAW-1002',
         chamber: 'Federal Supreme Court Bar',
         status: 'active'
@@ -117,16 +117,18 @@ async function loadLitigantData() {
 
 function getMyCase() {
   if (myCases && myCases.length > 0) return myCases[0];
+  const user = currentLitigant || {};
+  const isDef = user.role === 'defendant' || user.side === 'defendant';
   return {
-    caseId: currentLitigant.caseId || 'CASE-1787286146761',
-    trackingCode: currentLitigant.trackingCode || 'ET-FSC-837221',
-    caseTitle: 'Criminal Proceedings',
+    caseId: user.caseId || 'CASE-1787286146761',
+    trackingCode: user.trackingCode || 'ET-FSC-837221',
+    caseTitle: 'Litigation Proceeding',
     courtLevel: 'Federal Supreme Court (Sidist Kilo)',
     status: 'scheduled',
     incidentDate: '2026-08-21',
-    petitioner: 'Adnan',
-    respondent: 'Dagim',
-    defendantName: 'Dagim',
+    petitioner: isDef ? 'Adnan' : (user.fullName || 'Petitioner'),
+    respondent: isDef ? (user.fullName || 'Defendant') : 'Dagim',
+    defendantName: isDef ? (user.fullName || 'Defendant') : 'Dagim',
     judgeName: 'Hon. Judge Solomon Desta',
     courtroom: 'Courtroom 4 (Main Trial Room)',
     hearingDate: '2026-08-21',
@@ -171,6 +173,109 @@ function renderCurrentView() {
   }
 }
 
+function getLitigantRepresentationState(myCase, isDef) {
+  if (!myCase) return { status: 'self', lawyer: null };
+
+  if (isDef) {
+    // 1. Active Appointment
+    if (myCase.defendantRepresentation && myCase.defendantRepresentation.type === 'appointed_lawyer' && myCase.defendantRepresentation.lawyerName) {
+      return {
+        status: 'active',
+        lawyer: {
+          fullName: myCase.defendantRepresentation.lawyerName,
+          licenseNumber: myCase.defendantRepresentation.licenseNumber || myCase.defendantLawyerLic || 'Verified',
+          chamber: 'Federal Supreme Court Bar'
+        }
+      };
+    }
+    if (myCase.defendantRepresentation && myCase.defendantRepresentation.type === 'government_lawyer' && myCase.defendantRepresentation.lawyerName) {
+      return {
+        status: 'active',
+        lawyer: {
+          fullName: myCase.defendantRepresentation.lawyerName,
+          licenseNumber: myCase.defendantRepresentation.licenseNumber || 'LAW-2001',
+          chamber: 'Federal Supreme Court Public Defense Office'
+        }
+      };
+    }
+    if (myCase.defendantLawyerName && myCase.defendantRepresentation && myCase.defendantRepresentation.type !== 'self' && myCase.defendantRepresentation.type !== 'pending_request') {
+      return {
+        status: 'active',
+        lawyer: {
+          fullName: myCase.defendantLawyerName,
+          licenseNumber: myCase.defendantLawyerLicense || myCase.defendantLawyerLic || 'Verified',
+          chamber: 'Federal Supreme Court Bar'
+        }
+      };
+    }
+
+    // 2. Pending Invitation
+    if (myCase.pendingDefendantLawyerRequest && myCase.pendingDefendantLawyerRequest.status === 'pending') {
+      const p = myCase.pendingDefendantLawyerRequest;
+      return {
+        status: 'pending',
+        lawyer: {
+          fullName: p.lawyerName || 'Advocate',
+          licenseNumber: p.licenseNumber || 'LAW-1002',
+          requestedAt: p.requestedAt,
+          note: p.note
+        }
+      };
+    }
+    if (myCase.defendantRepresentation && myCase.defendantRepresentation.type === 'pending_request') {
+      const p = myCase.defendantRepresentation;
+      return {
+        status: 'pending',
+        lawyer: {
+          fullName: p.lawyerName || 'Advocate',
+          licenseNumber: p.licenseNumber || 'LAW-1002',
+          requestedAt: p.requestedAt
+        }
+      };
+    }
+
+    return { status: 'self', lawyer: null };
+  } else {
+    // 1. Active Appointment
+    if (myCase.lawyerAppointed && myCase.lawyerAppointed.lawyerName && myCase.lawyerAppointed.status !== 'declined') {
+      return {
+        status: 'active',
+        lawyer: {
+          fullName: myCase.lawyerAppointed.lawyerName,
+          licenseNumber: myCase.lawyerAppointed.licenseNumber || 'Verified',
+          chamber: 'Federal Supreme Court Bar'
+        }
+      };
+    }
+    if (myCase.plaintiffLawyerName && !myCase.pendingLawyerRequest) {
+      return {
+        status: 'active',
+        lawyer: {
+          fullName: myCase.plaintiffLawyerName,
+          licenseNumber: myCase.plaintiffLawyerLicense || 'Verified',
+          chamber: 'Federal Supreme Court Bar'
+        }
+      };
+    }
+
+    // 2. Pending Invitation
+    if (myCase.pendingLawyerRequest && myCase.pendingLawyerRequest.status === 'pending') {
+      const p = myCase.pendingLawyerRequest;
+      return {
+        status: 'pending',
+        lawyer: {
+          fullName: p.lawyerName || 'Advocate',
+          licenseNumber: p.licenseNumber || 'LAW-1002',
+          requestedAt: p.requestedAt,
+          note: p.note
+        }
+      };
+    }
+
+    return { status: 'self', lawyer: null };
+  }
+}
+
 // ── DASHBOARD VIEW ──
 function renderLitigantDashboard() {
   const container = getWorkspaceContainer();
@@ -178,23 +283,37 @@ function renderLitigantDashboard() {
 
   const myCase = getMyCase();
   const isDef = currentLitigant.role === 'defendant' || currentLitigant.side === 'defendant';
-  const lawyer = currentLitigant.appointedLawyer;
+  const repState = getLitigantRepresentationState(myCase, isDef);
 
   let repCardHtml = '';
-  if (lawyer) {
+  let repBtnLabel = '⚖️ Send Advocate Invitation';
+  if (repState.status === 'active') {
+    repBtnLabel = '⚖️ Representation Details';
     repCardHtml = 
       '<div class="rep-glance-body" style="padding:0.75rem 0">' +
-        '<div style="font-size:1.05rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:0.25rem">' + lawyer.fullName + '</div>' +
+        '<div style="font-size:1.05rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:0.25rem">' + repState.lawyer.fullName + '</div>' +
         '<div style="font-size:0.8rem;color:#475569;margin-bottom:0.65rem">' +
-          'Advocate License: <strong style="color:var(--fsc-navy-main)">' + (lawyer.licenseNumber || 'Verified') + '</strong>' +
+          'Advocate License: <strong style="color:var(--fsc-navy-main)">' + (repState.lawyer.licenseNumber || 'Verified') + '</strong>' +
         '</div>' +
         '<span class="status-pill pill-green">ACTIVE REPRESENTATION</span>' +
       '</div>';
+  } else if (repState.status === 'pending') {
+    repBtnLabel = '⚖️ Pending Invitation';
+    repCardHtml = 
+      '<div class="rep-glance-body" style="padding:0.75rem 0">' +
+        '<div style="font-size:1.05rem;font-weight:800;color:#b45309;margin-bottom:0.25rem">' + repState.lawyer.fullName + '</div>' +
+        '<div style="font-size:0.8rem;color:#92400e;margin-bottom:0.65rem">' +
+          'License: <strong>' + (repState.lawyer.licenseNumber || 'LAW-1002') + '</strong> &bull; ' +
+          'Status: <span style="font-weight:700">Awaiting Counsel Review</span>' +
+        '</div>' +
+        '<span class="status-pill pill-amber" style="background:#fef3c7;color:#92400e;font-weight:700">INVITATION PENDING ACCEPTANCE</span>' +
+      '</div>';
   } else {
+    repBtnLabel = '⚖️ Send Advocate Invitation';
     repCardHtml = 
       '<div class="rep-glance-body" style="padding:0.75rem 0">' +
         '<div style="font-size:0.95rem;font-weight:800;color:#64748b;margin-bottom:0.25rem">Self-Represented</div>' +
-        '<div style="font-size:0.785rem;color:#94a3b8;margin-bottom:0.65rem">No advocate appointed for this case</div>' +
+        '<div style="font-size:0.785rem;color:#94a3b8;margin-bottom:0.65rem">No advocate appointed &bull; Appearing in person</div>' +
         '<span class="status-pill pill-slate">IN PERSON</span>' +
       '</div>';
   }
@@ -207,7 +326,7 @@ function renderLitigantDashboard() {
       '</div>' +
       '<div style="display:flex;gap:0.75rem">' +
         '<button class="btn btn-outline" style="border:1.5px solid var(--fsc-navy-main);color:var(--fsc-navy-main);font-weight:700;padding:0.6rem 1.15rem;border-radius:6px;cursor:pointer" onclick="openAdvocateProfileModal()">' +
-          (lawyer ? '⚖️ Representation Details' : '⚖️ Appoint Advocate') +
+          repBtnLabel +
         '</button>' +
         '<button class="btn btn-primary" style="background:var(--fsc-navy-main);color:#ffffff;font-weight:700;padding:0.6rem 1.15rem;border:none;border-radius:6px;cursor:pointer" onclick="switchLitigantView(\'documents\')">' +
           '📄 Upload Document' +
@@ -243,7 +362,7 @@ function renderLitigantDashboard() {
         repCardHtml +
         '<div style="margin-top:auto;padding-top:0.65rem;border-top:1px solid #f1f5f9">' +
           '<a href="javascript:void(0)" onclick="openAdvocateProfileModal()" style="font-size:0.785rem;font-weight:700;color:#2563eb;text-decoration:none;">' +
-            (lawyer ? 'Manage Representation &rarr;' : 'Appoint Defense Counsel &rarr;') +
+            (repState.status === 'active' ? 'Manage Representation &rarr;' : (repState.status === 'pending' ? 'View Pending Invitation &rarr;' : 'Invite Legal Advocate &rarr;')) +
           '</a>' +
         '</div>' +
       '</div>' +
@@ -287,7 +406,7 @@ function renderLitigantDashboard() {
         '<h3 style="font-size:1rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:1rem">Quick Actions</h3>' +
         '<div style="display:flex;flex-direction:column;gap:0.4rem">' +
           '<div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 0.5rem;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:0.825rem;font-weight:600;color:var(--fsc-navy-main)" onclick="openAdvocateProfileModal()">' +
-            '<span>⚖️ ' + (lawyer ? 'View Representation' : 'Appoint Legal Advocate') + '</span>' +
+            '<span>⚖️ ' + (repState.status === 'active' ? 'View Representation' : (repState.status === 'pending' ? 'Pending Invitation' : 'Invite Legal Advocate')) + '</span>' +
             '<span>&rarr;</span>' +
           '</div>' +
           '<div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 0.5rem;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:0.825rem;font-weight:600;color:var(--fsc-navy-main)" onclick="switchLitigantView(\'documents\')">' +
@@ -312,7 +431,7 @@ function openAdvocateProfileModal() {
   const myCase = getMyCase();
   const caseId = myCase ? myCase.caseId : '';
   const isDef = currentLitigant.role === 'defendant' || currentLitigant.side === 'defendant';
-  const lawyer = currentLitigant.appointedLawyer;
+  const repState = getLitigantRepresentationState(myCase, isDef);
 
   const modalTitle = document.getElementById('litigant-modal-title');
   const modalBody = document.getElementById('litigant-modal-body');
@@ -320,7 +439,8 @@ function openAdvocateProfileModal() {
 
   modalTitle.textContent = isDef ? 'Defendant Legal Representation & Defense Counsel' : 'Legal Representation & Advocate Appointment';
 
-  if (lawyer) {
+  if (repState.status === 'active') {
+    const lawyer = repState.lawyer;
     modalBody.innerHTML = 
       '<div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:1.25rem;margin-bottom:1.25rem">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">' +
@@ -348,19 +468,48 @@ function openAdvocateProfileModal() {
       '<div style="display:flex;justify-content:flex-end">' +
         '<button type="button" class="btn btn-outline" style="padding:0.6rem 1.2rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeLitigantModal()">Close</button>' +
       '</div>';
+  } else if (repState.status === 'pending') {
+    const lawyer = repState.lawyer;
+    modalBody.innerHTML = 
+      '<div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:1.25rem;margin-bottom:1.25rem">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">' +
+          '<span style="font-weight:800;color:#b45309;font-size:0.95rem">📬 Representation Invitation Pending</span>' +
+          '<span class="status-pill" style="background:#fef3c7;color:#92400e;font-size:0.75rem;font-weight:800">AWAITING ACCEPTANCE</span>' +
+        '</div>' +
+        '<div style="font-size:1.2rem;font-weight:800;color:var(--fsc-navy-main);margin-bottom:0.25rem">' + lawyer.fullName + '</div>' +
+        '<div style="font-size:0.85rem;color:#334155;margin-bottom:0.25rem">Advocate License Number: <strong>' + (lawyer.licenseNumber || 'LAW-1002') + '</strong></div>' +
+        '<div style="font-size:0.775rem;color:#78350f;margin-bottom:0.75rem">Invitation Transmitted: ' + (lawyer.requestedAt ? new Date(lawyer.requestedAt).toLocaleString() : 'Recently') + '</div>' +
+        '<div style="padding:0.75rem 0.85rem;background:#ffffff;border:1px solid #fde68a;border-radius:6px;font-size:0.8rem;color:#92400e;line-height:1.45">' +
+          'An official invitation SMS & docket notification has been delivered to Counsel. Once the advocate logs in and clicks <strong>Accept Mandate</strong>, they will be officially appointed to your case.' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:1.15rem;margin-bottom:1.25rem">' +
+        '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.9rem;margin-bottom:0.35rem">Need to cancel or change advocate?</div>' +
+        '<div style="font-size:0.785rem;color:#64748b;line-height:1.45;margin-bottom:1rem">' +
+          'You may cancel this pending invitation at any time before Counsel accepts.' +
+        '</div>' +
+        '<button type="button" class="btn btn-outline" style="background:#f1f5f9;color:#dc2626;border:1.5px solid #fecaca;padding:0.75rem 1.25rem;border-radius:6px;font-weight:700;font-size:0.85rem;width:100%;cursor:pointer" onclick="handleRevokeAppointment()">' +
+          '✖ Cancel Representation Invitation' +
+        '</button>' +
+      '</div>' +
+
+      '<div style="display:flex;justify-content:flex-end">' +
+        '<button type="button" class="btn btn-outline" style="padding:0.6rem 1.2rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeLitigantModal()">Close</button>' +
+      '</div>';
   } else {
-    // Selection form
+    // Selection / Invitation form
     const lawyerOptions = (allLawyers && allLawyers.length) ? allLawyers.map(l => 
       '<option value="' + l.licenseNumber + '">' + l.fullName + ' (' + l.licenseNumber + ') — ' + (l.isGovernmentLawyer ? 'Public Defender' : 'Private Bar') + '</option>'
-    ).join('') : '<option value="LAW-1002">Advocate Tigist Assefa (LAW-1002)</option><option value="LAW-1001">Kebede Haile Mariam (LAW-1001)</option><option value="LAW-2001">Public Defender Dawit Kebede (LAW-2001)</option>';
+    ).join('') : '<option value="LAW-1002">Advocate Tigist Alemu Bekele (LAW-1002)</option><option value="LAW-1001">Kebede Haile Mariam (LAW-1001)</option><option value="LAW-2001">Public Defender Dawit Kebede (LAW-2001)</option>';
 
     modalBody.innerHTML = 
       '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:1.25rem">' +
         '<div style="font-weight:800;color:var(--fsc-navy-main);font-size:0.95rem;margin-bottom:0.25rem">' +
-          '⚖️ Appoint Legal Representation' +
+          '⚖️ Invite Legal Advocate' +
         '</div>' +
         '<div style="font-size:0.785rem;color:#64748b;margin-bottom:1rem">' +
-          'Select or enter a licensed advocate to represent you for Case <strong>' + caseId + '</strong>.' +
+          'Select or enter a licensed advocate to transmit a formal representation invitation for Case <strong>' + caseId + '</strong>. Counsel must review and accept the invitation before appearing on the docket.' +
         '</div>' +
 
         '<form onsubmit="handleAppointLawyerSubmit(event)">' +
@@ -374,15 +523,20 @@ function openAdvocateProfileModal() {
           '</div>' +
 
           '<div style="margin-bottom:0.85rem">' +
-            '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.825rem">Or Select from Verified Directory</label>' +
+            '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.825rem">Or Select from FSC Bar Directory</label>' +
             '<select class="top-search-input" style="width:100%" onchange="document.getElementById(\'rep-advocate-license\').value = this.value; handleAdvocateLicenseInput(this.value);">' +
               '<option value="" selected>-- Pick from FSC Directory --</option>' +
               lawyerOptions +
             '</select>' +
           '</div>' +
 
+          '<div style="margin-bottom:0.85rem">' +
+            '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.825rem">Message / Instructions for Advocate (Optional)</label>' +
+            '<textarea id="rep-advocate-note" class="top-search-input" style="width:100%;height:65px;resize:none" placeholder="Brief note explaining the dispute or request..."></textarea>' +
+          '</div>' +
+
           '<div style="display:flex;gap:0.5rem;margin-top:1.15rem">' +
-            '<button type="submit" id="appoint-lawyer-btn" class="btn btn-primary" style="flex:1;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;font-size:0.85rem;cursor:pointer">Confirm Appointment</button>' +
+            '<button type="submit" id="appoint-lawyer-btn" class="btn btn-primary" style="flex:1;padding:0.75rem;background:var(--fsc-navy-main);color:#fff;border:none;border-radius:6px;font-weight:700;font-size:0.85rem;cursor:pointer">📨 Send Representation Invitation</button>' +
             '<button type="button" class="btn btn-outline" style="padding:0.75rem 1rem;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer" onclick="closeLitigantModal()">Cancel</button>' +
           '</div>' +
         '</form>' +
@@ -402,7 +556,7 @@ async function handleAdvocateLicenseInput(val) {
     return;
   }
 
-  const local = allLawyers.find(l => (l.licenseNumber && l.licenseNumber.toUpperCase() === cleanLic) || l.id === cleanLic);
+  const local = allLawyers.find(l => (l.licenseNumber && l.licenseNumber.toUpperCase() === cleanLic) || (l.id && l.id.toUpperCase() === cleanLic));
   if (local) {
     feedback.innerHTML = 
       '<div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:0.45rem 0.65rem;border-radius:6px;margin-top:0.25rem">' +
@@ -423,39 +577,99 @@ window.verifyAdvocateLicenseManual = verifyAdvocateLicenseManual;
 
 async function handleAppointLawyerSubmit(e) {
   e.preventDefault();
+  const myCase = getMyCase();
+  if (!myCase || !myCase.caseId) {
+    alert('No active case docket found for your account.');
+    return;
+  }
+
   const input = document.getElementById('rep-advocate-license');
   const lic = input ? input.value.trim().toUpperCase() : '';
-  if (!lic) return;
+  if (!lic) {
+    alert('Please enter or select a valid advocate license number.');
+    return;
+  }
 
-  const lawyerObj = allLawyers.find(l => (l.licenseNumber && l.licenseNumber.toUpperCase() === lic) || l.id === lic) || {
-    id: 'LAWYER-' + Date.now(),
-    fullName: 'Advocate ' + lic,
-    licenseNumber: lic,
-    chamber: 'Federal Supreme Court Bar'
-  };
+  const noteInput = document.getElementById('rep-advocate-note');
+  const note = noteInput ? noteInput.value.trim() : '';
 
-  currentLitigant.appointedLawyer = {
-    id: lawyerObj.id,
-    fullName: lawyerObj.fullName,
-    licenseNumber: lawyerObj.licenseNumber,
-    chamber: lawyerObj.chamberAddress || 'Federal Supreme Court Bar',
-    status: 'active'
-  };
+  const btn = document.getElementById('appoint-lawyer-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span> Transmitting Invitation…';
+  }
 
-  sessionStorage.setItem('court_user', JSON.stringify(currentLitigant));
-  alert('✓ Appointed Advocate ' + lawyerObj.fullName + ' (' + lawyerObj.licenseNumber + ') for your case.');
-  closeLitigantModal();
-  renderCurrentView();
+  try {
+    const isDef = currentLitigant.role === 'defendant' || currentLitigant.side === 'defendant';
+    const res = await fetch('/api/cases/lawyer-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId: myCase.caseId,
+        licenseNumber: lic,
+        side: isDef ? 'defendant' : 'plaintiff',
+        clientName: currentLitigant.fullName || (isDef ? 'Defendant' : 'Plaintiff'),
+        note: note || 'Formal client representation invitation via FSC Litigant Portal.'
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert('✓ Representation invitation successfully sent to advocate!\n\nThe advocate will receive an SMS and dashboard notification to review the docket and accept the mandate.');
+      closeLitigantModal();
+      await loadLitigantData();
+      renderCurrentView();
+    } else {
+      alert(data.error || 'Failed to transmit representation invitation.');
+    }
+  } catch (err) {
+    alert('Server communication error: ' + err.message);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '📨 Send Representation Invitation';
+    }
+  }
 }
 window.handleAppointLawyerSubmit = handleAppointLawyerSubmit;
 
-function handleRevokeAppointment() {
-  if (!confirm('Are you sure you want to revoke advocate appointment and resume direct self-representation?')) return;
-  currentLitigant.appointedLawyer = null;
-  sessionStorage.setItem('court_user', JSON.stringify(currentLitigant));
-  alert('✓ Advocate appointment revoked. Full direct control returned.');
-  closeLitigantModal();
-  renderCurrentView();
+async function handleRevokeAppointment() {
+  const myCase = getMyCase();
+  if (!myCase || !myCase.caseId) return;
+
+  const isDef = currentLitigant.role === 'defendant' || currentLitigant.side === 'defendant';
+  const repState = getLitigantRepresentationState(myCase, isDef);
+  const isPending = repState.status === 'pending';
+
+  const confirmMsg = isPending 
+    ? 'Are you sure you want to cancel the pending representation invitation to Advocate ' + (repState.lawyer?.fullName || '') + '?'
+    : 'Are you sure you want to revoke advocate appointment and resume direct self-representation?';
+
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    const res = await fetch('/api/cases/lawyer-remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId: myCase.caseId,
+        clientName: currentLitigant.fullName,
+        side: isDef ? 'defendant' : 'plaintiff'
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert(isPending ? '✓ Representation invitation cancelled.' : '✓ Advocate representation revoked. Direct self-representation active.');
+      closeLitigantModal();
+      await loadLitigantData();
+      renderCurrentView();
+    } else {
+      alert(data.error || 'Failed to update representation state.');
+    }
+  } catch (err) {
+    alert('Error connecting to server: ' + err.message);
+  }
 }
 window.handleRevokeAppointment = handleRevokeAppointment;
 

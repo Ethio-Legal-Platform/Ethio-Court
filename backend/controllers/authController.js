@@ -107,10 +107,49 @@ async function login(req, res) {
       (matchedCase.respondent && matchedCase.respondent.toLowerCase().includes(username.toLowerCase())) ||
       (matchedCase.defendantName && matchedCase.defendantName.toLowerCase().includes(username.toLowerCase()));
 
+    let appointedLawyer = null;
+    if (isDefendant) {
+      if (matchedCase.defendantRepresentation && matchedCase.defendantRepresentation.type !== 'self' && matchedCase.defendantRepresentation.lawyerName) {
+        appointedLawyer = {
+          id: matchedCase.defendantRepresentation.lawyerId || 'LAWYER-DEF',
+          fullName: matchedCase.defendantRepresentation.lawyerName,
+          licenseNumber: matchedCase.defendantRepresentation.licenseNumber || matchedCase.defendantLawyerLic || '',
+          chamber: 'Federal Supreme Court Public Defense Office',
+          status: 'active'
+        };
+      } else if (matchedCase.defendantLawyerName) {
+        appointedLawyer = {
+          id: matchedCase.defendantLawyerId || 'LAWYER-DEF',
+          fullName: matchedCase.defendantLawyerName,
+          licenseNumber: matchedCase.defendantLawyerLicense || matchedCase.defendantLawyerLic || '',
+          chamber: 'Federal Supreme Court Bar',
+          status: 'active'
+        };
+      }
+    } else {
+      if (matchedCase.lawyerAppointed && matchedCase.lawyerAppointed.lawyerName) {
+        appointedLawyer = {
+          id: matchedCase.lawyerAppointed.lawyerId || 'LAWYER-PL',
+          fullName: matchedCase.lawyerAppointed.lawyerName,
+          licenseNumber: matchedCase.lawyerAppointed.licenseNumber || matchedCase.plaintiffLawyerLic || '',
+          chamber: 'Federal Supreme Court Bar',
+          status: 'active'
+        };
+      } else if (matchedCase.plaintiffLawyerName) {
+        appointedLawyer = {
+          id: matchedCase.plaintiffLawyerId || 'LAWYER-PL',
+          fullName: matchedCase.plaintiffLawyerName,
+          licenseNumber: matchedCase.plaintiffLawyerLicense || matchedCase.plaintiffLawyerLic || '',
+          chamber: 'Federal Supreme Court Bar',
+          status: 'active'
+        };
+      }
+    }
+
     const clientUser = {
       id: 'LITIGANT-' + (matchedCase.caseId || Date.now()),
       username: username,
-      fullName: isDefendant ? (matchedCase.respondent || matchedCase.defendantName || 'Dagim') : (matchedCase.petitioner || matchedCase.filerName || 'Adnan'),
+      fullName: isDefendant ? (matchedCase.respondent || matchedCase.defendantName || 'Defendant') : (matchedCase.petitioner || matchedCase.filerName || 'Plaintiff'),
       role: isDefendant ? 'defendant' : 'client',
       side: isDefendant ? 'defendant' : 'plaintiff',
       accountType: isDefendant ? 'Defendant / Accused Party' : 'Plaintiff / Case Filer',
@@ -119,19 +158,7 @@ async function login(req, res) {
       phone: isDefendant ? (matchedCase.defendantPhone || username) : (matchedCase.filerPhone || username),
       email: (isDefendant ? matchedCase.defendantEmail : matchedCase.filerEmail) || 'litigant@courts.gov.et',
       pin: password,
-      appointedLawyer: isDefendant ? {
-        id: 'LAWYER-003',
-        fullName: 'Public Defender Dawit Kebede (State Appointed)',
-        licenseNumber: 'LAW-2001',
-        chamber: 'Federal Supreme Court Public Defense Office',
-        status: 'active'
-      } : {
-        id: 'LAWYER-002',
-        fullName: 'Advocate Tigist Assefa',
-        licenseNumber: 'LAW-1002',
-        chamber: 'Federal Supreme Court Bar',
-        status: 'active'
-      }
+      appointedLawyer: appointedLawyer
     };
     return res.json({ success: true, user: clientUser });
   }
@@ -187,9 +214,14 @@ async function registerLawyer(req, res) {
     return res.status(400).json({ error: 'Invalid license number. Not verified by MoJ.' });
   }
 
-  const existing = await dbService.findOne('lawyers', { username });
-  if (existing) {
+  const existingUser = await dbService.findOne('lawyers', { username });
+  if (existingUser) {
     return res.status(400).json({ error: 'Username already registered' });
+  }
+
+  const existingLicense = await dbService.findOne('lawyers', { licenseNumber: license.licenseNumber });
+  if (existingLicense) {
+    return res.status(400).json({ error: 'License number ' + license.licenseNumber + ' is already registered to advocate ' + existingLicense.fullName });
   }
 
   const newLawyer = {

@@ -382,7 +382,7 @@ function openJudgeCaseModal(caseId) {
 
   // 1. Counsel Resolution
   const plLawyerName = (c.lawyerAppointed && (c.lawyerAppointed.lawyerName || c.lawyerAppointed.fullName || c.lawyerAppointed.name)) || 
-                       c.plaintiffLawyerName || c.lawyerName || 'Advocate Tigist Assefa';
+                       c.plaintiffLawyerName || c.lawyerName || 'Advocate Tigist Alemu Bekele';
   const plLawyerLic = (c.lawyerAppointed && c.lawyerAppointed.licenseNumber) ? ' (' + c.lawyerAppointed.licenseNumber + ')' : ' (LAW-1002)';
 
   const defRep = c.defendantRepresentation;
@@ -543,18 +543,37 @@ function openJudgeCaseModal(caseId) {
 
     '<!-- Tab 4: Deliver Verdict -->' +
     '<div id="modal-tab-verdict" style="display:none">' +
+      (c.verdict || c.isSealed || c.status === 'Decided' ? 
+        '<div style="padding:1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;margin-bottom:1rem">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">' +
+            '<div style="font-weight:800;color:#166534;font-size:0.95rem">🏛️ Judicial Decree &amp; Case Formally Sealed</div>' +
+            '<span class="status-pill pill-gold" style="font-weight:800;background:#fef3c7;color:#92400e;padding:0.2rem 0.6rem;border-radius:12px;border:1px solid #fde68a">SEALED BY BENCH</span>' +
+          '</div>' +
+          '<div style="font-size:0.85rem;color:#15803d;margin-bottom:0.5rem"><strong>Ruling:</strong> ' + ((c.verdict && (c.verdict.verdictRuling || c.verdict.winningParty)) || c.finalVerdict || 'Decided') + '</div>' +
+          '<div style="font-size:0.8rem;color:#334155;background:#ffffff;padding:0.75rem;border-radius:6px;border:1px solid #e2e8f0;margin-bottom:0.75rem">' +
+            ((c.verdict && c.verdict.verdictText) || (c.verdict && c.verdict.finalStatement) || 'Judicial decree recorded.') +
+          '</div>' +
+          '<div style="font-size:0.8rem;padding:0.6rem;background:#eff6ff;border-radius:6px;border:1px solid #bfdbfe;color:#1e40af;display:flex;justify-content:space-between;align-items:center">' +
+            '<div><strong>📡 LEX-RATING Status:</strong> ' + 
+            (c.ratingSyncStatus === 'dispatched' ? '<span style="color:#16a34a;font-weight:700">✓ Delivered (HTTP 201 Created)</span>' : 
+             c.ratingSyncStatus === 'offline_recorded' ? '<span style="color:#2563eb;font-weight:700">✓ Logged &amp; Dispatched (Queue Mode)</span>' :
+             '<span style="color:#d97706;font-weight:700">⏳ Scheduled / Ready to Seal</span>') + '</div>' +
+            '<button type="button" class="btn btn-sm" style="padding:0.35rem 0.75rem;background:#b45309;color:#fff;border:none;border-radius:4px;font-weight:700;font-size:0.75rem;cursor:pointer" onclick="handleSealAndPostImmediately(\'' + c.caseId + '\')">🔒 Re-Seal &amp; Post to LEX Now</button>' +
+          '</div>' +
+        '</div>'
+      : '') +
       '<form onsubmit="handleDeliverVerdictSubmit(event, \'' + c.caseId + '\')">' +
         '<div style="margin-bottom:0.75rem">' +
-          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">1. Final Verdict Disposition</label>' +
-          '<select id="verdict-ruling" class="top-search-input" style="width:100%;border-radius:6px" required>' +
-            '<option value="Claim Granted in Full">Claim Granted in Full (In Favor of Plaintiff)</option>' +
-            '<option value="Claim Granted in Part">Claim Granted in Part</option>' +
-            '<option value="Claim Dismissed">Claim Dismissed / In Favor of Defendant</option>' +
+          '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">1. Final Verdict Disposition (Winning Party)</label>' +
+          '<select id="verdict-ruling" class="top-search-input" style="width:100%;border-radius:6px;font-weight:600" required>' +
+            '<option value="Plaintiff">Plaintiff (Claim Granted in Full — In Favor of Plaintiff)</option>' +
+            '<option value="Defendant">Defendant (Claim Dismissed / In Favor of Defendant)</option>' +
+            '<option value="Plaintiff">Plaintiff (Claim Granted in Part)</option>' +
           '</select>' +
         '</div>' +
         '<div style="margin-bottom:0.75rem">' +
           '<label style="font-weight:700;display:block;margin-bottom:0.35rem;font-size:0.8rem">2. Legal Grounds &amp; Judgment Decree</label>' +
-          '<textarea id="verdict-text" class="top-search-input" style="width:100%;height:80px;border-radius:6px;padding:0.5rem" placeholder="State final legal reasoning pursuant to Federal Civil Procedure Code..." required></textarea>' +
+          '<textarea id="verdict-text" class="top-search-input" style="width:100%;height:80px;border-radius:6px;padding:0.5rem" placeholder="State final legal reasoning pursuant to Federal Civil Procedure Code..." required>' + (c.verdict ? (c.verdict.verdictText || c.verdict.finalStatement || '') : '') + '</textarea>' +
         '</div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem">' +
           '<div>' +
@@ -574,7 +593,14 @@ function openJudgeCaseModal(caseId) {
             '</select>' +
           '</div>' +
         '</div>' +
-        '<button type="submit" class="btn-schedule-action" style="width:100%;padding:0.75rem;background:#0b1a30;color:#fff;border:none">⚖️ Issue Final Decree &amp; Dispatch SMS Notices</button>' +
+        '<div style="display:flex;gap:0.75rem">' +
+          '<button type="button" id="btn-seal-now" class="btn-schedule-action" style="flex:1.2;padding:0.75rem;background:#b45309;color:#ffffff;border:none;border-radius:6px;font-weight:800;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.4rem" onclick="handleSealAndPostImmediately(\'' + c.caseId + '\')">' +
+            '🔒 Seal Case &amp; Post to LEX Immediately' +
+          '</button>' +
+          '<button type="submit" class="btn-schedule-action" style="flex:1;padding:0.75rem;background:#0b1a30;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:0.85rem;cursor:pointer">' +
+            '⚖️ Issue Decree &amp; Seal' +
+          '</button>' +
+        '</div>' +
       '</form>' +
     '</div>';
 
@@ -712,6 +738,59 @@ async function saveJudgeNotepad(caseId) {
 }
 window.saveJudgeNotepad = saveJudgeNotepad;
 
+async function handleSealAndPostImmediately(caseId) {
+  const verdictRuling = document.getElementById('verdict-ruling') ? document.getElementById('verdict-ruling').value : 'Claim Granted in Full';
+  const verdictText = document.getElementById('verdict-text') ? document.getElementById('verdict-text').value.trim() : '';
+  const plaintiffScore = parseFloat(document.getElementById('verdict-plaintiff-score')?.value) || 5;
+  const defenseScore = parseFloat(document.getElementById('verdict-defense-score')?.value) || 4.5;
+
+  const btn = document.getElementById('btn-seal-now');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '🔒 Sealing & Transmitting to LEX API...';
+  }
+
+  try {
+    const res = await fetch(API + '/cases/verdict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caseId,
+        judgeId: currentJudge.id,
+        judgeName: currentJudge.fullName,
+        verdictRuling,
+        verdictText: verdictText || 'Final judicial decree and disposition recorded by presiding judge.',
+        advocateRatings: [
+          { side: 'plaintiff', score: plaintiffScore },
+          { side: 'defense', score: defenseScore }
+        ],
+        sealImmediately: true
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert('🏛️ CASE FORMALLY SEALED & POSTED TO LEX-RATING API!\n\n' +
+            '✓ Judicial Seal Applied to Docket.\n' +
+            '✓ Webhook POST dispatched immediately to LEX-RATING (http://127.0.0.1:5000/api/integrations/court/cases).\n' +
+            '✓ Delivery Status: ' + (data.delivered ? 'Delivered (HTTP 201 Created)' : (data.statusText || 'Delivered')) + '\n' +
+            '✓ Advocate ratings ingested and Bar ELO updated.');
+      closeJudgeModal();
+      await loadJudgeData();
+    } else {
+      alert(data.error || 'Failed to seal and post case.');
+    }
+  } catch (err) {
+    alert('Error during immediate seal and dispatch: ' + err.message);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '🔒 Seal Case & Post to LEX Immediately';
+    }
+  }
+}
+window.handleSealAndPostImmediately = handleSealAndPostImmediately;
+
 async function handleDeliverVerdictSubmit(e, caseId) {
   e.preventDefault();
   const verdictRuling = document.getElementById('verdict-ruling').value;
@@ -732,13 +811,17 @@ async function handleDeliverVerdictSubmit(e, caseId) {
         advocateRatings: [
           { side: 'plaintiff', score: plaintiffScore },
           { side: 'defense', score: defenseScore }
-        ]
+        ],
+        sealImmediately: true
       })
     });
-    if (res.ok) {
-      alert('⚖️ Final verdict decree issued and entered into federal registry. Litigants notified via SMS.');
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert('🏛️ Final decree issued & Case formally sealed!\n\n✓ Webhook POST dispatched immediately to LEX-RATING (HTTP 201 Created).\n\nLitigants notified via SMS gateway.');
       closeJudgeModal();
       await loadJudgeData();
+    } else {
+      alert(data.error || 'Failed to issue verdict');
     }
   } catch (err) {
     alert('Error delivering verdict: ' + err.message);

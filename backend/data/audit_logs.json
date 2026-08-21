@@ -1,5 +1,1035 @@
 [
   {
+    "id": "AUD-1787320030473",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T13:47:10.473Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787319982484",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T13:46:22.484Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787319838183",
+    "action": "CASE_SEALED_IMMEDIATE_LEX_DISPATCH",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:43:58.183Z",
+    "details": "Case sealed and immediately posted to LEX-RATING API (Dispatched). Verdict: \"Claim Granted in Full\""
+  },
+  {
+    "id": "AUD-1787319838175",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:43:58.175Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: Connection timeout after 8s)"
+  },
+  {
+    "id": "AUD-1787319646302",
+    "action": "CASE_SEALED_IMMEDIATE_LEX_DISPATCH",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:40:46.302Z",
+    "details": "Case sealed and immediately posted to LEX-RATING API (Delivered HTTP 201). Verdict: \"Claim Dismissed\""
+  },
+  {
+    "id": "AUD-1787319646275",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:40:46.276Z",
+    "details": "Successfully transmitted case outcome & advocate ratings to LEX-RATING (http://127.0.0.1:5000/api/integrations/court/cases)"
+  },
+  {
+    "id": "AUD-1787319526000",
+    "action": "CASE_SEALED_IMMEDIATE_LEX_DISPATCH",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:38:46.000Z",
+    "details": "Case sealed and immediately posted to LEX-RATING API (Delivered HTTP 201). Verdict: \"Claim Granted in Full\""
+  },
+  {
+    "id": "AUD-1787319525994",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:38:45.994Z",
+    "details": "Successfully transmitted case outcome & advocate ratings to LEX-RATING (http://127.0.0.1:5000/api/integrations/court/cases)"
+  },
+  {
+    "id": "AUD-1787319431576",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "TEST-DEF-002",
+    "timestamp": "2026-08-21T13:37:11.576Z",
+    "details": "Successfully transmitted case outcome & advocate ratings to LEX-RATING (http://127.0.0.1:5000/api/integrations/court/cases)"
+  },
+  {
+    "id": "AUD-1787319431560",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "TEST-PL-001",
+    "timestamp": "2026-08-21T13:37:11.560Z",
+    "details": "Successfully transmitted case outcome & advocate ratings to LEX-RATING (http://127.0.0.1:5000/api/integrations/court/cases)"
+  },
+  {
+    "id": "AUD-1787318945870",
+    "action": "CASE_SEALED_IMMEDIATE_LEX_DISPATCH",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:29:05.870Z",
+    "details": "Case sealed and immediately posted to LEX-RATING API (Delivered HTTP 201). Verdict: \"Claim Granted in Full\""
+  },
+  {
+    "id": "AUD-1787318945863",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:29:05.863Z",
+    "details": "Successfully transmitted case outcome & advocate ratings to LEX-RATING (http://127.0.0.1:5000/api/integrations/court/cases)"
+  },
+  {
+    "id": "AUD-1787318580115",
+    "action": "CASE_SEALED_IMMEDIATE_LEX_DISPATCH",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:23:00.115Z",
+    "details": "Case sealed and immediately posted to LEX-RATING API (Dispatched). Verdict: \"Claim Granted in Full\""
+  },
+  {
+    "id": "AUD-1787318580110",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:23:00.110Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: Connection timeout after 8s)"
+  },
+  {
+    "id": "AUD-1787318115879",
+    "action": "CASE_SEALED_IMMEDIATE_LEX_DISPATCH",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T13:15:15.879Z",
+    "details": "Case sealed and immediately posted to LEX-RATING API (Dispatched). Verdict: \"Claim Granted in Full\""
+  },
+  {
+    "id": "AUD-1787318115871",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T13:15:15.871Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: Connection timeout after 8s)"
+  },
+  {
+    "id": "AUD-1787318009470",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T13:13:29.470Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787317806654",
+    "action": "CASE_FORMALLY_SEALED_IMMEDIATE_POST",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T13:10:06.654Z",
+    "details": "Case formally sealed and immediately posted to LEX-RATING API (Dispatched)"
+  },
+  {
+    "id": "AUD-1787317806647",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T13:10:06.647Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: Connection timeout after 8s)"
+  },
+  {
+    "id": "AUD-1787317792349",
+    "action": "CASE_SEALED_IMMEDIATE_LEX_DISPATCH",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:09:52.349Z",
+    "details": "Case sealed and immediately posted to LEX-RATING API (Dispatched). Verdict: \"Claim Granted in Full (Judicial Seal Applied)\""
+  },
+  {
+    "id": "AUD-1787317792342",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:09:52.342Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: Connection timeout after 8s)"
+  },
+  {
+    "id": "AUD-1787317765419",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:09:25.419Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full (Judicial Seal Applied)\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:14:25.415Z)."
+  },
+  {
+    "id": "AUD-1787317407143",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:03:27.143Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: Connection timeout after 8s)"
+  },
+  {
+    "id": "AUD-1787317405333",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T13:03:25.333Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: Connection timeout after 8s)"
+  },
+  {
+    "id": "AUD-1787317097292",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:58:17.292Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:03:17.283Z)."
+  },
+  {
+    "id": "AUD-1787317097263",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:58:17.263Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:03:17.256Z)."
+  },
+  {
+    "id": "AUD-1787317096769",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:58:16.769Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:03:16.758Z)."
+  },
+  {
+    "id": "AUD-1787317096741",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:58:16.741Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:03:16.733Z)."
+  },
+  {
+    "id": "AUD-1787317087079",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:58:07.079Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:03:07.067Z)."
+  },
+  {
+    "id": "AUD-1787317087047",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:58:07.047Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:03:07.040Z)."
+  },
+  {
+    "id": "AUD-1787317079106",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:59.106Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:59.097Z)."
+  },
+  {
+    "id": "AUD-1787317079079",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:59.079Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:59.070Z)."
+  },
+  {
+    "id": "AUD-1787317079055",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:59.055Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:59.045Z)."
+  },
+  {
+    "id": "AUD-1787317079030",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:59.030Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:59.024Z)."
+  },
+  {
+    "id": "AUD-1787317069223",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:49.223Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:49.216Z)."
+  },
+  {
+    "id": "AUD-1787317066467",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:46.467Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:46.461Z)."
+  },
+  {
+    "id": "AUD-1787317061742",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:41.742Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:41.733Z)."
+  },
+  {
+    "id": "AUD-1787317061535",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:41.535Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:41.528Z)."
+  },
+  {
+    "id": "AUD-1787317060719",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:40.719Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:40.713Z)."
+  },
+  {
+    "id": "AUD-1787317059692",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:39.692Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:39.683Z)."
+  },
+  {
+    "id": "AUD-1787317053167",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:33.167Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:33.161Z)."
+  },
+  {
+    "id": "AUD-1787317050414",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:30.414Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:30.406Z)."
+  },
+  {
+    "id": "AUD-1787317045679",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:25.679Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:25.670Z)."
+  },
+  {
+    "id": "AUD-1787317045473",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:25.473Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:25.457Z)."
+  },
+  {
+    "id": "AUD-1787317044663",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:24.663Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:24.650Z)."
+  },
+  {
+    "id": "AUD-1787317043629",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:23.629Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:23.616Z)."
+  },
+  {
+    "id": "AUD-1787317037108",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:17.108Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:17.099Z)."
+  },
+  {
+    "id": "AUD-1787317034260",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T12:57:14.260Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T13:02:14.249Z)."
+  },
+  {
+    "id": "AUD-1787316845441",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T12:54:05.441Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787316827067",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Alemu Bekele",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T12:53:47.067Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787316270414",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T12:44:30.414Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787316242655",
+    "action": "USER_LOGIN",
+    "user": "Court Clerk Ibrahim Tesfaye",
+    "role": "clerk",
+    "timestamp": "2026-08-21T12:44:02.655Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787316227983",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Yonas",
+    "role": "officer",
+    "timestamp": "2026-08-21T12:43:47.983Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787316188713",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Selam",
+    "role": "officer",
+    "timestamp": "2026-08-21T12:43:08.713Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787316174814",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Hassan",
+    "role": "officer",
+    "timestamp": "2026-08-21T12:42:54.814Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787316164471",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Selam",
+    "role": "officer",
+    "timestamp": "2026-08-21T12:42:44.471Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787316138539",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Yonas",
+    "role": "officer",
+    "timestamp": "2026-08-21T12:42:18.539Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787316138296",
+    "action": "USER_LOGIN",
+    "user": "Bereket Girma",
+    "role": "prosecutor",
+    "timestamp": "2026-08-21T12:42:18.297Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787312659522",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T11:44:19.522Z",
+    "details": "Successfully transmitted case outcome & advocate ratings to LEX-RATING (http://127.0.0.1:5000/api/integrations/court/cases)"
+  },
+  {
+    "id": "AUD-1787312497936",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T11:41:37.936Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (HTTP 401: {\"error\":\"Unauthorized\",\"message\":\"A valid government integration API key is required in the X-API-KEY header.\"})"
+  },
+  {
+    "id": "AUD-1787311418663",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T11:23:38.663Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (HTTP 401: {\"error\":\"Unauthorized\",\"message\":\"A valid government integration API key is required in the X-API-KEY header.\"})"
+  },
+  {
+    "id": "AUD-1787311106610",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T11:18:26.610Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T11:23:26.605Z)."
+  },
+  {
+    "id": "AUD-1787311036066",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T11:17:16.066Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787310947007",
+    "action": "COURT_SESSION_MINUTES_LOGGED",
+    "user": "Kalkidan Mengistu",
+    "role": "clerk",
+    "caseId": "CASE-1787300342312",
+    "details": "Attendance and procedural minutes committed and sealed for Oral Arguments on Merits",
+    "timestamp": "2026-08-21T11:15:47.007Z"
+  },
+  {
+    "id": "AUD-1787310712808",
+    "action": "USER_LOGIN",
+    "user": "Kalkidan Mengistu",
+    "role": "clerk",
+    "timestamp": "2026-08-21T11:11:52.808Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787310652902",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T11:10:52.902Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787310638808",
+    "action": "USER_LOGIN",
+    "user": "Advocate Kalalew Terefe",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T11:10:38.808Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787310600664",
+    "action": "LAWYER_APPOINTMENT_ACCEPTED",
+    "user": "Kebede Haile Mariam",
+    "role": "lawyer",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T11:10:00.664Z",
+    "details": "Appointed for Plaintiff (Adnan)"
+  },
+  {
+    "id": "AUD-1787310588491",
+    "action": "USER_LOGIN",
+    "user": "Kebede Haile Mariam",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T11:09:48.491Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787310027013",
+    "action": "LAWYER_APPOINTMENT_ACCEPTED",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T11:00:27.013Z",
+    "details": "Appointed for Defendant (Dagim)"
+  },
+  {
+    "id": "AUD-1787309999906",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T10:59:59.906Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787308894788",
+    "action": "LAWYER_REMOVED_BY_CLIENT",
+    "user": "Leil",
+    "role": "defendant",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T10:41:34.788Z",
+    "details": "Defendant revoked lawyer and resumed direct self-representation."
+  },
+  {
+    "id": "AUD-1787308894660",
+    "action": "LAWYER_APPOINTMENT_ACCEPTED",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T10:41:34.660Z",
+    "details": "Appointed for Defendant (Dagim)"
+  },
+  {
+    "id": "AUD-1787308682459",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T10:38:02.459Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787308181573",
+    "action": "USER_LOGIN",
+    "user": "Advocate Tigist Assefa",
+    "role": "lawyer",
+    "timestamp": "2026-08-21T10:29:41.573Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787307746443",
+    "action": "COURT_SESSION_MINUTES_LOGGED",
+    "user": "Kalkidan Mengistu",
+    "role": "clerk",
+    "caseId": "CASE-1787286146761",
+    "details": "Attendance and procedural minutes committed and sealed for Final Closing Submissions",
+    "timestamp": "2026-08-21T10:22:26.443Z"
+  },
+  {
+    "id": "AUD-1787307446124",
+    "action": "COURT_SESSION_MINUTES_LOGGED",
+    "user": "Kalkidan Mengistu",
+    "role": "clerk",
+    "caseId": "CASE-1787286146761",
+    "details": "Attendance and procedural minutes recorded for Examination of Witnesses",
+    "timestamp": "2026-08-21T10:17:26.124Z"
+  },
+  {
+    "id": "AUD-1787306776965",
+    "action": "USER_LOGIN",
+    "user": "Kalkidan Mengistu",
+    "role": "clerk",
+    "timestamp": "2026-08-21T10:06:16.965Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787306682131",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Hassan",
+    "role": "officer",
+    "timestamp": "2026-08-21T10:04:42.131Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787306118808",
+    "action": "USER_LOGIN",
+    "user": "Court Clerk Ibrahim Tesfaye",
+    "role": "clerk",
+    "timestamp": "2026-08-21T09:55:18.808Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787305916427",
+    "action": "USER_LOGIN",
+    "user": "Court Clerk Ibrahim Tesfaye",
+    "role": "clerk",
+    "timestamp": "2026-08-21T09:51:56.427Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787300821948",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T08:27:01.948Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787300750959",
+    "action": "HEARING_SCHEDULED",
+    "user": "Branch Official Hassan",
+    "role": "official",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T08:25:50.960Z",
+    "details": "Judge: Hon. Judge Solomon Desta, Courtroom: Courtroom 1A (Cassation Bench), Date: 2026-08-21 at 11:15 AM"
+  },
+  {
+    "id": "AUD-1787300598468",
+    "action": "USER_LOGIN",
+    "user": "Branch Official Hassan",
+    "role": "officer",
+    "timestamp": "2026-08-21T08:23:18.468Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787300500813",
+    "action": "ADMIN_APPROVED_AND_FORWARDED",
+    "user": "System Administrator",
+    "role": "admin",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T08:21:40.813Z",
+    "details": "Assigned to Federal Supreme Court (Sidist Kilo). Law Check: undefined - undefined"
+  },
+  {
+    "id": "AUD-1787300390963",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T08:19:50.963Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787300342323",
+    "action": "CASE_FILED",
+    "user": "Lemi",
+    "role": "plaintiff",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T08:19:02.324Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787300167251",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T08:16:07.251Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299867222",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T08:11:07.222Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full (In Favor of Plaintiff)\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T08:16:07.214Z)."
+  },
+  {
+    "id": "AUD-1787299824307",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1027",
+    "timestamp": "2026-08-21T08:10:24.307Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824284",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1026",
+    "timestamp": "2026-08-21T08:10:24.284Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824266",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1024",
+    "timestamp": "2026-08-21T08:10:24.266Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824250",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1023",
+    "timestamp": "2026-08-21T08:10:24.250Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824230",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1022",
+    "timestamp": "2026-08-21T08:10:24.230Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824214",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1020",
+    "timestamp": "2026-08-21T08:10:24.214Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824195",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1019",
+    "timestamp": "2026-08-21T08:10:24.195Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824179",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1018",
+    "timestamp": "2026-08-21T08:10:24.179Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824162",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1016",
+    "timestamp": "2026-08-21T08:10:24.162Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824144",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1015",
+    "timestamp": "2026-08-21T08:10:24.144Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824127",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1014",
+    "timestamp": "2026-08-21T08:10:24.127Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824112",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1012",
+    "timestamp": "2026-08-21T08:10:24.112Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824092",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1011",
+    "timestamp": "2026-08-21T08:10:24.092Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824076",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1010",
+    "timestamp": "2026-08-21T08:10:24.076Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824059",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1008",
+    "timestamp": "2026-08-21T08:10:24.059Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824041",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1007",
+    "timestamp": "2026-08-21T08:10:24.041Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824023",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1006",
+    "timestamp": "2026-08-21T08:10:24.023Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299824006",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1004",
+    "timestamp": "2026-08-21T08:10:24.006Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299823984",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1003",
+    "timestamp": "2026-08-21T08:10:23.984Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299823967",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-HIST-2025-1002",
+    "timestamp": "2026-08-21T08:10:23.967Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299823951",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-178721511200",
+    "timestamp": "2026-08-21T08:10:23.951Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299823935",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-178721540800",
+    "timestamp": "2026-08-21T08:10:23.935Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299823919",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T08:10:23.919Z",
+    "details": "Dispatched case ratings to LEX-RATING queue (Target offline/logged: connect ECONNREFUSED 127.0.0.1:5000)"
+  },
+  {
+    "id": "AUD-1787299809298",
+    "action": "CASE_SEALED_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T08:10:09.298Z",
+    "details": "Case sealed with verdict: \"Claim Granted in Full (In Favor of Plaintiff)\". LEX-RATING sync scheduled in 5 minutes (2026-08-21T08:15:09.294Z)."
+  },
+  {
+    "id": "AUD-1787298075798",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T07:41:15.798Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787298053904",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T07:40:53.904Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787294714622",
+    "action": "FINAL_VERDICT_ISSUED",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787286146761",
+    "timestamp": "2026-08-21T06:45:14.622Z",
+    "details": "Winner: undefined | Appeal Deadline: 30 days"
+  },
+  {
+    "id": "AUD-1787294611232",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T06:43:31.232Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787294602098",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T06:43:22.098Z",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-1787292630211",
     "action": "USER_LOGIN",
     "user": "Hon. Judge Solomon Desta",

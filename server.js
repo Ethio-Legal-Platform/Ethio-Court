@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 
 const { connectDB } = require('./backend/config/db');
+const { initRatingSyncWorker } = require('./backend/services/webhookDispatcher');
 const apiRoutes = require('./backend/routes/apiRoutes');
 const pageRoutes = require('./backend/routes/pageRoutes');
 
@@ -44,6 +45,7 @@ app.use('/', pageRoutes);
 app.listen(PORT, async () => {
   console.log(`⚖️  Federal Supreme Court System running on http://localhost:${PORT}`);
   await connectDB();
+  initRatingSyncWorker();
 });
 
 module.exports = app;
