@@ -1,5 +1,47 @@
 [
   {
+    "id": "AUD-1787338846481",
+    "action": "USER_LOGIN",
+    "user": "System Administrator",
+    "role": "admin",
+    "timestamp": "2026-08-21T19:00:46.481Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787333970180",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T17:39:30.180Z",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-1787325140778",
+    "action": "CASE_SEALED_IMMEDIATE_LEX_DISPATCH",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T15:12:20.779Z",
+    "details": "Case sealed and immediately posted to LEX-RATING API (Delivered HTTP 201). Verdict: \"Defendant\""
+  },
+  {
+    "id": "AUD-1787325140772",
+    "action": "LEX_RATING_WEBHOOK_DISPATCHED",
+    "user": "System Automation",
+    "role": "system",
+    "caseId": "CASE-1787300342312",
+    "timestamp": "2026-08-21T15:12:20.772Z",
+    "details": "Successfully transmitted case outcome & advocate ratings to LEX-RATING (http://127.0.0.1:5000/api/integrations/court/cases)"
+  },
+  {
+    "id": "AUD-1787325098100",
+    "action": "USER_LOGIN",
+    "user": "Hon. Judge Solomon Desta",
+    "role": "judge",
+    "timestamp": "2026-08-21T15:11:38.101Z",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-1787323083761",
     "action": "USER_LOGIN",
     "user": "System Administrator",

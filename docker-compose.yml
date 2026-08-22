@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # Court Core Application (Federal Supreme Court System)
+  # ----------------------------------------------------------------------------
+  court-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fsc_court_system
+    restart: unless-stopped
+    ports:
+      - "${PORT:-5001}:5001"
+    environment:
+      - PORT=5001
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/efcourt
+      - LEX_RATING_HOST=${LEX_RATING_HOST:-host.docker.internal}
+      - LEX_RATING_PORT=${LEX_RATING_PORT:-5000}
+      - LEX_RATING_API_KEY=${LEX_RATING_API_KEY:-moj_court_sec_key_98374189234812398471}
+      - SEAL_GRACE_PERIOD_MS=${SEAL_GRACE_PERIOD_MS:-300000}
+    volumes:
+      # Persistent case records, advocate accounts, audit logs & registries
+      - court_data:/app/backend/data
+      # Persistent evidentiary filings and document uploads
+      - court_uploads:/app/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - court-network
+
+  # ----------------------------------------------------------------------------
+  # MongoDB Database Service
+  # ----------------------------------------------------------------------------
+  mongodb:
+    image: mongo:7.0
+    container_name: fsc_court_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=efcourt
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - court-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+# ------------------------------------------------------------------------------
+# Persistent Storage Volumes
+# ------------------------------------------------------------------------------
+volumes:
+  mongo_data:
+    name: fsc_mongo_data
+  court_data:
+    name: fsc_court_data
+  court_uploads:
+    name: fsc_court_uploads
+
+# ------------------------------------------------------------------------------
+# Isolated Bridge Network
+# ------------------------------------------------------------------------------
+networks:
+  court-network:
+    name: fsc_court_network
+    driver: bridge

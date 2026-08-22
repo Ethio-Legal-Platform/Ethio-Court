@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  court-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fsc_court_system_dev
+    environment:
+      - NODE_ENV=development
+      - PORT=5001
+      - MONGODB_URI=mongodb://mongodb:27017/efcourt
+      - LEX_RATING_HOST=host.docker.internal
+      - LEX_RATING_PORT=5000
+    volumes:
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+      - ./server.js:/app/server.js
+      - ./db.js:/app/db.js
+      - ./uploads:/app/uploads
+    ports:
+      - "5001:5001"

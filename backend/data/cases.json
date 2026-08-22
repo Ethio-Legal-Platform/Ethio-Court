@@ -113,27 +113,27 @@
       }
     ],
     "verdict": {
-      "verdictDate": "2026-08-21T13:43:50.132Z",
-      "winningParty": "Claim Granted in Full",
-      "verdictRuling": "Claim Granted in Full",
-      "verdictText": "Plaintiff",
+      "verdictDate": "2026-08-21T15:12:16.671Z",
+      "winningParty": "Defendant",
+      "verdictRuling": "Defendant",
+      "verdictText": "Defendant",
       "judgmentRemedy": "Full judicial relief granted pursuant to Federal Civil Code",
-      "finalStatement": "Plaintiff",
-      "appealDeadline": "2026-09-20T13:43:50.132Z",
+      "finalStatement": "Defendant",
+      "appealDeadline": "2026-09-20T15:12:16.671Z",
       "judgeName": "Hon. Judge Solomon Desta",
       "advocateRatings": [
         {
           "side": "plaintiff",
-          "score": 5
+          "score": 4
         },
         {
           "side": "defense",
-          "score": 3
+          "score": 4
         }
       ],
       "ratings": []
     },
-    "appealDeadline": "2026-09-20T13:43:50.132Z",
+    "appealDeadline": "2026-09-20T15:12:16.671Z",
     "isClosed": false,
     "adminViewed": true,
     "adminViewedAt": "2026-08-21T08:22:56.160Z",
@@ -153,16 +153,16 @@
     "clientAccessMode": "read_only_with_full_visibility",
     "hearingType": "Examination of Expert Witnesses & Closing Arguments",
     "isSealed": true,
-    "sealedAt": "2026-08-21T13:43:50.132Z",
-    "finalVerdict": "Claim Granted in Full",
+    "sealedAt": "2026-08-21T15:12:16.671Z",
+    "finalVerdict": "Defendant",
     "dateDecided": "2026-08-21",
-    "judgeRatingPlaintiff": 5,
-    "judgeRatingDefendant": 3,
-    "ratingSyncStatus": "offline_recorded",
-    "ratingSyncScheduledAt": "2026-08-21T13:48:50.132Z",
+    "judgeRatingPlaintiff": 4,
+    "judgeRatingDefendant": 4,
+    "ratingSyncStatus": "dispatched",
+    "ratingSyncScheduledAt": "2026-08-21T15:17:16.671Z",
     "ratingSyncCountdownMs": 300000,
-    "ratingSyncDispatchedAt": "2026-08-21T13:43:58.166Z",
-    "ratingSyncDetails": "Target offline/logged: Connection timeout after 8s",
+    "ratingSyncDispatchedAt": "2026-08-21T15:12:20.761Z",
+    "ratingSyncDetails": "Delivered HTTP 201",
     "ratingSyncPayload": {
       "caseId": "CASE-1787300342312",
       "caseTitle": "Commercial",
@@ -175,15 +175,15 @@
       "plaintiffClientName": "Lemi",
       "plaintiffLawyerLicense": "LAW-1001",
       "plaintiffLawyerName": "Kebede Haile Mariam",
-      "judgeRatingPlaintiff": 5,
+      "judgeRatingPlaintiff": 4,
       "clientRatingPlaintiff": 4.8,
       "defendantClientId": "0901457490",
       "defendantClientName": "Leil",
       "defendantLawyerLicense": "LAW-1002",
       "defendantLawyerName": "Advocate Tigist Alemu Bekele",
-      "judgeRatingDefendant": 3,
+      "judgeRatingDefendant": 4,
       "clientRatingDefendant": null,
-      "verdict": "Plaintiff"
+      "verdict": "Defendant"
     }
   },
   {

@@ -1,5 +1,33 @@
 [
   {
+    "id": "SMS-1787325144346-761",
+    "time": "8/21/2026, 6:12:24 PM",
+    "phone": "0901457490",
+    "msisdn": "251901457490",
+    "type": "Verdict Notice",
+    "message": "FSC Notice: Final judgment rendered in Case CASE-1787300342312. Statutory appeal window active. View docket: http://localhost:5001/file-case",
+    "status": "Sent",
+    "statusClass": "pill-green",
+    "sentBy": "Federal Court Auto-Gateway (SMSEthiopia)",
+    "delivered": true,
+    "providerResponse": "SMSEthiopia Accepted: Accepted for delivery",
+    "createdAt": "2026-08-21T15:12:24.405Z"
+  },
+  {
+    "id": "SMS-1787325140788-368",
+    "time": "8/21/2026, 6:12:20 PM",
+    "phone": "0924050557",
+    "msisdn": "251924050557",
+    "type": "Verdict Notice",
+    "message": "FSC Notice: Final verdict entered in Case CASE-1787300342312. Decree: Defendant. View docket: http://localhost:5001/file-case",
+    "status": "Sent",
+    "statusClass": "pill-green",
+    "sentBy": "Federal Court Auto-Gateway (SMSEthiopia)",
+    "delivered": true,
+    "providerResponse": "SMSEthiopia Accepted: Accepted for delivery",
+    "createdAt": "2026-08-21T15:12:24.337Z"
+  },
+  {
     "id": "SMS-1787319857380-678",
     "time": "8/21/2026, 4:44:17 PM",
     "phone": "0901457490",

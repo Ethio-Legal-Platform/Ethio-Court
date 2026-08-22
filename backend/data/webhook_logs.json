@@ -1,5 +1,38 @@
 [
   {
+    "id": "WH-1787325140747",
+    "event": "CASE_SEALED_RATING_SYNC",
+    "caseId": "CASE-1787300342312",
+    "targetUrl": "http://127.0.0.1:5000/api/integrations/court/cases",
+    "delivered": true,
+    "statusCode": 201,
+    "statusText": "Delivered HTTP 201",
+    "payload": {
+      "caseId": "CASE-1787300342312",
+      "caseTitle": "Commercial",
+      "caseType": "Commercial & Contract",
+      "dateDecided": "2026-08-21",
+      "judgeId": "JUDGE-001",
+      "judgeName": "Hon. Judge Solomon Desta",
+      "courtLevel": "Federal High Court",
+      "plaintiffClientId": "0924050557",
+      "plaintiffClientName": "Lemi",
+      "plaintiffLawyerLicense": "LAW-1001",
+      "plaintiffLawyerName": "Kebede Haile Mariam",
+      "judgeRatingPlaintiff": 4,
+      "clientRatingPlaintiff": 4.8,
+      "defendantClientId": "0901457490",
+      "defendantClientName": "Leil",
+      "defendantLawyerLicense": "LAW-1002",
+      "defendantLawyerName": "Advocate Tigist Alemu Bekele",
+      "judgeRatingDefendant": 4,
+      "clientRatingDefendant": null,
+      "verdict": "Defendant"
+    },
+    "responseBody": "{\"success\":true,\"message\":\"Successfully ingested 1 court cases. Lawyer ELO ratings recalculated.\",\"ingestedCount\":1,\"cases\":[{\"_id\":\"6a883a0cd988394bd8b69048\",\"caseId\":\"CASE-1787300342312\",\"__v\":0,\"caseTitle\":\"Commercial\",\"caseType\":\"Commercial & Contract\",\"clientRatingDefendant\":null,\"clientRatingPlaintiff\":4.8,\"createdAt\":\"2026-08-21T11:44:12.001Z\",\"dateDecided\":\"2026-08-21\",\"defendantClientId\":\"0901457490\",\"defendantClientName\":\"Leil\",\"defendantLawyerLicense\":\"LAW-1002\",\"defendantLawyerName\":\"Advocate Tigist Alemu Bekele\",\"judgeId\":\"JUDGE-001\",\"judgeName\":\"Hon. Judge Solomon Desta\",\"judgeRatingDefendant\":4,\"judgeRatingPlaintiff\":4,\"plaintiffClientId\":\"0924050557\",\"plaintiffClientName\":\"Lemi\",\"plaintiffLawyerLicense\":\"LAW-1001\",\"plaintiffLawyerName\":\"Kebede Haile Mariam\",\"status\":\"Decided\",\"updatedAt\":\"2026-08-21T15:12:16.792Z\",\"verdict\":\"Defendant\"}]}",
+    "timestamp": "2026-08-21T15:12:20.747Z"
+  },
+  {
     "id": "WH-1787319838155",
     "event": "CASE_SEALED_RATING_SYNC",
     "caseId": "CASE-1787300342312",
